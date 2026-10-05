@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sahabat Muslim — Platform All-in-One untuk Kaum Muslimin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --green-900: #064e3b;
+            --green-800: #065f46;
+            --green-700: #047857;
+            --green-600: #059669;
+            --green-500: #10b981;
+            --green-100: #d1fae5;
+            --green-50: #ecfdf5;
+            --gold-500: #d4a843;
+            --gold-400: #e2b960;
+            --gold-300: #f0d78a;
+            --white: #ffffff;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--gray-800);
+            background: var(--white);
+            line-height: 1.6;
+        }
+
+        .arabic {
+            font-family: 'Amiri', serif;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--gray-200);
+            z-index: 100;
+            padding: 1rem 2rem;
+        }
+
+        .nav-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: var(--green-800);
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--green-700), var(--green-600));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+        }
+
+        .logo-text {
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--gray-600);
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--green-700);
+        }
+
+        /* Hero */
+        .hero {
+            padding: 8rem 2rem 4rem;
+            background: linear-gradient(180deg, var(--green-50) 0%, var(--white) 100%);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '﷽';
+            position: absolute;
+            top: 6rem;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 2rem;
+            color: var(--green-100);
+            font-family: 'Amiri', serif;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: var(--green-100);
+            color: var(--green-800);
+            padding: 0.5rem 1rem;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .hero h1 span {
+            color: var(--green-700);
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            color: var(--gray-600);
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.875rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: var(--green-700);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--green-800);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--green-700);
+            border: 2px solid var(--green-200);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--green-500);
+            background: var(--green-50);
+        }
+
+        /* Features */
+        .features {
+            padding: 5rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-header h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 0.75rem;
+        }
+
+        .section-header p {
+            color: var(--gray-600);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .feature-card {
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid var(--gray-200);
+            background: var(--white);
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            border-color: var(--green-200);
+            box-shadow: 0 4px 20px rgba(5, 150, 105, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-card p {
+            color: var(--gray-600);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .fi-green { background: var(--green-100); color: var(--green-700); }
+        .fi-gold { background: #fef3c7; color: #b45309; }
+        .fi-blue { background: #dbeafe; color: #1d4ed8; }
+        .fi-purple { background: #ede9fe; color: #7c3aed; }
+        .fi-pink { background: #fce7f3; color: #be185d; }
+        .fi-orange { background: #ffedd5; color: #c2410c; }
+
+        /* Countdown */
+        .countdown {
+            padding: 4rem 2rem;
+            background: var(--green-800);
+            color: white;
+            text-align: center;
+        }
+
+        .countdown h2 {
+            font-size: 1.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .countdown p {
+            color: var(--green-200);
+            margin-bottom: 2rem;
+        }
+
+        .countdown-timer {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+
+        .countdown-item {
+            text-align: center;
+        }
+
+        .countdown-number {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--gold-400);
+            line-height: 1;
+        }
+
+        .countdown-label {
+            font-size: 0.85rem;
+            color: var(--green-200);
+            margin-top: 0.25rem;
+        }
+
+        /* Email Signup */
+        .signup {
+            padding: 5rem 2rem;
+            text-align: center;
+            background: var(--gray-50);
+        }
+
+        .signup-form {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            max-width: 500px;
+            margin: 1.5rem auto 0;
+        }
+
+        .signup-form input {
+            flex: 1;
+            min-width: 250px;
+            padding: 0.875rem 1.25rem;
+            border: 2px solid var(--gray-200);
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .signup-form input:focus {
+            border-color: var(--green-500);
+        }
+
+        /* Footer */
+        footer {
+            padding: 3rem 2rem;
+            background: var(--gray-900);
+            color: var(--gray-400);
+            text-align: center;
+        }
+
+        .footer-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--gray-400);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .footer-divider {
+            border-top: 1px solid var(--gray-700);
+            margin: 1.5rem 0;
+        }
+
+        .footer-copy {
+            font-size: 0.85rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2rem; }
+            .nav-links { display: none; }
+            .countdown-timer { gap: 1rem; }
+            .countdown-number { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-inner">
+            <a href="#" class="logo">
+                <div class="logo-icon">🕌</div>
+                <span class="logo-text">Sahabat Muslim</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="#fitur">Fitur</a></li>
+                <li><a href="#launch">Launch</a></li>
+                <li><a href="#daftar">Daftar</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-badge">🚀 Coming Soon 2026</div>
+        <h1>Platform <span>All-in-One</span> untuk<br>Kaum Muslimin</h1>
+        <p class="hero-subtitle">
+            Ibadah, edukasi, jual beli, dan komunitas — semuanya dalam satu aplikasi. 
+            Dibangun oleh muslim, untuk muslim.
+        </p>
+        <div class="hero-cta">
+            <a href="#daftar" class="btn btn-primary">Daftar Early Access</a>
+            <a href="#fitur" class="btn btn-secondary">Lihat Fitur</a>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features" id="fitur">
+        <div class="section-header">
+            <h2>8 Fitur Utama</h2>
+            <p>Semua yang dibutuhkan kaum muslimin sehari-hari, tersedia di satu tempat</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon fi-green">🕌</div>
+                <h3>Ibadah & Spiritual</h3>
+                <p>Jadwal sholat akurat, Quran digital dengan tafsir, doa harian, dzikir & wirid, kalender Hijriah, dan arah kiblat.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon fi-gold">📚</div>
+                <h3>Pendidikan & Kajian</h3>
+                <p>Kelas online bahasa Arab & Al-Quran, video kajian ustadz, artikel Islam bermanfaat, dan quiz harian.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon fi-blue">🛒</div>
+                <h3>Marketplace Halal</h3>
+                <p>Jual beli produk halal: baju muslim, herbal, makanan, aksesoris. Rekening bersama & rating penjual.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon fi-purple">💬</div>
+                <h3>Sosial & Komunitas</h3>
+                <p>Forum diskusi, grup komunitas per wilayah/kajian, chat private & grup, dan donasi online.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon fi-green">💰</div>
+                <h3>Keuangan Muslim</h3>
+                <p>Kalkulator zakat otomatis, catatan keuangan halal, info investasi syariah, dan asuransi takaful.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon fi-orange">🏥</div>
+                <h3>Kesehatan Islami</h3>
+                <p>Tips sehat sunnah, pola makan Nabi, jadwal vaksin keluarga, dan rekomendasi rumah sakit syariah.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon fi-pink">💍</div>
+                <h3>Pernikahan Muslim</h3>
+                <p>Taaruf online halal, panduan persiapan nikah, undangan digital, dan doa pernikahan.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon fi-gold">📖</div>
+                <h3>Konten Islami</h3>
+                <p>Kultum singkat, nasehat harian, cerita sahabat Nabi, dan galeri kaligrafi.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Countdown -->
+    <section class="countdown" id="launch">
+        <h2>Insya Allah Launching</h2>
+        <p>Saat ini dalam tahap pengembangan</p>
+        <div class="countdown-timer">
+            <div class="countdown-item">
+                <div class="countdown-number" id="days">--</div>
+                <div class="countdown-label">Hari</div>
+            </div>
+            <div class="countdown-item">
+                <div class="countdown-number" id="hours">--</div>
+                <div class="countdown-label">Jam</div>
+            </div>
+            <div class="countdown-item">
+                <div class="countdown-number" id="minutes">--</div>
+                <div class="countdown-label">Menit</div>
+            </div>
+            <div class="countdown-item">
+                <div class="countdown-number" id="seconds">--</div>
+                <div class="countdown-label">Detik</div>
+            </div>
+        </div>
+        <a href="#daftar" class="btn btn-primary" style="background: var(--gold-500); color: var(--gray-900);">Bantu Doa & Dukung</a>
+    </section>
+
+    <!-- Email Signup -->
+    <section class="signup" id="daftar">
+        <div class="section-header">
+            <h2>Daftar Early Access</h2>
+            <p>Jadikan yang pertama tahu saat Sahabat Muslim resmi diluncurkan</p>
+        </div>
+        <form class="signup-form" onsubmit="handleSignup(event)">
+            <input type="email" placeholder="Masukkan email kamu" required id="email-input">
+            <button type="submit" class="btn btn-primary">Daftar</button>
+        </form>
+        <p id="signup-msg" style="margin-top: 1rem; color: var(--green-700); display: none;"></p>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-inner">
+            <div class="footer-links">
+                <a href="#">Tentang</a>
+                <a href="#">Blog</a>
+                <a href="#">Kontak</a>
+                <a href="#">Kebijakan Privasi</a>
+            </div>
+            <div class="footer-divider"></div>
+            <p class="footer-copy">
+                © 2026 Sahabat Muslim — Dibuat dengan ❤️ oleh <a href="https://ahsailabs.my.id" style="color: var(--gold-400); text-decoration: none;">AhsaiLabs</a>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Countdown timer (target: 1 Januari 2027)
+        function updateCountdown() {
+            const target = new Date('2027-01-01T00:00:00+07:00');
+            const now = new Date();
+            const diff = target - now;
+
+            if (diff <= 0) {
+                document.getElementById('days').textContent = '0';
+                document.getElementById('hours').textContent = '0';
+                document.getElementById('minutes').textContent = '0';
+                document.getElementById('seconds').textContent = '0';
+                return;
+            }
+
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+            document.getElementById('days').textContent = days;
+            document.getElementById('hours').textContent = hours;
+            document.getElementById('minutes').textContent = minutes;
+            document.getElementById('seconds').textContent = seconds;
+        }
+
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+
+        // Signup handler (placeholder)
+        function handleSignup(e) {
+            e.preventDefault();
+            const email = document.getElementById('email-input').value;
+            const msg = document.getElementById('signup-msg');
+            msg.textContent = '✅ Jazakallahu khairan! ' + email + ' sudah terdaftar.';
+            msg.style.display = 'block';
+            document.getElementById('email-input').value = '';
+        }
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>

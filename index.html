@@ -425,10 +425,68 @@
             color: var(--gray-900);
         }
 
+        .prayer-hijri-wrap {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+        }
+
         .prayer-date-hijri {
             font-size: 0.95rem;
             color: var(--green-700);
             font-weight: 600;
+        }
+
+        .hijri-source-tag {
+            font-size: 0.7rem;
+            background: var(--green-100);
+            color: var(--green-800);
+            padding: 0.15rem 0.45rem;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .hijri-adj-controls {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            background: var(--gray-100);
+            padding: 0.15rem 0.35rem;
+            border-radius: 6px;
+            border: 1px solid var(--gray-200);
+        }
+
+        .hijri-adj-label {
+            font-size: 0.7rem;
+            color: var(--gray-600);
+            font-weight: 500;
+            padding-right: 0.2rem;
+        }
+
+        .hijri-adj-btn {
+            background: white;
+            border: 1px solid var(--gray-300);
+            border-radius: 4px;
+            padding: 0.15rem 0.4rem;
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--gray-700);
+            cursor: pointer;
+            line-height: 1.2;
+            transition: all 0.15s;
+        }
+
+        .hijri-adj-btn:hover {
+            background: var(--green-50);
+            border-color: var(--green-600);
+            color: var(--green-800);
+        }
+
+        .hijri-adj-btn.active {
+            background: var(--green-700);
+            border-color: var(--green-700);
+            color: white;
         }
 
         .prayer-controls {
@@ -717,7 +775,16 @@
             <div class="prayer-topbar">
                 <div class="prayer-info-meta">
                     <div class="prayer-date-gregorian" id="prayer-gregorian-date">Memuat tanggal...</div>
-                    <div class="prayer-date-hijri" id="prayer-hijri-date">Memuat tanggal Hijriah...</div>
+                    <div class="prayer-hijri-wrap">
+                        <span class="prayer-date-hijri" id="prayer-hijri-date">Memuat tanggal Hijriah...</span>
+                        <span class="hijri-source-tag" id="hijri-source-label">Kemenag RI</span>
+                        <div class="hijri-adj-controls" title="Koreksi Tanggal Hijriah jika ada perbedaan hisab/rukyat">
+                            <span class="hijri-adj-label">Koreksi:</span>
+                            <button type="button" class="hijri-adj-btn" id="adj-btn-minus1" onclick="setHijriAdjustment(-1)">-1</button>
+                            <button type="button" class="hijri-adj-btn active" id="adj-btn-0" onclick="setHijriAdjustment(0)">0</button>
+                            <button type="button" class="hijri-adj-btn" id="adj-btn-plus1" onclick="setHijriAdjustment(1)">+1</button>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="prayer-controls">
@@ -1012,6 +1079,7 @@
             label: 'Jakarta'
         };
         let selectedMethod = '20'; // Default: Kementerian Agama RI
+        let hijriAdjustment = 0; // -1, 0, +1
 
         // Initialize saved preferences
         function initPrayerPreferences() {
@@ -1034,11 +1102,46 @@
                         }
                     }
                 }
+
+                const savedAdj = localStorage.getItem('sm_hijri_adj');
+                if (savedAdj !== null) {
+                    hijriAdjustment = parseInt(savedAdj, 10) || 0;
+                }
             } catch (e) {
                 console.warn('Could not read stored prayer preferences', e);
             }
+            updateAdjButtonsUI();
             updateMethodBadge();
             fetchPrayerTimes();
+        }
+
+        function updateAdjButtonsUI() {
+            [-1, 0, 1].forEach(val => {
+                const id = val === -1 ? 'adj-btn-minus1' : (val === 0 ? 'adj-btn-0' : 'adj-btn-plus1');
+                const btn = document.getElementById(id);
+                if (btn) {
+                    if (hijriAdjustment === val) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                }
+            });
+        }
+
+        function setHijriAdjustment(adj) {
+            hijriAdjustment = adj;
+            try {
+                localStorage.setItem('sm_hijri_adj', adj);
+            } catch (e) {}
+            updateAdjButtonsUI();
+            // Re-fetch or re-render Hijri date
+            loadHijriDate();
+        }
+
+        function isUsingKemenag() {
+            // If method is Kemenag (20) and location is within Indonesia
+            return selectedMethod === '20';
         }
 
         function updateMethodBadge() {
@@ -1079,24 +1182,82 @@
             }
         }
 
+        async function loadHijriDate() {
+            const hijriEl = document.getElementById('prayer-hijri-date');
+            const sourceLabel = document.getElementById('hijri-source-label');
+            if (!hijriEl) return;
+
+            // Scenario 1: Kemenag selected (Method 20) -> Use Kemenag API (api.myquran.com)
+            if (isUsingKemenag()) {
+                if (sourceLabel) sourceLabel.textContent = 'Kemenag RI';
+                try {
+                    // API myquran default has adj=-1 for Kemenag sync; user adjustment is added to it
+                    const effectiveAdj = -1 + hijriAdjustment;
+                    const res = await fetch(`https://api.myquran.com/v2/cal/hijr/?adj=${effectiveAdj}`);
+                    if (res.ok) {
+                        const quranData = await res.json();
+                        if (quranData && quranData.data && quranData.data.date) {
+                            // Format: ["Selasa", "23 Rabiul Akhir 1448 H", "06-10-2026"]
+                            const hijriStr = quranData.data.date[1];
+                            hijriEl.textContent = `${hijriStr}`;
+                            return;
+                        }
+                    }
+                } catch (e) {
+                    console.warn('MyQuran API error, falling back to Aladhan for Hijri date', e);
+                }
+            }
+
+            // Scenario 2: Global method (MUIS, JAKIM, Umm Al Qura, ISNA, MWL, etc.) -> Use Aladhan global Hijri API
+            if (sourceLabel) {
+                const methodSelect = document.getElementById('method-select');
+                const methodName = methodSelect ? methodSelect.options[methodSelect.selectedIndex]?.text.split('(')[0].trim() : 'Aladhan Global';
+                sourceLabel.textContent = `Global (${methodName})`;
+            }
+
+            try {
+                // Aladhan target date with adjustment
+                const today = new Date();
+                today.setDate(today.getDate() + hijriAdjustment);
+                const dd = String(today.getDate()).padStart(2, '0');
+                const mm = String(today.getMonth() + 1).padStart(2, '0');
+                const yyyy = today.getFullYear();
+                const ddmmyyyy = `${dd}-${mm}-${yyyy}`;
+
+                const res = await fetch(`https://api.aladhan.com/v1/gToH/${ddmmyyyy}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && data.data && data.data.hijri) {
+                        const h = data.data.hijri;
+                        hijriEl.textContent = `${h.day} ${h.month.en} ${h.year} H (${h.weekday.ar} / ${h.weekday.en})`;
+                        return;
+                    }
+                }
+            } catch (err) {
+                console.warn('Aladhan Hijri fetch error', err);
+            }
+
+            // Fallback to currentPrayerData if available
+            if (currentPrayerData && currentPrayerData.date && currentPrayerData.date.hijri) {
+                const h = currentPrayerData.date.hijri;
+                hijriEl.textContent = `${h.day} ${h.month.en} ${h.year} H (${h.weekday.ar})`;
+            }
+        }
+
         function renderPrayerTimes(data) {
             const timings = data.timings;
             const dateObj = data.date;
 
-            // Render Dates
+            // Render Gregorian Date
             const gregorianEl = document.getElementById('prayer-gregorian-date');
-            const hijriEl = document.getElementById('prayer-hijri-date');
-            
             if (gregorianEl && dateObj.readable) {
                 const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
                 const todayFormatted = new Intl.DateTimeFormat('id-ID', options).format(new Date());
                 gregorianEl.textContent = todayFormatted;
             }
 
-            if (hijriEl && dateObj.hijri) {
-                const h = dateObj.hijri;
-                hijriEl.textContent = `${h.day} ${h.month.en} ${h.year} H (${h.weekday.ar} / ${h.weekday.en})`;
-            }
+            // Render Hijri Date
+            loadHijriDate();
 
             // Clean time helper (e.g., "04:18 (WIB)" -> "04:18")
             const cleanTime = (t) => t ? t.split(' ')[0] : '--:--';

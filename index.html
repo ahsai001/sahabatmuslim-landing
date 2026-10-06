@@ -387,15 +387,292 @@
             font-size: 0.85rem;
         }
 
+        /* Jadwal Sholat Section */
+        .prayer-section {
+            padding: 4rem 2rem;
+            background: linear-gradient(180deg, #ffffff 0%, var(--green-50) 100%);
+            border-bottom: 1px solid var(--green-100);
+        }
+
+        .prayer-container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .prayer-topbar {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 16px;
+            border: 1px solid var(--gray-200);
+            box-shadow: 0 4px 20px rgba(6, 78, 59, 0.05);
+            margin-bottom: 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.25rem;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .prayer-info-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .prayer-date-gregorian {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .prayer-date-hijri {
+            font-size: 0.95rem;
+            color: var(--green-700);
+            font-weight: 600;
+        }
+
+        .prayer-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .prayer-control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .prayer-control-group label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--gray-600);
+        }
+
+        .prayer-select {
+            padding: 0.6rem 1rem;
+            border: 1.5px solid var(--gray-200);
+            border-radius: 8px;
+            font-size: 0.875rem;
+            color: var(--gray-800);
+            background: white;
+            outline: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            max-width: 250px;
+        }
+
+        .prayer-select:focus {
+            border-color: var(--green-500);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+        }
+
+        .btn-gps {
+            padding: 0.6rem 0.9rem;
+            background: var(--green-100);
+            color: var(--green-800);
+            border: 1px solid var(--green-200);
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            align-self: flex-end;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            height: 38px;
+        }
+
+        .btn-gps:hover {
+            background: var(--green-600);
+            color: white;
+        }
+
+        /* Next Prayer Banner */
+        .prayer-banner {
+            background: linear-gradient(135deg, var(--green-800) 0%, var(--green-900) 100%);
+            color: white;
+            border-radius: 16px;
+            padding: 1.75rem 2rem;
+            margin-bottom: 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(6, 78, 59, 0.2);
+        }
+
+        .prayer-banner::after {
+            content: '🕌';
+            position: absolute;
+            right: 20px;
+            bottom: -15px;
+            font-size: 6rem;
+            opacity: 0.1;
+            pointer-events: none;
+        }
+
+        .prayer-banner-text h3 {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--green-200);
+            margin-bottom: 0.35rem;
+        }
+
+        .prayer-banner-name {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--white);
+            display: flex;
+            align-items: baseline;
+            gap: 0.75rem;
+        }
+
+        .prayer-banner-name .banner-time {
+            color: var(--gold-400);
+            font-size: 2.25rem;
+        }
+
+        .prayer-countdown-wrap {
+            text-align: right;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(5px);
+            padding: 0.85rem 1.5rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .prayer-countdown-label {
+            font-size: 0.8rem;
+            color: var(--green-100);
+            margin-bottom: 0.25rem;
+        }
+
+        .prayer-countdown-val {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--gold-300);
+            letter-spacing: 1px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Prayer Cards Grid */
+        .prayer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 1rem;
+        }
+
+        .prayer-card {
+            background: white;
+            border: 1.5px solid var(--gray-200);
+            border-radius: 14px;
+            padding: 1.25rem 1rem;
+            text-align: center;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .prayer-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(6, 78, 59, 0.08);
+            border-color: var(--green-500);
+        }
+
+        .prayer-card.active {
+            border-color: var(--green-600);
+            background: linear-gradient(180deg, var(--green-50) 0%, #ffffff 100%);
+            box-shadow: 0 0 0 2px var(--green-500), 0 8px 20px rgba(16, 185, 129, 0.15);
+        }
+
+        .prayer-card.active::before {
+            content: 'Sedang Berlangsung';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--green-600);
+            color: white;
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 0.15rem 0.5rem;
+            border-radius: 999px;
+            white-space: nowrap;
+        }
+
+        .prayer-card-icon {
+            font-size: 1.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .prayer-card-name {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 0.25rem;
+        }
+
+        .prayer-card-name-ar {
+            font-family: 'Amiri', serif;
+            font-size: 0.85rem;
+            color: var(--gray-500);
+            margin-bottom: 0.5rem;
+        }
+
+        .prayer-card-time {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--green-800);
+            letter-spacing: -0.5px;
+        }
+
+        .prayer-method-note {
+            margin-top: 1.5rem;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--gray-600);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .prayer-method-badge {
+            background: var(--green-100);
+            color: var(--green-800);
+            padding: 0.2rem 0.6rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .hero h1 { font-size: 2rem; }
             .nav-links { display: none; }
             .countdown-timer { gap: 1rem; }
             .countdown-number { font-size: 2rem; }
+            .prayer-topbar { flex-direction: column; align-items: stretch; }
+            .prayer-controls { flex-direction: column; align-items: stretch; }
+            .prayer-select { max-width: 100%; }
+            .btn-gps { align-self: stretch; justify-content: center; }
+            .prayer-banner { flex-direction: column; text-align: center; }
+            .prayer-banner-name { justify-content: center; }
+            .prayer-countdown-wrap { text-align: center; }
+            .prayer-grid { grid-template-columns: repeat(2, 1fr); }
         }
     </style>
 </head>
+
 <body>
 
     <!-- Navigation -->
@@ -406,6 +683,7 @@
                 <span class="logo-text">Sahabat Muslim</span>
             </a>
             <ul class="nav-links">
+                <li><a href="#jadwal-sholat">Jadwal Sholat</a></li>
                 <li><a href="#fitur">Fitur</a></li>
                 <li><a href="#launch">Launch</a></li>
                 <li><a href="#daftar">Daftar</a></li>
@@ -424,6 +702,147 @@
         <div class="hero-cta">
             <a href="#daftar" class="btn btn-primary">Daftar Early Access</a>
             <a href="#fitur" class="btn btn-secondary">Lihat Fitur</a>
+        </div>
+    </section>
+
+    <!-- Jadwal Sholat -->
+    <section class="prayer-section" id="jadwal-sholat">
+        <div class="prayer-container">
+            <div class="section-header" style="margin-bottom: 2rem;">
+                <h2>Jadwal Sholat Hari Ini</h2>
+                <p>Waktu sholat akurat sesuai lokasi dan metode perhitungan pilihan Anda</p>
+            </div>
+
+            <!-- Top Controls & Info -->
+            <div class="prayer-topbar">
+                <div class="prayer-info-meta">
+                    <div class="prayer-date-gregorian" id="prayer-gregorian-date">Memuat tanggal...</div>
+                    <div class="prayer-date-hijri" id="prayer-hijri-date">Memuat tanggal Hijriah...</div>
+                </div>
+
+                <div class="prayer-controls">
+                    <div class="prayer-control-group">
+                        <label for="city-select">Kota / Wilayah</label>
+                        <select id="city-select" class="prayer-select" onchange="onCityChange(this.value)">
+                            <option value="Jakarta" selected>Jakarta</option>
+                            <option value="Bandung">Bandung</option>
+                            <option value="Surabaya">Surabaya</option>
+                            <option value="Semarang">Semarang</option>
+                            <option value="Yogyakarta">Yogyakarta</option>
+                            <option value="Medan">Medan</option>
+                            <option value="Makassar">Makassar</option>
+                            <option value="Palembang">Palembang</option>
+                            <option value="Banda Aceh">Banda Aceh</option>
+                            <option value="Padang">Padang</option>
+                            <option value="Banjarmasin">Banjarmasin</option>
+                            <option value="Balikpapan">Balikpapan</option>
+                            <option value="Samarinda">Samarinda</option>
+                            <option value="Pontianak">Pontianak</option>
+                            <option value="Denpasar">Denpasar</option>
+                            <option value="Mataram">Mataram</option>
+                            <option value="Kupang">Kupang</option>
+                            <option value="Manado">Manado</option>
+                            <option value="Ambon">Ambon</option>
+                            <option value="Jayapura">Jayapura</option>
+                        </select>
+                    </div>
+
+                    <button type="button" class="btn-gps" onclick="detectGPSLocation()" id="btn-gps" title="Gunakan Lokasi Saat Ini (GPS)">
+                        <span>📍</span> Lokasi Saya
+                    </button>
+
+                    <div class="prayer-control-group">
+                        <label for="method-select">Metode Perhitungan</label>
+                        <select id="method-select" class="prayer-select" onchange="onMethodChange(this.value)">
+                            <option value="20" selected>Kemenag RI (Default)</option>
+                            <option value="11">MUIS (Singapura)</option>
+                            <option value="17">JAKIM (Malaysia)</option>
+                            <option value="3">Muslim World League (MWL)</option>
+                            <option value="4">Umm Al-Qura (Makkah)</option>
+                            <option value="2">ISNA (Amerika Utara)</option>
+                            <option value="5">Egyptian General Authority</option>
+                            <option value="1">Univ. Islamic Sciences (Karachi)</option>
+                            <option value="13">Diyanet (Turki)</option>
+                            <option value="15">Moonsighting Committee</option>
+                            <option value="16">Dubai</option>
+                            <option value="8">Gulf Region</option>
+                            <option value="9">Kuwait</option>
+                            <option value="10">Qatar</option>
+                            <option value="21">Morocco</option>
+                            <option value="23">Jordan</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Next Prayer Countdown Banner -->
+            <div class="prayer-banner">
+                <div class="prayer-banner-text">
+                    <h3 id="next-prayer-title">Menuju Waktu Sholat Berikutnya</h3>
+                    <div class="prayer-banner-name">
+                        <span id="next-prayer-name">--</span>
+                        <span class="banner-time" id="next-prayer-time">--:--</span>
+                    </div>
+                </div>
+                <div class="prayer-countdown-wrap">
+                    <div class="prayer-countdown-label">Sisa Waktu</div>
+                    <div class="prayer-countdown-val" id="next-prayer-countdown">--:--:--</div>
+                </div>
+            </div>
+
+            <!-- Prayer Cards Grid -->
+            <div class="prayer-grid">
+                <div class="prayer-card" id="card-Imsak">
+                    <div class="prayer-card-icon">🌙</div>
+                    <div class="prayer-card-name">Imsak</div>
+                    <div class="prayer-card-name-ar">الإمساك</div>
+                    <div class="prayer-card-time" id="time-Imsak">--:--</div>
+                </div>
+                <div class="prayer-card" id="card-Fajr">
+                    <div class="prayer-card-icon">🌄</div>
+                    <div class="prayer-card-name">Subuh</div>
+                    <div class="prayer-card-name-ar">الفجر</div>
+                    <div class="prayer-card-time" id="time-Fajr">--:--</div>
+                </div>
+                <div class="prayer-card" id="card-Sunrise">
+                    <div class="prayer-card-icon">🌅</div>
+                    <div class="prayer-card-name">Terbit</div>
+                    <div class="prayer-card-name-ar">الشروق</div>
+                    <div class="prayer-card-time" id="time-Sunrise">--:--</div>
+                </div>
+                <div class="prayer-card" id="card-Dhuhr">
+                    <div class="prayer-card-icon">☀️</div>
+                    <div class="prayer-card-name">Dzuhur</div>
+                    <div class="prayer-card-name-ar">الظهر</div>
+                    <div class="prayer-card-time" id="time-Dhuhr">--:--</div>
+                </div>
+                <div class="prayer-card" id="card-Asr">
+                    <div class="prayer-card-icon">🌤️</div>
+                    <div class="prayer-card-name">Ashar</div>
+                    <div class="prayer-card-name-ar">العصر</div>
+                    <div class="prayer-card-time" id="time-Asr">--:--</div>
+                </div>
+                <div class="prayer-card" id="card-Maghrib">
+                    <div class="prayer-card-icon">🌇</div>
+                    <div class="prayer-card-name">Maghrib</div>
+                    <div class="prayer-card-name-ar">المغرب</div>
+                    <div class="prayer-card-time" id="time-Maghrib">--:--</div>
+                </div>
+                <div class="prayer-card" id="card-Isha">
+                    <div class="prayer-card-icon">🌌</div>
+                    <div class="prayer-card-name">Isya</div>
+                    <div class="prayer-card-name-ar">العشاء</div>
+                    <div class="prayer-card-time" id="time-Isha">--:--</div>
+                </div>
+            </div>
+
+            <!-- Footer Note / Method info -->
+            <div class="prayer-method-note">
+                <span>Sumber Data: <strong>Aladhan API</strong></span>
+                <span>•</span>
+                <span>Metode Aktif: <span class="prayer-method-badge" id="active-method-label">Kementerian Agama RI</span></span>
+                <span id="location-label-note">• Lokasi: <strong id="active-city-label">Jakarta</strong></span>
+            </div>
         </div>
     </section>
 
@@ -568,6 +987,303 @@
             msg.textContent = '✅ Jazakallahu khairan! ' + email + ' sudah terdaftar.';
             msg.style.display = 'block';
             document.getElementById('email-input').value = '';
+        }
+
+        /* -------------------------------------------------------------
+         * Jadwal Sholat Logic (Aladhan API)
+         * ------------------------------------------------------------- */
+        const PRAYER_KEYS = [
+            { key: 'Imsak', label: 'Imsak' },
+            { key: 'Fajr', label: 'Subuh' },
+            { key: 'Sunrise', label: 'Terbit' },
+            { key: 'Dhuhr', label: 'Dzuhur' },
+            { key: 'Asr', label: 'Ashar' },
+            { key: 'Maghrib', label: 'Maghrib' },
+            { key: 'Isha', label: 'Isya' }
+        ];
+
+        let currentPrayerData = null;
+        let prayerTimerInterval = null;
+        let userLocation = {
+            type: 'city', // 'city' or 'coords'
+            city: 'Jakarta',
+            lat: null,
+            lng: null,
+            label: 'Jakarta'
+        };
+        let selectedMethod = '20'; // Default: Kementerian Agama RI
+
+        // Initialize saved preferences
+        function initPrayerPreferences() {
+            try {
+                const savedMethod = localStorage.getItem('sm_prayer_method');
+                if (savedMethod) {
+                    selectedMethod = savedMethod;
+                    const methodSelect = document.getElementById('method-select');
+                    if (methodSelect) methodSelect.value = savedMethod;
+                }
+
+                const savedLocation = localStorage.getItem('sm_prayer_location');
+                if (savedLocation) {
+                    const parsed = JSON.parse(savedLocation);
+                    if (parsed && parsed.type) {
+                        userLocation = parsed;
+                        const citySelect = document.getElementById('city-select');
+                        if (citySelect && parsed.type === 'city') {
+                            citySelect.value = parsed.city;
+                        }
+                    }
+                }
+            } catch (e) {
+                console.warn('Could not read stored prayer preferences', e);
+            }
+            updateMethodBadge();
+            fetchPrayerTimes();
+        }
+
+        function updateMethodBadge() {
+            const methodSelect = document.getElementById('method-select');
+            const badge = document.getElementById('active-method-label');
+            if (methodSelect && badge) {
+                const text = methodSelect.options[methodSelect.selectedIndex]?.text || 'Kemenag RI';
+                badge.textContent = text;
+            }
+            const cityLabel = document.getElementById('active-city-label');
+            if (cityLabel) {
+                cityLabel.textContent = userLocation.label;
+            }
+        }
+
+        async function fetchPrayerTimes() {
+            let url = '';
+            if (userLocation.type === 'coords' && userLocation.lat && userLocation.lng) {
+                url = `https://api.aladhan.com/v1/timings?latitude=${userLocation.lat}&longitude=${userLocation.lng}&method=${selectedMethod}`;
+            } else {
+                url = `https://api.aladhan.com/v1/timingsByCity?city=${encodeURIComponent(userLocation.city)}&country=Indonesia&method=${selectedMethod}`;
+            }
+
+            try {
+                const res = await fetch(url);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+                if (data.code === 200 && data.data) {
+                    currentPrayerData = data.data;
+                    renderPrayerTimes(data.data);
+                } else {
+                    console.error('Aladhan API error response', data);
+                }
+            } catch (err) {
+                console.error('Gagal mengambil jadwal sholat:', err);
+                const gregorianEl = document.getElementById('prayer-gregorian-date');
+                if (gregorianEl) gregorianEl.textContent = 'Gagal memuat jadwal sholat (periksa koneksi)';
+            }
+        }
+
+        function renderPrayerTimes(data) {
+            const timings = data.timings;
+            const dateObj = data.date;
+
+            // Render Dates
+            const gregorianEl = document.getElementById('prayer-gregorian-date');
+            const hijriEl = document.getElementById('prayer-hijri-date');
+            
+            if (gregorianEl && dateObj.readable) {
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                const todayFormatted = new Intl.DateTimeFormat('id-ID', options).format(new Date());
+                gregorianEl.textContent = todayFormatted;
+            }
+
+            if (hijriEl && dateObj.hijri) {
+                const h = dateObj.hijri;
+                hijriEl.textContent = `${h.day} ${h.month.en} ${h.year} H (${h.weekday.ar} / ${h.weekday.en})`;
+            }
+
+            // Clean time helper (e.g., "04:18 (WIB)" -> "04:18")
+            const cleanTime = (t) => t ? t.split(' ')[0] : '--:--';
+
+            // Populate cards
+            PRAYER_KEYS.forEach(item => {
+                const el = document.getElementById(`time-${item.key}`);
+                if (el && timings[item.key]) {
+                    el.textContent = cleanTime(timings[item.key]);
+                }
+            });
+
+            // Start countdown ticker
+            if (prayerTimerInterval) clearInterval(prayerTimerInterval);
+            updateNextPrayerTicker();
+            prayerTimerInterval = setInterval(updateNextPrayerTicker, 1000);
+        }
+
+        function updateNextPrayerTicker() {
+            if (!currentPrayerData || !currentPrayerData.timings) return;
+            const timings = currentPrayerData.timings;
+            const now = new Date();
+
+            // Build prayer date objects for today
+            const parseTimeString = (timeStr, addDays = 0) => {
+                const clean = timeStr.split(' ')[0];
+                const [hrs, mins] = clean.split(':').map(Number);
+                const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() + addDays, hrs, mins, 0);
+                return d;
+            };
+
+            // Main 5 obligatory prayers + Sunrise/Imsak for sequence
+            // For countdown to NEXT prayer, usually people want the next among (Subuh, Terbit, Dzuhur, Ashar, Maghrib, Isya) or next Subuh tomorrow
+            const upcomingList = [
+                { key: 'Fajr', label: 'Subuh', date: parseTimeString(timings.Fajr) },
+                { key: 'Sunrise', label: 'Terbit', date: parseTimeString(timings.Sunrise) },
+                { key: 'Dhuhr', label: 'Dzuhur', date: parseTimeString(timings.Dhuhr) },
+                { key: 'Asr', label: 'Ashar', date: parseTimeString(timings.Asr) },
+                { key: 'Maghrib', label: 'Maghrib', date: parseTimeString(timings.Maghrib) },
+                { key: 'Isha', label: 'Isya', date: parseTimeString(timings.Isha) },
+            ];
+
+            let nextPrayer = null;
+            let activePrayer = null;
+
+            // Determine active prayer (the latest passed one)
+            for (let i = 0; i < upcomingList.length; i++) {
+                if (now >= upcomingList[i].date) {
+                    activePrayer = upcomingList[i];
+                }
+            }
+
+            // Determine next prayer
+            for (let i = 0; i < upcomingList.length; i++) {
+                if (now < upcomingList[i].date) {
+                    nextPrayer = upcomingList[i];
+                    break;
+                }
+            }
+
+            // If all prayers today have passed, next is Fajr tomorrow
+            if (!nextPrayer) {
+                nextPrayer = {
+                    key: 'Fajr',
+                    label: 'Subuh (Besok)',
+                    date: parseTimeString(timings.Fajr, 1)
+                };
+            }
+
+            // Update Active Card Class
+            PRAYER_KEYS.forEach(p => {
+                const card = document.getElementById(`card-${p.key}`);
+                if (card) {
+                    if (activePrayer && activePrayer.key === p.key) {
+                        card.classList.add('active');
+                    } else {
+                        card.classList.remove('active');
+                    }
+                }
+            });
+
+            // Update Banner
+            const nameEl = document.getElementById('next-prayer-name');
+            const timeEl = document.getElementById('next-prayer-time');
+            const countdownEl = document.getElementById('next-prayer-countdown');
+
+            if (nameEl) nameEl.textContent = nextPrayer.label;
+            if (timeEl) {
+                const h = String(nextPrayer.date.getHours()).padStart(2, '0');
+                const m = String(nextPrayer.date.getMinutes()).padStart(2, '0');
+                timeEl.textContent = `${h}:${m}`;
+            }
+
+            // Calculate countdown
+            const diffMs = nextPrayer.date - now;
+            if (diffMs > 0) {
+                const totalSec = Math.floor(diffMs / 1000);
+                const hrs = Math.floor(totalSec / 3600);
+                const mins = Math.floor((totalSec % 3600) / 60);
+                const secs = totalSec % 60;
+                if (countdownEl) {
+                    countdownEl.textContent = 
+                        `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+                }
+            } else {
+                if (countdownEl) countdownEl.textContent = '00:00:00';
+            }
+        }
+
+        function onMethodChange(methodId) {
+            selectedMethod = methodId;
+            try {
+                localStorage.setItem('sm_prayer_method', methodId);
+            } catch (e) {}
+            updateMethodBadge();
+            fetchPrayerTimes();
+        }
+
+        function onCityChange(cityName) {
+            userLocation = {
+                type: 'city',
+                city: cityName,
+                lat: null,
+                lng: null,
+                label: cityName
+            };
+            try {
+                localStorage.setItem('sm_prayer_location', JSON.stringify(userLocation));
+            } catch (e) {}
+            updateMethodBadge();
+            fetchPrayerTimes();
+        }
+
+        function detectGPSLocation() {
+            const gpsBtn = document.getElementById('btn-gps');
+            if (!navigator.geolocation) {
+                alert('Browser Anda tidak mendukung deteksi lokasi (Geolocation).');
+                return;
+            }
+
+            if (gpsBtn) {
+                gpsBtn.disabled = true;
+                gpsBtn.innerHTML = '<span>⏳</span> Mendeteksi...';
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    const lat = pos.coords.latitude;
+                    const lng = pos.coords.longitude;
+                    userLocation = {
+                        type: 'coords',
+                        city: '',
+                        lat: lat.toFixed(4),
+                        lng: lng.toFixed(4),
+                        label: `GPS (${lat.toFixed(2)}°, ${lng.toFixed(2)}°)`
+                    };
+
+                    try {
+                        localStorage.setItem('sm_prayer_location', JSON.stringify(userLocation));
+                    } catch (e) {}
+
+                    if (gpsBtn) {
+                        gpsBtn.disabled = false;
+                        gpsBtn.innerHTML = '<span>📍</span> Lokasi Saya (Aktif)';
+                    }
+                    updateMethodBadge();
+                    fetchPrayerTimes();
+                },
+                (err) => {
+                    console.warn('Geolocation error:', err);
+                    if (gpsBtn) {
+                        gpsBtn.disabled = false;
+                        gpsBtn.innerHTML = '<span>📍</span> Lokasi Saya';
+                    }
+                    alert('Tidak dapat mendeteksi lokasi otomatis. Silakan pilih kota secara manual dari daftar.');
+                },
+                { timeout: 10000, enableHighAccuracy: false }
+            );
+        }
+
+        // Initialize prayer widget on load
+        document.addEventListener('DOMContentLoaded', () => {
+            initPrayerPreferences();
+        });
+        // Call immediately in case DOM is already ready
+        if (document.readyState === 'interactive' || document.readyState === 'complete') {
+            initPrayerPreferences();
         }
 
         // Smooth scroll

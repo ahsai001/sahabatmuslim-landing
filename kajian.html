@@ -1,0 +1,1566 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jadwal Kajian Sunnah Terdekat & Terkini — Sahabat Muslim</title>
+    <meta name="description" content="Temukan jadwal kajian sunnah, majelis ilmu, daurah, dan kajian kitab terdekat dari lokasi Anda atau pilih kota di seluruh Indonesia. Terupdate setiap hari.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --green-900: #064e3b;
+            --green-800: #065f46;
+            --green-700: #047857;
+            --green-600: #059669;
+            --green-500: #10b981;
+            --green-100: #d1fae5;
+            --green-50: #ecfdf5;
+            --gold-500: #d4a843;
+            --gold-400: #e2b960;
+            --gold-300: #f0d78a;
+            --white: #ffffff;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--gray-800);
+            background: var(--white);
+            line-height: 1.6;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--gray-200);
+            z-index: 100;
+            padding: 1rem 2rem;
+        }
+
+        .nav-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: var(--green-800);
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--green-700), var(--green-600));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+        }
+
+        .logo-text {
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--gray-600);
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--green-700);
+        }
+
+        /* Kajian Page Hero */
+        .kajian-page-hero {
+            padding: 7.5rem 2rem 2.5rem;
+            background: linear-gradient(180deg, #ecfdf5 0%, #ffffff 100%);
+            text-align: center;
+        }
+
+        .kajian-page-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #d1fae5;
+            color: #065f46;
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 0.4rem 1rem;
+            border-radius: 9999px;
+            margin-bottom: 0.75rem;
+        }
+
+        .kajian-page-hero h1 {
+            font-size: 2.35rem;
+            font-weight: 800;
+            color: var(--gray-900);
+            margin-bottom: 0.6rem;
+        }
+
+        .kajian-page-hero h1 span {
+            color: var(--green-700);
+        }
+
+        .kajian-page-hero p {
+            color: var(--gray-600);
+            max-width: 650px;
+            margin: 0 auto;
+            font-size: 1.05rem;
+        }
+
+        /* Container */
+        .kajian-section {
+            padding: 1rem 2rem 5rem;
+            background: var(--white);
+        }
+
+        .kajian-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Date filter wrap */
+        .date-filter-wrap {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.25rem;
+        }
+
+        .date-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.6rem 1.2rem;
+            border-radius: 9999px;
+            border: 1px solid var(--gray-200);
+            background: var(--white);
+            color: var(--gray-700);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+        }
+
+        .date-pill:hover {
+            border-color: var(--green-500);
+            color: var(--green-800);
+            transform: translateY(-1px);
+        }
+
+        .date-pill.active {
+            background: linear-gradient(135deg, var(--green-800), var(--green-600));
+            color: var(--white);
+            border-color: transparent;
+            box-shadow: 0 4px 12px rgba(6, 95, 70, 0.25);
+        }
+
+        .date-input-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.55rem 1rem;
+            border-radius: 9999px;
+            border: 1px solid var(--gray-200);
+            background: var(--white);
+            color: var(--gray-700);
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+
+        .date-input-btn input[type="date"] {
+            border: none;
+            background: transparent;
+            font-family: inherit;
+            font-size: inherit;
+            color: inherit;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .tag-filter-pills {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+
+        .tag-pill {
+            padding: 0.35rem 0.85rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            border: 1px solid var(--gray-200);
+            background: var(--white);
+            color: var(--gray-600);
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .tag-pill:hover {
+            border-color: var(--green-500);
+            color: var(--green-800);
+        }
+
+        .tag-pill.active {
+            background: var(--green-100);
+            color: var(--green-800);
+            border-color: #a7f3d0;
+            font-weight: 600;
+        }
+
+        /* Topbar */
+        .kajian-topbar {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 16px;
+            padding: 1.1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.03);
+        }
+
+        .radius-filter-wrap {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+        }
+
+        .radius-filter-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--gray-700);
+        }
+
+        .radius-pill-group {
+            display: flex;
+            gap: 0.35rem;
+            background: var(--gray-100);
+            padding: 0.25rem;
+            border-radius: 9999px;
+        }
+
+        .radius-pill {
+            border: none;
+            background: transparent;
+            padding: 0.35rem 0.8rem;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--gray-600);
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .radius-pill:hover {
+            color: var(--green-800);
+        }
+
+        .radius-pill.active {
+            background: var(--green-700);
+            color: var(--white);
+            box-shadow: 0 2px 6px rgba(4, 120, 87, 0.3);
+        }
+
+        .kajian-filter-group {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+        }
+
+        .kajian-location-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            background: var(--gray-100);
+            color: var(--gray-700);
+            padding: 0.45rem 0.85rem;
+            border-radius: 10px;
+            font-size: 0.82rem;
+            font-weight: 500;
+        }
+
+        .kajian-location-badge.active {
+            background: var(--green-50);
+            color: var(--green-800);
+            border: 1px solid #a7f3d0;
+        }
+
+        .btn-gps {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.45rem 0.85rem;
+            border-radius: 10px;
+            border: 1px solid var(--gray-200);
+            background: var(--white);
+            color: var(--gray-700);
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .btn-gps:hover {
+            background: var(--gray-50);
+            border-color: var(--green-500);
+            color: var(--green-800);
+        }
+
+        .city-filter {
+            padding: 0.45rem 0.85rem;
+            border-radius: 10px;
+            border: 1px solid var(--gray-200);
+            background: var(--white);
+            color: var(--gray-700);
+            font-size: 0.85rem;
+            font-family: inherit;
+            cursor: pointer;
+            outline: none;
+        }
+
+        /* Search input */
+        .search-input-wrap {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1.1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 1rem;
+        }
+
+        .search-input-wrap input {
+            width: 100%;
+            padding: 0.85rem 1rem 0.85rem 2.75rem;
+            border-radius: 14px;
+            border: 1px solid var(--gray-200);
+            background: var(--white);
+            font-family: inherit;
+            font-size: 0.95rem;
+            color: var(--gray-900);
+            outline: none;
+            transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+
+        .search-input-wrap input:focus {
+            border-color: var(--green-500);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+        }
+
+        /* Grid & Cards */
+        .kajian-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .kajian-card {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 18px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+            display: flex;
+            flex-direction: column;
+            transition: all 0.25s ease;
+            position: relative;
+        }
+
+        .kajian-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 28px rgba(0,0,0,0.08);
+            border-color: rgba(6, 95, 70, 0.25);
+        }
+
+        .kajian-card.is-ongoing {
+            border: 1.5px solid var(--green-500);
+            background: linear-gradient(180deg, #fafffc 0%, #ffffff 100%);
+        }
+
+        .kajian-badges-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .kajian-audiens-badge {
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.25rem 0.65rem;
+            border-radius: 9999px;
+        }
+
+        .badge-audiens-umum {
+            background: #e0f2fe;
+            color: #0369a1;
+        }
+
+        .badge-audiens-akhwat {
+            background: #fce7f3;
+            color: #be185d;
+        }
+
+        .kajian-distance-badge {
+            font-size: 0.75rem;
+            font-weight: 700;
+            background: #fef3c7;
+            color: #92400e;
+            padding: 0.25rem 0.65rem;
+            border-radius: 9999px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .badge-status-ongoing {
+            font-size: 0.75rem;
+            font-weight: 700;
+            background: #d1fae5;
+            color: #065f46;
+            padding: 0.25rem 0.65rem;
+            border-radius: 9999px;
+            animation: pulse 2s infinite;
+        }
+
+        .badge-status-upcoming {
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: var(--gray-100);
+            color: var(--gray-600);
+            padding: 0.25rem 0.65rem;
+            border-radius: 9999px;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.75; }
+        }
+
+        .kajian-speaker-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+            margin-bottom: 0.35rem;
+        }
+
+        .kajian-speaker-icon {
+            font-size: 1.1rem;
+            line-height: 1.2;
+        }
+
+        .kajian-speaker {
+            font-size: 0.92rem;
+            font-weight: 600;
+            color: var(--green-800);
+            line-height: 1.35;
+        }
+
+        .kajian-title {
+            font-size: 1.12rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            line-height: 1.4;
+            margin-bottom: 0.6rem;
+        }
+
+        .kajian-kitab-row {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-bottom: 0.75rem;
+            background: #f8fafc;
+            padding: 0.35rem 0.65rem;
+            border-radius: 8px;
+        }
+
+        .kajian-date-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #b45309;
+            background: #fffbeb;
+            border: 1px solid #fef3c7;
+            padding: 0.35rem 0.75rem;
+            border-radius: 8px;
+            margin-bottom: 0.85rem;
+        }
+
+        .kajian-loc-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+            margin-bottom: 1.25rem;
+            font-size: 0.88rem;
+        }
+
+        .kajian-loc-icon {
+            font-size: 1.1rem;
+            line-height: 1.2;
+            color: var(--green-700);
+        }
+
+        .kajian-loc-name {
+            font-weight: 600;
+            color: var(--gray-800);
+        }
+
+        .kajian-loc-addr {
+            font-size: 0.8rem;
+            color: #64748b;
+            margin-top: 2px;
+            line-height: 1.4;
+        }
+
+        .kajian-footer-meta {
+            margin-top: auto;
+            padding-top: 1rem;
+            border-top: 1px solid var(--gray-100);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .kajian-btn-rute {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.5rem 0.95rem;
+            border-radius: 10px;
+            background: var(--green-50);
+            color: var(--green-800);
+            font-size: 0.82rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.15s;
+            border: 1px solid #a7f3d0;
+        }
+
+        .kajian-btn-rute:hover {
+            background: var(--green-700);
+            color: var(--white);
+            border-color: transparent;
+        }
+
+        .kajian-btn-share {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.5rem 0.85rem;
+            border-radius: 10px;
+            background: var(--white);
+            color: var(--gray-700);
+            font-size: 0.82rem;
+            font-weight: 600;
+            border: 1px solid var(--gray-200);
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .kajian-btn-share:hover {
+            background: var(--gray-50);
+            border-color: var(--gray-300);
+        }
+
+        .kajian-empty {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 4rem 1.5rem;
+            background: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            border-radius: 16px;
+        }
+
+        .kajian-empty-icon {
+            font-size: 3rem;
+            margin-bottom: 0.75rem;
+            display: block;
+        }
+
+        .kajian-empty h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--gray-800);
+            margin-bottom: 0.4rem;
+        }
+
+        .kajian-empty p {
+            color: #64748b;
+            font-size: 0.95rem;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #e2e8f0;
+            border-top: 3px solid var(--green-600);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Modal Poster */
+        .poster-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            padding: 1.5rem;
+        }
+
+        .poster-modal.active {
+            display: flex;
+        }
+
+        .poster-modal-content {
+            background: var(--white);
+            border-radius: 16px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .poster-modal img {
+            width: 100%;
+            height: auto;
+            max-height: 80vh;
+            object-fit: contain;
+            background: #000;
+        }
+
+        .poster-modal-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 36px;
+            height: 36px;
+            background: rgba(0,0,0,0.6);
+            color: #fff;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            z-index: 10;
+        }
+
+        /* Toast */
+        .dzikir-toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--gray-900);
+            color: var(--white);
+            padding: 0.75rem 1.5rem;
+            border-radius: 9999px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+            z-index: 9999;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .dzikir-toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--gray-900);
+            color: #9ca3af;
+            padding: 4rem 2rem 2rem;
+        }
+
+        .footer-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-brand .logo {
+            color: var(--white);
+            margin-bottom: 1rem;
+        }
+
+        .footer-brand p {
+            color: #9ca3af;
+            line-height: 1.6;
+        }
+
+        .footer-col h4 {
+            color: var(--white);
+            margin-bottom: 1.25rem;
+            font-size: 1rem;
+        }
+
+        .footer-col a {
+            display: block;
+            color: #9ca3af;
+            text-decoration: none;
+            margin-bottom: 0.75rem;
+            transition: color 0.2s;
+        }
+
+        .footer-col a:hover {
+            color: var(--white);
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
+            font-size: 0.9rem;
+            color: #9ca3af;
+        }
+
+        .footer-bottom a {
+            color: var(--green-400, #34d399);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            .kajian-page-hero h1 { font-size: 1.85rem; }
+            .kajian-topbar { flex-direction: column; align-items: stretch; }
+            .radius-pill-group { overflow-x: auto; }
+            .kajian-grid { grid-template-columns: 1fr; }
+            .footer-inner { grid-template-columns: 1fr; gap: 2rem; }
+            .nav-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-inner">
+            <a href="/" class="logo">
+                <div class="logo-icon">🕌</div>
+                <span class="logo-text">Sahabat Muslim</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="/">Beranda</a></li>
+                <li><a href="/#jadwal-sholat">Jadwal Sholat</a></li>
+                <li><a href="/kajian" style="color: var(--green-700); font-weight: 700;">Jadwal Kajian</a></li>
+                <li><a href="/dzikir">Dzikir Harian</a></li>
+                <li><a href="/#fitur">Fitur</a></li>
+                <li><a href="/#daftar">Daftar</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Page Header / Hero -->
+    <header class="kajian-page-hero">
+        <div class="kajian-page-badge">📚 Majelis Ilmu & Daurah Sunnah</div>
+        <h1>Jadwal Kajian Sunnah <span>Terdekat</span></h1>
+        <p>
+            Temukan jadwal kajian sunnah hari ini dan hari mendatang berbasis GPS atau telusuri kota di seluruh Indonesia.
+        </p>
+    </header>
+
+    <!-- Main Kajian Content Section -->
+    <section class="kajian-section">
+        <div class="kajian-container">
+
+            <!-- Filter Tanggal & Hari -->
+            <div class="date-filter-wrap">
+                <button type="button" class="date-pill active" data-date-filter="today" onclick="selectDateFilter('today')">
+                    <span>📅 Hari Ini</span>
+                </button>
+                <button type="button" class="date-pill" data-date-filter="tomorrow" onclick="selectDateFilter('tomorrow')">
+                    <span>📅 Besok</span>
+                </button>
+                <button type="button" class="date-pill" data-date-filter="after_tomorrow" onclick="selectDateFilter('after_tomorrow')">
+                    <span>📅 Lusa</span>
+                </button>
+                <button type="button" class="date-pill" data-date-filter="week" onclick="selectDateFilter('week')">
+                    <span>🗓️ Pekan Ini (Semua)</span>
+                </button>
+                <div class="date-input-btn">
+                    <span>📅 Pilih:</span>
+                    <input type="date" id="custom-date-picker" onchange="selectCustomDate(this.value)">
+                </div>
+            </div>
+
+            <!-- Filter Kategori Audiens / Jenis -->
+            <div class="tag-filter-pills">
+                <button type="button" class="tag-pill active" data-tag="all" onclick="selectTagFilter('all')">Semua Audiens</button>
+                <button type="button" class="tag-pill" data-tag="umum" onclick="selectTagFilter('umum')">Umum (Ikhwan/Akhwat)</button>
+                <button type="button" class="tag-pill" data-tag="akhwat" onclick="selectTagFilter('akhwat')">Khusus Akhwat</button>
+                <button type="button" class="tag-pill" data-tag="rutin" onclick="selectTagFilter('rutin')">Kajian Rutin</button>
+                <button type="button" class="tag-pill" data-tag="tematik" onclick="selectTagFilter('tematik')">Kajian Tematik</button>
+            </div>
+
+            <!-- Top Toolbar Filter: Radius, GPS & Search -->
+            <div class="kajian-topbar">
+                <!-- Filter Radius Jarak -->
+                <div class="radius-filter-wrap">
+                    <span class="radius-filter-label">Radius:</span>
+                    <div class="radius-pill-group">
+                        <button type="button" class="radius-pill active" data-radius="5" onclick="setKajianRadius(5)">≤ 5 km</button>
+                        <button type="button" class="radius-pill" data-radius="10" onclick="setKajianRadius(10)">≤ 10 km</button>
+                        <button type="button" class="radius-pill" data-radius="15" onclick="setKajianRadius(15)">≤ 15 km</button>
+                        <button type="button" class="radius-pill" data-radius="9999" onclick="setKajianRadius(9999)">Semua</button>
+                    </div>
+                </div>
+
+                <div class="kajian-filter-group">
+                    <!-- Status GPS -->
+                    <div class="kajian-location-badge" id="kajian-loc-badge" title="Status lokasi GPS">
+                        <span>📍</span>
+                        <span id="kajian-loc-text">GPS Terkunci (≤ 5 km)</span>
+                    </div>
+
+                    <button type="button" class="btn-gps" id="btn-detect-kajian-gps" onclick="detectKajianGPS(true)">
+                        <span>🎯</span> Update GPS
+                    </button>
+
+                    <!-- Filter Kota Manual -->
+                    <select id="kajian-city-select" class="city-filter" onchange="handleKajianFilter()">
+                        <option value="">Semua Wilayah</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="search-input-wrap">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="kajian-search-input" placeholder="Cari Ustadz, Tema Kajian, Kitab, atau Masjid..." oninput="handleKajianFilter()">
+            </div>
+
+            <!-- Info Bar Tanggal & Jumlah Data -->
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.5rem; font-size: 0.88rem; color: #475569;">
+                <div id="kajian-active-date-label" style="font-weight: 600; color: var(--green-800);">
+                    📅 Memuat jadwal kajian...
+                </div>
+                <div id="kajian-count-info">
+                    Menampilkan 0 jadwal kajian
+                </div>
+            </div>
+
+            <!-- List Grid Kajian -->
+            <div class="kajian-grid" id="kajian-list-container">
+                <div class="kajian-loading" style="grid-column: 1 / -1; text-align: center; padding: 4rem 1rem;">
+                    <div class="loading-spinner" style="margin: 0 auto 1rem;"></div>
+                    <p style="color: var(--gray-600); font-weight: 500;">Memuat jadwal kajian terdekat...</p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Modal Poster Viewer -->
+    <div class="poster-modal" id="poster-modal" onclick="if(event.target === this) closePosterModal()">
+        <div class="poster-modal-content">
+            <button type="button" class="poster-modal-close" onclick="closePosterModal()">&times;</button>
+            <img id="poster-img" src="" alt="Poster Kajian">
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="dzikir-toast" id="kajian-toast"></div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <div class="logo">
+                    <div class="logo-icon">🕌</div>
+                    <span class="logo-text">Sahabat Muslim</span>
+                </div>
+                <p>Platform All-in-One untuk Kaum Muslimin. Membantu ibadah harian, menuntut ilmu, dan mempererat ukhuwah.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Navigasi</h4>
+                <a href="/">Beranda</a>
+                <a href="/#jadwal-sholat">Jadwal Sholat</a>
+                <a href="/kajian">Jadwal Kajian</a>
+                <a href="/dzikir">Dzikir Harian</a>
+                <a href="/#fitur">8 Fitur Utama</a>
+            </div>
+            <div class="footer-col">
+                <h4>Konten</h4>
+                <a href="/kajian">Kajian Sunnah</a>
+                <a href="/dzikir">Dzikir Pagi</a>
+                <a href="/dzikir">Dzikir Petang</a>
+                <a href="/dzikir">Dzikir Sesudah Sholat</a>
+            </div>
+            <div class="footer-col">
+                <h4>Legal & Info</h4>
+                <a href="#">Kebijakan Privasi</a>
+                <a href="#">Ketentuan Layanan</a>
+                <a href="#">Hubungi Kami</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 Sahabat Muslim — Dibuat dengan ❤️ oleh <a href="https://ahsailabs.my.id/" target="_blank" rel="noopener">AhsaiLabs</a>
+        </div>
+    </footer>
+
+    <!-- Kajian Script Logic -->
+    <script>
+        let allKajianData = [];
+        let userGPS = null;
+        let currentKajianRadius = 5;
+        let currentDateFilter = 'today';
+        let currentTagFilter = 'all';
+        let customSelectedDate = '';
+
+        function showToast(msg) {
+            const toast = document.getElementById('kajian-toast');
+            if (!toast) return;
+            toast.textContent = msg;
+            toast.classList.add('show');
+            clearTimeout(toast._timeout);
+            toast._timeout = setTimeout(() => toast.classList.remove('show'), 2500);
+        }
+
+        function getDatesForFilter(filterType) {
+            const now = new Date();
+            const formatYMD = (d) => {
+                const year = d.getFullYear();
+                const month = String(d.getMonth() + 1).padStart(2, '0');
+                const day = String(d.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            };
+
+            if (filterType === 'today') {
+                return [formatYMD(now)];
+            }
+            if (filterType === 'tomorrow') {
+                const t = new Date(now);
+                t.setDate(t.getDate() + 1);
+                return [formatYMD(t)];
+            }
+            if (filterType === 'after_tomorrow') {
+                const at = new Date(now);
+                at.setDate(at.getDate() + 2);
+                return [formatYMD(at)];
+            }
+            if (filterType === 'week') {
+                const list = [];
+                for (let i = 0; i < 7; i++) {
+                    const d = new Date(now);
+                    d.setDate(d.getDate() + i);
+                    list.push(formatYMD(d));
+                }
+                return list;
+            }
+            if (filterType === 'custom' && customSelectedDate) {
+                return [customSelectedDate];
+            }
+            return [formatYMD(now)];
+        }
+
+        async function fetchSchedulesForDates(dateList) {
+            const container = document.getElementById('kajian-list-container');
+            const dateLabel = document.getElementById('kajian-active-date-label');
+            if (container) {
+                container.innerHTML = `
+                <div class="kajian-loading" style="grid-column: 1 / -1; text-align: center; padding: 4rem 1rem;">
+                    <div class="loading-spinner" style="margin: 0 auto 1rem;"></div>
+                    <p style="color: var(--gray-600); font-weight: 500;">Mengambil jadwal kajian...</p>
+                </div>
+                `;
+            }
+
+            if (dateLabel) {
+                if (dateList.length === 1) {
+                    dateLabel.innerHTML = `📅 Jadwal Kajian Tanggal: <strong>${dateList[0]}</strong>`;
+                } else {
+                    dateLabel.innerHTML = `🗓️ Jadwal Kajian Pekan Ini (${dateList[0]} s/d ${dateList[dateList.length - 1]})`;
+                }
+            }
+
+            try {
+                // Fetch in parallel
+                const promises = dateList.map(d => {
+                    const url = `/api-kajian/schedule?date=${d}`;
+                    return fetch(url)
+                        .then(r => r.ok ? r.json() : [])
+                        .catch(() => {
+                            return fetch(`https://kajian-api.derrylab.com/schedule?date=${d}`)
+                                .then(r => r.ok ? r.json() : [])
+                                .catch(() => []);
+                        });
+                });
+
+                const results = await Promise.all(promises);
+                const merged = [];
+                const seenIds = new Set();
+
+                results.forEach(items => {
+                    if (Array.isArray(items)) {
+                        items.forEach(it => {
+                            if (it.id && !seenIds.has(it.id)) {
+                                seenIds.add(it.id);
+                                merged.push(it);
+                            }
+                        });
+                    }
+                });
+
+                allKajianData = merged;
+                populateKajianCities(allKajianData);
+                renderKajianList();
+            } catch (err) {
+                console.error('Gagal mengambil jadwal kajian:', err);
+                if (container) {
+                    container.innerHTML = `
+                    <div class="kajian-empty" style="grid-column: 1 / -1;">
+                        <p style="color: #ef4444; font-weight: 600;">Gagal memuat jadwal kajian. Periksa koneksi internet Anda.</p>
+                        <button type="button" class="btn btn-secondary" style="margin-top: 1rem;" onclick="loadCurrentDateSchedules()">
+                            Coba Lagi
+                        </button>
+                    </div>
+                    `;
+                }
+            }
+        }
+
+        function loadCurrentDateSchedules() {
+            const dates = getDatesForFilter(currentDateFilter);
+            fetchSchedulesForDates(dates);
+        }
+
+        function selectDateFilter(filterType) {
+            currentDateFilter = filterType;
+            customSelectedDate = '';
+            const picker = document.getElementById('custom-date-picker');
+            if (picker) picker.value = '';
+
+            document.querySelectorAll('.date-pill').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.dateFilter === filterType);
+            });
+
+            loadCurrentDateSchedules();
+        }
+
+        function selectCustomDate(val) {
+            if (!val) return;
+            customSelectedDate = val;
+            currentDateFilter = 'custom';
+            document.querySelectorAll('.date-pill').forEach(btn => btn.classList.remove('active'));
+            loadCurrentDateSchedules();
+        }
+
+        function selectTagFilter(tag) {
+            currentTagFilter = tag;
+            document.querySelectorAll('.tag-pill').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.tag === tag);
+            });
+            renderKajianList();
+        }
+
+        function setKajianRadius(radiusKm) {
+            currentKajianRadius = radiusKm;
+            document.querySelectorAll('.radius-pill').forEach(btn => {
+                btn.classList.toggle('active', parseInt(btn.dataset.radius, 10) === radiusKm);
+            });
+
+            const locText = document.getElementById('kajian-loc-text');
+            if (locText && userGPS) {
+                locText.innerHTML = `GPS Terkunci (≤ ${radiusKm < 9999 ? radiusKm + ' km' : 'Semua'})`;
+            }
+
+            if (radiusKm < 9999 && !userGPS) {
+                detectKajianGPS(true);
+                return;
+            }
+
+            renderKajianList();
+        }
+
+        function handleKajianFilter() {
+            renderKajianList();
+        }
+
+        function calcDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371;
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        }
+
+        function parseKajianTiming(k) {
+            let startMinutes = -1;
+            let endMinutes = -1;
+            const rawStart = (k.time_start || '').trim().toLowerCase();
+            const rawEnd = (k.time_end || '').trim().toLowerCase();
+
+            if (rawStart.includes('bada_maghrib') || rawStart.includes("ba'da maghrib") || rawStart.includes("maghrib")) {
+                startMinutes = 18 * 60 + 20;
+                endMinutes = 19 * 60 + 30;
+            } else if (rawStart.includes('bada_isya') || rawStart.includes("ba'da isya") || rawStart.includes("isya")) {
+                startMinutes = 19 * 60 + 45;
+                endMinutes = 21 * 60 + 0;
+            } else if (rawStart.includes('bada_subuh') || rawStart.includes("ba'da subuh") || rawStart.includes("subuh")) {
+                startMinutes = 5 * 60 + 0;
+                endMinutes = 6 * 60 + 15;
+            } else if (rawStart.includes('bada_ashar') || rawStart.includes("ba'da ashar") || rawStart.includes("ashar")) {
+                startMinutes = 15 * 60 + 45;
+                endMinutes = 17 * 60 + 15;
+            } else if (rawStart.includes('bada_dzuhur') || rawStart.includes("ba'da dzuhur") || rawStart.includes("dzuhur")) {
+                startMinutes = 12 * 60 + 30;
+                endMinutes = 14 * 60 + 0;
+            } else {
+                const matchStart = rawStart.match(/(\d{1,2})[:.](\d{2})/);
+                if (matchStart) {
+                    startMinutes = parseInt(matchStart[1], 10) * 60 + parseInt(matchStart[2], 10);
+                }
+            }
+
+            const matchEnd = rawEnd.match(/(\d{1,2})[:.](\d{2})/);
+            if (matchEnd) {
+                endMinutes = parseInt(matchEnd[1], 10) * 60 + parseInt(matchEnd[2], 10);
+            } else if (startMinutes !== -1 && endMinutes === -1) {
+                endMinutes = startMinutes + 120;
+            }
+
+            return { startMinutes, endMinutes };
+        }
+
+        function getKajianStatus(k) {
+            const todayStr = new Date().toISOString().split('T')[0];
+            const kDate = (k.date || '').trim();
+
+            if (kDate && kDate > todayStr) {
+                return 'upcoming';
+            }
+            if (kDate && kDate < todayStr) {
+                return 'passed';
+            }
+
+            const now = new Date();
+            const nowMinutes = now.getHours() * 60 + now.getMinutes();
+            const { startMinutes, endMinutes } = parseKajianTiming(k);
+
+            if (startMinutes === -1) return 'upcoming';
+
+            if (nowMinutes < startMinutes) return 'upcoming';
+            if (nowMinutes >= startMinutes && nowMinutes <= endMinutes) return 'ongoing';
+            return 'passed';
+        }
+
+        function populateKajianCities(data) {
+            const citySelect = document.getElementById('kajian-city-select');
+            if (!citySelect) return;
+            const currentSelected = citySelect.value;
+            const cities = new Set();
+            data.forEach(k => {
+                if (k.city && k.city.trim()) {
+                    cities.add(k.city.trim());
+                }
+            });
+            const sorted = Array.from(cities).sort();
+            let opts = '<option value="">Semua Wilayah</option>';
+            sorted.forEach(c => {
+                opts += `<option value="${c}">${c}</option>`;
+            });
+            citySelect.innerHTML = opts;
+            citySelect.value = currentSelected;
+        }
+
+        function formatTimeDisplay(timeStart, timeEnd) {
+            const formatLabel = (t) => {
+                if (!t) return '';
+                const low = t.toLowerCase();
+                if (low.includes('bada_maghrib') || low.includes("ba'da maghrib")) return "Ba'da Maghrib";
+                if (low.includes('bada_isya') || low.includes("ba'da isya")) return "Ba'da Isya";
+                if (low.includes('bada_subuh') || low.includes("ba'da subuh")) return "Ba'da Shubuh";
+                if (low.includes('bada_ashar') || low.includes("ba'da ashar")) return "Ba'da 'Ashar";
+                if (low.includes('bada_dzuhur') || low.includes("ba'da dzuhur")) return "Ba'da Zhuhur";
+                return t;
+            };
+
+            const s = formatLabel(timeStart);
+            const e = formatLabel(timeEnd);
+            if (!s) return 'Waktu Belum Ditentukan';
+            if (!e) return `${s} WIB - Selesai`;
+            return `${s} - ${e} WIB`;
+        }
+
+        function renderKajianList() {
+            const container = document.getElementById('kajian-list-container');
+            const countInfo = document.getElementById('kajian-count-info');
+            const cityFilter = (document.getElementById('kajian-city-select')?.value || '').toLowerCase();
+            const searchKw = (document.getElementById('kajian-search-input')?.value || '').toLowerCase();
+            if (!container) return;
+
+            let filtered = allKajianData.map(k => {
+                let dist = null;
+                if (userGPS && k.lat && k.lng) {
+                    dist = calcDistance(userGPS.lat, userGPS.lng, parseFloat(k.lat), parseFloat(k.lng));
+                }
+                const status = getKajianStatus(k);
+                return { ...k, distanceKm: dist, calculatedStatus: status };
+            });
+
+            // Filter kota
+            if (cityFilter) {
+                filtered = filtered.filter(k => (k.city || '').toLowerCase().includes(cityFilter));
+            }
+
+            // Filter tag / kategori
+            if (currentTagFilter === 'akhwat') {
+                filtered = filtered.filter(k => (k.tags || '').includes('khusus_akhwat') || (k.notes || '').toLowerCase().includes('khusus akhwat'));
+            } else if (currentTagFilter === 'umum') {
+                filtered = filtered.filter(k => !(k.tags || '').includes('khusus_akhwat'));
+            } else if (currentTagFilter === 'rutin') {
+                filtered = filtered.filter(k => (k.tags || '').includes('rutin'));
+            } else if (currentTagFilter === 'tematik') {
+                filtered = filtered.filter(k => (k.tags || '').includes('tematik'));
+            }
+
+            // Filter pencarian
+            if (searchKw) {
+                filtered = filtered.filter(k =>
+                    (k.speaker || '').toLowerCase().includes(searchKw) ||
+                    (k.topic || '').toLowerCase().includes(searchKw) ||
+                    (k.book || '').toLowerCase().includes(searchKw) ||
+                    (k.loc_name || '').toLowerCase().includes(searchKw) ||
+                    (k.addr || '').toLowerCase().includes(searchKw) ||
+                    (k.city || '').toLowerCase().includes(searchKw)
+                );
+            }
+
+            // Filter radius jika GPS aktif
+            if (currentKajianRadius < 9999 && userGPS) {
+                filtered = filtered.filter(k => k.distanceKm !== null && k.distanceKm <= currentKajianRadius);
+            }
+
+            // Hanya tampilkan yang Sedang Berlangsung dan Akan Datang
+            filtered = filtered.filter(k => k.calculatedStatus !== 'passed');
+
+            // Sorting: sedang berlangsung duluan, lalu jarak terdekat, lalu tanggal & waktu
+            filtered.sort((a, b) => {
+                if (a.calculatedStatus === 'ongoing' && b.calculatedStatus !== 'ongoing') return -1;
+                if (b.calculatedStatus === 'ongoing' && a.calculatedStatus !== 'ongoing') return 1;
+
+                if (a.distanceKm !== null && b.distanceKm !== null) {
+                    return a.distanceKm - b.distanceKm;
+                }
+                if (a.distanceKm !== null) return -1;
+                if (b.distanceKm !== null) return 1;
+
+                const dateA = a.date || '';
+                const dateB = b.date || '';
+                if (dateA !== dateB) return dateA.localeCompare(dateB);
+
+                const tA = parseKajianTiming(a).startMinutes;
+                const tB = parseKajianTiming(b).startMinutes;
+                return tA - tB;
+            });
+
+            if (countInfo) {
+                countInfo.textContent = `Menampilkan ${filtered.length} jadwal kajian (${currentKajianRadius < 9999 ? '≤ ' + currentKajianRadius + ' km' : 'semua jarak'})`;
+            }
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                <div class="kajian-empty">
+                    <span class="kajian-empty-icon">🔍</span>
+                    <h3>Tidak Ada Kajian dalam Radius ≤ ${currentKajianRadius < 9999 ? currentKajianRadius + ' km' : 'Semua Wilayah'}</h3>
+                    <p>Tidak ada jadwal kajian aktif atau akan datang yang cocok dengan kriteria saat ini.</p>
+                    <button type="button" class="btn-gps" style="margin-top: 1rem; padding: 0.6rem 1.25rem; font-size: 0.9rem;" onclick="setKajianRadius(9999)">
+                        Tampilkan Semua Wilayah
+                    </button>
+                </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            filtered.forEach(k => {
+                const isAkhwat = (k.tags || '').includes('khusus_akhwat') || (k.notes || '').toLowerCase().includes('khusus akhwat');
+                const audiensBadge = isAkhwat ? '🧕 Khusus Akhwat' : '👥 Umum (Ikhwan/Akhwat)';
+                const audiensClass = isAkhwat ? 'badge-audiens-akhwat' : 'badge-audiens-umum';
+
+                const statusLabel = k.calculatedStatus === 'ongoing' ? '🟢 Sedang Berlangsung' : '⏳ Akan Datang';
+                const statusClass = k.calculatedStatus === 'ongoing' ? 'badge-status-ongoing' : 'badge-status-upcoming';
+
+                const distBadge = k.distanceKm !== null ? `
+                <span class="kajian-distance-badge">
+                    🚗 ${k.distanceKm.toFixed(1)} km
+                </span>
+                ` : '';
+
+                const timeStr = formatTimeDisplay(k.time_start, k.time_end);
+                const dayName = (k.day || '').toUpperCase();
+                const dateStr = k.date ? `${k.date}` : '';
+
+                const mapsUrl = k.gmaps_url || (k.lat && k.lng ? `https://www.google.com/maps/dir/?api=1&destination=${k.lat},${k.lng}` : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((k.loc_name || '') + ' ' + (k.addr || ''))}`);
+
+                const rawPoster = k.src_image ? (k.src_image.startsWith('http') ? k.src_image : `https://kajian-api.derrylab.com/${k.src_image}`) : '';
+
+                html += `
+                <div class="kajian-card ${k.calculatedStatus === 'ongoing' ? 'is-ongoing' : ''}">
+                    <div class="kajian-badges-top">
+                        <span class="kajian-audiens-badge ${audiensClass}">${audiensBadge}</span>
+                        <div style="display: flex; gap: 0.4rem; align-items: center;">
+                            ${distBadge}
+                            <span class="${statusClass}">${statusLabel}</span>
+                        </div>
+                    </div>
+
+                    <div class="kajian-speaker-row">
+                        <span class="kajian-speaker-icon">🎙️</span>
+                        <div class="kajian-speaker">${escapeHtml(k.speaker || 'Asatidzah Ahlus Sunnah')}</div>
+                    </div>
+
+                    <h3 class="kajian-title">${escapeHtml(k.topic || 'Kajian Islam Ilmiah')}</h3>
+
+                    ${k.book ? `
+                    <div class="kajian-kitab-row">
+                        <span>📖 Kitab:</span>
+                        <span>${escapeHtml(k.book)}</span>
+                    </div>
+                    ` : ''}
+
+                    <div class="kajian-date-pill">
+                        <span>⏰</span>
+                        <span>${timeStr} ${dayName ? '• ' + dayName : ''} ${dateStr ? '(' + dateStr + ')' : ''}</span>
+                    </div>
+
+                    <div class="kajian-loc-row">
+                        <span class="kajian-loc-icon">🕌</span>
+                        <div class="kajian-loc-info">
+                            <div class="kajian-loc-name">${escapeHtml(k.loc_name || 'Masjid / Lokasi Terdaftar')}</div>
+                            <div class="kajian-loc-addr">${escapeHtml(k.addr || k.city || 'Alamat kajian belum dicantumkan')}</div>
+                        </div>
+                    </div>
+
+                    <div class="kajian-footer-meta">
+                        <a href="${mapsUrl}" target="_blank" rel="noopener" class="kajian-btn-rute">
+                            <span>🗺️</span> Rute Google Maps ↗
+                        </a>
+                        <div style="display: flex; gap: 0.4rem;">
+                            ${rawPoster ? `
+                            <button type="button" class="kajian-btn-share" title="Lihat Poster Kajian" onclick="openPosterModal('${rawPoster}')">
+                                🖼️ Poster
+                            </button>
+                            ` : ''}
+                            <button type="button" class="kajian-btn-share" title="Bagikan ke WhatsApp" onclick="shareKajian('${escapeHtml(k.topic || '')}', '${escapeHtml(k.speaker || '')}', '${escapeHtml(k.loc_name || '')}', '${timeStr}', '${mapsUrl}')">
+                                📤 Bagikan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function shareKajian(topic, speaker, loc, time, mapsUrl) {
+            const text = `*Jadwal Kajian Sunnah:*\n\n🎙️ *${speaker}*\n📖 *${topic}*\n⏰ ${time}\n🕌 *${loc}*\n\n🗺️ Lokasi: ${mapsUrl}\n\n— Dibagikan via Sahabat Muslim (https://sahabatmuslim.ahsailabs.my.id/kajian)`;
+
+            if (navigator.share) {
+                navigator.share({
+                    title: `Kajian: ${topic}`,
+                    text: text,
+                    url: 'https://sahabatmuslim.ahsailabs.my.id/kajian'
+                }).catch(() => {});
+            } else {
+                const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
+                window.open(waUrl, '_blank');
+            }
+        }
+
+        function openPosterModal(imgUrl) {
+            const modal = document.getElementById('poster-modal');
+            const img = document.getElementById('poster-img');
+            if (modal && img) {
+                img.src = imgUrl;
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function closePosterModal() {
+            const modal = document.getElementById('poster-modal');
+            const img = document.getElementById('poster-img');
+            if (modal) {
+                modal.classList.remove('active');
+                if (img) img.src = '';
+                document.body.style.overflow = '';
+            }
+        }
+
+        function detectKajianGPS(interactive = true) {
+            const locText = document.getElementById('kajian-loc-text');
+            const locBadge = document.getElementById('kajian-loc-badge');
+            const gpsBtn = document.getElementById('btn-detect-kajian-gps');
+
+            if (!navigator.geolocation) {
+                if (interactive) showToast('Browser tidak mendukung deteksi GPS.');
+                return;
+            }
+
+            if (gpsBtn) {
+                gpsBtn.disabled = true;
+                gpsBtn.innerHTML = '<span>⏳</span> Mendeteksi...';
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    userGPS = {
+                        lat: pos.coords.latitude,
+                        lng: pos.coords.longitude
+                    };
+                    if (locText) {
+                        locText.innerHTML = `GPS Terkunci (≤ ${currentKajianRadius < 9999 ? currentKajianRadius + ' km' : 'Semua'})`;
+                    }
+                    if (locBadge) {
+                        locBadge.classList.add('active');
+                    }
+                    if (gpsBtn) {
+                        gpsBtn.disabled = false;
+                        gpsBtn.innerHTML = '<span>✅</span> Lokasi Aktif';
+                    }
+                    showToast('Lokasi GPS berhasil terkunci!');
+                    renderKajianList();
+                },
+                (err) => {
+                    console.warn('GPS error in Kajian:', err);
+                    if (gpsBtn) {
+                        gpsBtn.disabled = false;
+                        gpsBtn.innerHTML = '<span>🎯</span> Update GPS';
+                    }
+                    if (interactive) {
+                        showToast('Izin GPS tidak diberikan. Menampilkan semua wilayah.');
+                    }
+                    renderKajianList();
+                },
+                { timeout: 10000, enableHighAccuracy: false }
+            );
+        }
+
+        function tryInheritGPS() {
+            try {
+                const saved = localStorage.getItem('sm_prayer_location');
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    if (parsed.lat && parsed.lng) {
+                        userGPS = {
+                            lat: parseFloat(parsed.lat),
+                            lng: parseFloat(parsed.lng)
+                        };
+                        const locText = document.getElementById('kajian-loc-text');
+                        const locBadge = document.getElementById('kajian-loc-badge');
+                        if (locText) locText.innerHTML = `Lokasi Terdeteksi (≤ ${currentKajianRadius < 9999 ? currentKajianRadius + ' km' : 'Semua'})`;
+                        if (locBadge) locBadge.classList.add('active');
+                    }
+                }
+            } catch (e) {}
+        }
+
+        // Init page
+        document.addEventListener('DOMContentLoaded', () => {
+            tryInheritGPS();
+            if (!userGPS && navigator.geolocation) {
+                detectKajianGPS(false);
+            }
+            loadCurrentDateSchedules();
+        });
+    </script>
+</body>
+</html>

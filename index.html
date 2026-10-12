@@ -1142,6 +1142,570 @@
             .kajian-topbar { flex-direction: column; align-items: stretch; }
             .radius-pill-group { overflow-x: auto; }
         }
+
+        /* ==================== DZIKIR SECTION STYLES ==================== */
+        .dzikir-section {
+            padding: 5rem 2rem;
+            background: linear-gradient(180deg, #f0fdf4 0%, #ffffff 100%);
+            position: relative;
+        }
+
+        .dzikir-container {
+            max-width: 1060px;
+            margin: 0 auto;
+        }
+
+        .dzikir-header {
+            text-align: center;
+            margin-bottom: 2.25rem;
+        }
+
+        .dzikir-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #d1fae5;
+            color: #065f46;
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 0.4rem 1rem;
+            border-radius: 9999px;
+            margin-bottom: 0.75rem;
+        }
+
+        .dzikir-main-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.25rem;
+        }
+
+        .dzikir-tab-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.85rem 1.6rem;
+            border-radius: 14px;
+            border: 1px solid var(--gray-200);
+            background: var(--white);
+            color: var(--gray-700);
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+        }
+
+        .dzikir-tab-btn:hover {
+            border-color: var(--green-500);
+            color: var(--green-800);
+            transform: translateY(-2px);
+        }
+
+        .dzikir-tab-btn.active {
+            background: linear-gradient(135deg, var(--green-800), var(--green-600));
+            color: var(--white);
+            border-color: transparent;
+            box-shadow: 0 4px 14px rgba(6, 95, 70, 0.25);
+        }
+
+        .dzikir-tab-btn .tab-count {
+            background: rgba(0,0,0,0.06);
+            padding: 0.15rem 0.6rem;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+        }
+
+        .dzikir-tab-btn.active .tab-count {
+            background: rgba(255,255,255,0.25);
+        }
+
+        .dzikir-subpills {
+            display: none;
+            justify-content: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+
+        .dzikir-subpill-btn {
+            padding: 0.45rem 1.1rem;
+            border-radius: 9999px;
+            border: 1px solid var(--gray-200);
+            background: var(--white);
+            color: var(--gray-600);
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .dzikir-subpill-btn:hover {
+            border-color: var(--green-500);
+            color: var(--green-800);
+        }
+
+        .dzikir-subpill-btn.active {
+            background: var(--green-100);
+            color: var(--green-800);
+            border-color: var(--green-500);
+            font-weight: 600;
+        }
+
+        .dzikir-info-banner {
+            background: #ecfdf5;
+            border: 1px solid #a7f3d0;
+            border-radius: 14px;
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.75rem;
+        }
+
+        .dzikir-info-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .dzikir-info-icon {
+            font-size: 1.75rem;
+        }
+
+        .dzikir-info-title {
+            font-weight: 700;
+            color: var(--green-900);
+            font-size: 0.95rem;
+        }
+
+        .dzikir-info-desc {
+            font-size: 0.85rem;
+            color: #065f46;
+            margin-top: 2px;
+        }
+
+        .dzikir-toolbar {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 14px;
+            padding: 0.9rem 1.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+        }
+
+        .dzikir-progress-wrap {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            flex: 1;
+            min-width: 260px;
+        }
+
+        .dzikir-progress-text {
+            font-size: 0.85rem;
+            color: var(--gray-700);
+            white-space: nowrap;
+        }
+
+        .dzikir-progress-bar-bg {
+            flex: 1;
+            height: 9px;
+            background: var(--gray-100);
+            border-radius: 9999px;
+            overflow: hidden;
+        }
+
+        .dzikir-progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--green-600), var(--green-500));
+            border-radius: 9999px;
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .dzikir-tools-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .dzikir-tool-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.45rem 0.8rem;
+            border-radius: 9px;
+            border: 1px solid var(--gray-200);
+            background: var(--white);
+            color: var(--gray-700);
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .dzikir-tool-btn:hover {
+            background: var(--gray-50);
+            border-color: var(--gray-300);
+            color: var(--gray-900);
+        }
+
+        .dzikir-tool-btn.active {
+            background: var(--green-50);
+            border-color: var(--green-500);
+            color: var(--green-800);
+            font-weight: 600;
+        }
+
+        /* Dzikir List Cards */
+        .dzikir-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .dzikir-card {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 18px;
+            padding: 2rem 2.25rem;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.04);
+            transition: all 0.25s ease;
+            position: relative;
+        }
+
+        .dzikir-card:hover {
+            box-shadow: 0 8px 26px rgba(0,0,0,0.07);
+            border-color: rgba(6, 95, 70, 0.25);
+        }
+
+        .dzikir-card.is-completed {
+            border-color: #a7f3d0;
+            background: linear-gradient(180deg, #fafffc 0%, #ffffff 100%);
+        }
+
+        .dzikir-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        .dzikir-card-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+        }
+
+        .dzikir-card-number {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: var(--green-50);
+            color: var(--green-800);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            border: 1px solid #a7f3d0;
+            flex-shrink: 0;
+        }
+
+        .dzikir-card-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            line-height: 1.4;
+        }
+
+        .dzikir-target-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.35rem 0.85rem;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fde68a;
+            white-space: nowrap;
+        }
+
+        .dzikir-target-badge.done {
+            background: #d1fae5;
+            color: #065f46;
+            border-color: #a7f3d0;
+        }
+
+        .dzikir-arabic-text {
+            font-family: 'Amiri', serif;
+            line-height: 2.3;
+            text-align: right;
+            direction: rtl;
+            color: #0f172a;
+            margin-bottom: 1.25rem;
+            padding: 0.5rem 0.25rem;
+            user-select: text;
+        }
+
+        .dzikir-latin-text {
+            font-size: 0.98rem;
+            font-style: italic;
+            color: #374151;
+            line-height: 1.7;
+            margin-bottom: 1.1rem;
+            padding: 0.85rem 1.1rem;
+            background: #f8fafc;
+            border-left: 3px solid var(--green-600);
+            border-radius: 6px;
+        }
+
+        .dzikir-trans-text {
+            font-size: 0.95rem;
+            color: #4b5563;
+            line-height: 1.65;
+            margin-bottom: 1.25rem;
+        }
+
+        .dzikir-dalil-box {
+            background: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            border-radius: 10px;
+            padding: 0.9rem 1.1rem;
+            font-size: 0.85rem;
+            color: #475569;
+            line-height: 1.55;
+            margin-bottom: 1.25rem;
+        }
+
+        .dzikir-dalil-title {
+            font-weight: 600;
+            color: var(--green-800);
+            margin-bottom: 0.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .dzikir-card-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            padding-top: 1.1rem;
+            border-top: 1px solid var(--gray-100);
+        }
+
+        .dzikir-counter-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--green-700), var(--green-600));
+            color: var(--white);
+            font-size: 0.95rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.2);
+        }
+
+        .dzikir-counter-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(5, 150, 105, 0.3);
+        }
+
+        .dzikir-counter-btn:active {
+            transform: scale(0.97);
+        }
+
+        .dzikir-counter-btn.completed {
+            background: #059669;
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+        }
+
+        .dzikir-secondary-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .dzikir-icon-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            border: 1px solid var(--gray-200);
+            background: var(--white);
+            color: var(--gray-600);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.15s ease;
+        }
+
+        .dzikir-icon-btn:hover {
+            background: var(--gray-50);
+            border-color: var(--gray-300);
+            color: var(--gray-900);
+            transform: translateY(-1px);
+        }
+
+        /* Toast notification */
+        .dzikir-toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--gray-900);
+            color: var(--white);
+            padding: 0.75rem 1.5rem;
+            border-radius: 9999px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+            z-index: 9999;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .dzikir-toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Faedah Modal */
+        .dzikir-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 1.5rem;
+        }
+
+        .dzikir-modal.active {
+            display: flex;
+        }
+
+        .dzikir-modal-content {
+            background: var(--white);
+            border-radius: 20px;
+            max-width: 680px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 2.25rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+            position: relative;
+        }
+
+        .dzikir-modal-close {
+            position: absolute;
+            top: 1.25rem;
+            right: 1.25rem;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1px solid var(--gray-200);
+            background: var(--white);
+            color: var(--gray-600);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .dzikir-modal-close:hover {
+            background: var(--gray-100);
+            color: var(--gray-900);
+        }
+
+        .dzikir-faedah-item {
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        .dzikir-faedah-item:last-child {
+            border-bottom: none;
+        }
+
+        .dzikir-faedah-title {
+            font-weight: 700;
+            color: var(--green-900);
+            margin-bottom: 0.35rem;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .dzikir-faedah-desc {
+            font-size: 0.9rem;
+            color: var(--gray-600);
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .dzikir-card {
+                padding: 1.5rem 1.25rem;
+            }
+            .dzikir-card-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+            .dzikir-toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .dzikir-progress-wrap {
+                min-width: 100%;
+            }
+            .dzikir-tools-group {
+                justify-content: space-between;
+                width: 100%;
+            }
+            .dzikir-main-tabs {
+                gap: 0.5rem;
+            }
+            .dzikir-tab-btn {
+                padding: 0.65rem 1.1rem;
+                font-size: 0.88rem;
+                flex: 1;
+                justify-content: center;
+            }
+        }
+
     </style>
 </head>
 
@@ -1157,6 +1721,7 @@
             <ul class="nav-links">
                 <li><a href="#jadwal-sholat">Jadwal Sholat</a></li>
                 <li><a href="#jadwal-kajian">Jadwal Kajian</a></li>
+                <li><a href="#dzikir-harian">Dzikir Harian</a></li>
                 <li><a href="#fitur">Fitur</a></li>
                 <li><a href="#daftar">Daftar</a></li>
             </ul>
@@ -1383,6 +1948,165 @@
         </div>
     </section>
 
+
+    <!-- Dzikir Harian Section -->
+    <section class="dzikir-section" id="dzikir-harian">
+        <div class="dzikir-container">
+            <div class="dzikir-header">
+                <div class="dzikir-badge">📿 Dzikir Sesuai As-Sunnah</div>
+                <h2>Dzikir Harian Muslim</h2>
+                <p style="color: var(--gray-600); max-width: 680px; margin: 0 auto;">
+                    Dzikir Pagi, Dzikir Petang, dan Dzikir Setelah Sholat Fardhu berdasarkan Al-Qur'an dan As-Sunnah yang Shahih.
+                </p>
+            </div>
+
+            <!-- Main Category Navigation Tabs -->
+            <div class="dzikir-main-tabs">
+                <button type="button" class="dzikir-tab-btn active" data-category="pagi" onclick="window.smDzikir.setCategory('pagi')">
+                    <span>🌅 Dzikir Pagi</span>
+                    <span class="tab-count">19</span>
+                </button>
+                <button type="button" class="dzikir-tab-btn" data-category="petang" onclick="window.smDzikir.setCategory('petang')">
+                    <span>🌇 Dzikir Petang</span>
+                    <span class="tab-count">17</span>
+                </button>
+                <button type="button" class="dzikir-tab-btn" data-category="sholat" onclick="window.smDzikir.setCategory('sholat')">
+                    <span>🕌 Dzikir Sesudah Sholat</span>
+                    <span class="tab-count">Fardhu</span>
+                </button>
+            </div>
+
+            <!-- Sub-pills for Sholat Fardhu -->
+            <div class="dzikir-subpills" id="dzikir-sholat-subpills">
+                <button type="button" class="dzikir-subpill-btn active" data-sub="semua" onclick="window.smDzikir.setSholatSub('semua')">
+                    ✨ Panduan Lengkap (11)
+                </button>
+                <button type="button" class="dzikir-subpill-btn" data-sub="sholat_subuh" onclick="window.smDzikir.setSholatSub('sholat_subuh')">
+                    🌅 Ba'da Shubuh (11)
+                </button>
+                <button type="button" class="dzikir-subpill-btn" data-sub="sholat_maghrib" onclick="window.smDzikir.setSholatSub('sholat_maghrib')">
+                    🌇 Ba'da Maghrib (10)
+                </button>
+                <button type="button" class="dzikir-subpill-btn" data-sub="sholat_dz_a_i" onclick="window.smDzikir.setSholatSub('sholat_dz_a_i')">
+                    ☀️ Zhuhur, 'Ashar, 'Isya (9)
+                </button>
+            </div>
+
+            <!-- Info & Mukadimah Banner -->
+            <div class="dzikir-info-banner">
+                <div class="dzikir-info-meta">
+                    <div class="dzikir-info-icon">✨</div>
+                    <div>
+                        <div class="dzikir-info-title" id="dzikir-category-title">🌅 Dzikir Pagi Hari</div>
+                        <div class="dzikir-info-desc" id="dzikir-category-subtitle">
+                            Waktu utama: Antara shubuh hingga terbit matahari. Melindungi diri dan melapangkan hati sepanjang hari.
+                        </div>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                    <button type="button" class="dzikir-tool-btn" onclick="window.smDzikir.openFaedahModal()" style="background: var(--white); border-color: #a7f3d0; color: #065f46; font-weight: 600;">
+                        📖 Keutamaan & Referensi
+                    </button>
+                </div>
+            </div>
+
+            <!-- Toolbar Controls & Progress Bar -->
+            <div class="dzikir-toolbar">
+                <div class="dzikir-progress-wrap">
+                    <div class="dzikir-progress-text" id="dzikir-progress-count">
+                        Dibaca: <strong>0</strong> / 19 dzikir (0%)
+                    </div>
+                    <div class="dzikir-progress-bar-bg">
+                        <div class="dzikir-progress-bar-fill" id="dzikir-progress-fill"></div>
+                    </div>
+                </div>
+
+                <div class="dzikir-tools-group">
+                    <!-- Font Size Adjusters -->
+                    <div style="display: inline-flex; border: 1px solid var(--gray-200); border-radius: 9px; overflow: hidden;">
+                        <button type="button" class="dzikir-tool-btn" style="border: none; border-radius: 0;" title="Kecilkan Huruf Arab" onclick="window.smDzikir.adjustFontSize(-0.15)">
+                            A-
+                        </button>
+                        <button type="button" class="dzikir-tool-btn" style="border: none; border-radius: 0; border-left: 1px solid var(--gray-200);" title="Besarkan Huruf Arab" onclick="window.smDzikir.adjustFontSize(0.15)">
+                            A+
+                        </button>
+                    </div>
+
+                    <!-- Toggle Views -->
+                    <button type="button" class="dzikir-tool-btn active" id="btn-toggle-latin" title="Sembunyikan/Tampilkan Teks Latin" onclick="window.smDzikir.toggleLatin()">
+                        🔤 Latin
+                    </button>
+                    <button type="button" class="dzikir-tool-btn active" id="btn-toggle-trans" title="Sembunyikan/Tampilkan Terjemah & Dalil" onclick="window.smDzikir.toggleTerjemah()">
+                        🇮🇩 Terjemah
+                    </button>
+
+                    <!-- Reset Category Counters -->
+                    <button type="button" class="dzikir-tool-btn" title="Ulangi semua hitungan dzikir ini" onclick="window.smDzikir.resetCategoryCounters()" style="color: #dc2626;">
+                        🔄 Reset
+                    </button>
+                </div>
+            </div>
+
+            <!-- Card List Container -->
+            <div class="dzikir-list" id="dzikir-card-list">
+                <!-- Cards dynamically populated by js/dzikir.js -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal Faedah & Keutamaan Dzikir -->
+    <div class="dzikir-modal" id="dzikir-faedah-modal" onclick="if(event.target === this) window.smDzikir.closeFaedahModal()">
+        <div class="dzikir-modal-content">
+            <button type="button" class="dzikir-modal-close" onclick="window.smDzikir.closeFaedahModal()">&times;</button>
+            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem;">
+                <span style="font-size: 2rem;">📖</span>
+                <div>
+                    <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--green-900);">Keutamaan & Referensi Dzikir</h3>
+                    <p style="font-size: 0.85rem; color: #64748b;">Faedah berdzikir kepada Allah Subhanahu wa Ta'ala</p>
+                </div>
+            </div>
+
+            <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 1rem; margin-bottom: 1.5rem; font-size: 0.88rem; color: #166534; line-height: 1.6;">
+                <strong>📚 Rujukan Kitab:</strong><br>
+                Konten dzikir ini merujuk kepada kitab terpercaya: <em>"Dzikir Pagi Petang dan Sesudah Shalat Fardhu Menurut Al-Qur'an dan As-Sunnah yang Shahih"</em> karya Ustadz Yazid bin Abdul Qadir Jawas (Penerbit Pustaka Imam Asy-Syafi'i).
+            </div>
+
+            <h4 style="font-size: 1rem; font-weight: 700; color: var(--gray-900); margin-bottom: 0.75rem;">Faedah Dzikir Menurut Al-Qur'an & As-Sunnah:</h4>
+            
+            <div class="dzikir-faedah-item">
+                <div class="dzikir-faedah-title">✨ Mendatangkan Pertolongan Allah</div>
+                <div class="dzikir-faedah-desc">Allah Ta'ala berfirman: <em>"Maka ingatlah kalian kepada-Ku, niscaya Aku pun akan mengingat kalian."</em> (QS. Al-Baqarah: 152)</div>
+            </div>
+
+            <div class="dzikir-faedah-item">
+                <div class="dzikir-faedah-title">🎁 Ampunan & Pahala yang Besar</div>
+                <div class="dzikir-faedah-desc">Allah Ta'ala berfirman: <em>"Laki-laki dan perempuan yang banyak menyebut (nama) Allah, Allah telah menyediakan untuk mereka ampunan dan pahala yang besar."</em> (QS. Al-Ahzab: 35)</div>
+            </div>
+
+            <div class="dzikir-faedah-item">
+                <div class="dzikir-faedah-title">🌿 Menentramkan Hati & Jiwa</div>
+                <div class="dzikir-faedah-desc">Allah Ta'ala berfirman: <em>"Ingatlah, hanya dengan mengingati Allah-lah hati menjadi tenteram."</em> (QS. Ar-Ra'd: 28)</div>
+            </div>
+
+            <div class="dzikir-faedah-item">
+                <div class="dzikir-faedah-title">❤️ Menghidupkan Hati</div>
+                <div class="dzikir-faedah-desc">Rasulullah ﷺ bersabda: <em>"Perumpamaan orang yang berdzikir kepada Rabbnya dengan orang yang tidak berdzikir adalah seperti orang yang hidup dengan orang yang mati."</em> (HR. Al-Bukhari)</div>
+            </div>
+
+            <div class="dzikir-faedah-item">
+                <div class="dzikir-faedah-title">🛡️ Perlindungan dari Godaan Syaitan</div>
+                <div class="dzikir-faedah-desc">Dzikir pagi dan petang adalah benteng yang kokoh bagi seorang mukmin dari kejahatan jin, manusia, sihir, 'ain, serta mara bahaya sepanjang siang dan malam.</div>
+            </div>
+
+            <div style="margin-top: 1.5rem; text-align: center;">
+                <button type="button" class="btn btn-primary" onclick="window.smDzikir.closeFaedahModal()" style="width: 100%;">
+                    Tutup & Lanjutkan Berdzikir
+                </button>
+            </div>
+        </div>
+    </div>
+
+
     <!-- Features -->
     <section class="features" id="fitur">
         <div class="section-header">
@@ -1402,9 +2126,14 @@
                         <p>Jadwal sholat presisi, kalender Hijriah, Quran digital beserta tafsir, doa harian, dzikir pagi petang, dan penunjuk arah kiblat.</p>
                     </div>
                 </div>
-                <a href="#jadwal-sholat" class="feature-card-btn btn-live">
-                    Buka Jadwal Sholat ↗
-                </a>
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: auto;">
+                    <a href="#jadwal-sholat" class="feature-card-btn btn-live" style="flex: 1; text-align: center;">
+                        Jadwal Sholat ↗
+                    </a>
+                    <a href="#dzikir-harian" class="feature-card-btn btn-live" style="flex: 1; text-align: center;">
+                        Dzikir Harian ↗
+                    </a>
+                </div>
             </div>
 
             <!-- 2. Pendidikan & Kajian (Jadwal Kajian sudah aktif di web) -->
@@ -2605,6 +3334,10 @@
             });
         });
     </script>
+
+    <!-- Dzikir Harian Script & Data -->
+    <script src="js/dzikir-data.js?v=2"></script>
+    <script src="js/dzikir.js?v=2"></script>
 
 </body>
 </html>

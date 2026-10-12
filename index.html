@@ -1296,34 +1296,9 @@
 
             <!-- Filter & Search Controls -->
             <div class="kajian-filters">
-                <div class="kajian-search-wrap">
+                <div class="kajian-search-wrap" style="width: 100%;">
                     <span class="kajian-search-icon">🔍</span>
                     <input type="text" id="kajian-search-input" class="kajian-search-input" placeholder="Cari Ustadz, Tema, Kitab, atau Masjid..." oninput="handleKajianFilter()">
-                </div>
-
-                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                    <select id="kajian-time-filter" class="prayer-select" style="min-width: 175px; padding: 0.65rem 1rem;" onchange="handleTimeFilter(this.value)">
-                        <option value="active_upcoming" selected>⚡ Sedang & Akan Datang</option>
-                        <option value="all">Semua Waktu (Termasuk Selesai)</option>
-                    </select>
-
-                    <select id="kajian-date-filter" class="prayer-select" style="min-width: 130px; padding: 0.65rem 1rem;" onchange="handleDateChange(this.value)">
-                        <option value="today">Hari Ini</option>
-                        <option value="tomorrow">Besok</option>
-                    </select>
-
-                    <select id="kajian-city-fallback" class="prayer-select" style="min-width: 150px; padding: 0.65rem 1rem;" onchange="handleCityFilter(this.value)">
-                        <option value="all">Semua Kota</option>
-                        <option value="Jakarta">DKI Jakarta</option>
-                        <option value="Depok">Kota Depok</option>
-                        <option value="Bogor">Bogor</option>
-                        <option value="Tangerang">Tangerang</option>
-                        <option value="Bekasi">Bekasi</option>
-                        <option value="Bandung">Bandung</option>
-                        <option value="Surabaya">Surabaya</option>
-                        <option value="Yogyakarta">Yogyakarta / Solo</option>
-                        <option value="Medan">Medan</option>
-                    </select>
                 </div>
             </div>
 
@@ -2062,14 +2037,12 @@
                 if (userGPS && item.lat && item.lng) {
                     dist = calculateDistanceKm(userGPS.lat, userGPS.lng, parseFloat(item.lat), parseFloat(item.lng));
                 }
-                const timeInfo = getKajianTimeStatus(item, currentKajianDate);
+                const timeInfo = getKajianTimeStatus(item);
                 return { ...item, distanceKm: dist, timeInfo };
             });
 
-            // Filter: Hanya yang sedang berlangsung atau belum berlangsung (default)
-            if (currentKajianTimeFilter === 'active_upcoming') {
-                processed = processed.filter(item => item.timeInfo.status === 'ongoing' || item.timeInfo.status === 'upcoming');
-            }
+            // Filter: Hanya yang sedang berlangsung atau belum berlangsung (ongoing & upcoming)
+            processed = processed.filter(item => item.timeInfo.status === 'ongoing' || item.timeInfo.status === 'upcoming');
 
             // Sort: prioritize nearest distance if GPS active, otherwise ongoing first
             if (userGPS) {
@@ -2091,8 +2064,8 @@
                 processed = processed.filter(item => item.distanceKm !== null && item.distanceKm <= currentKajianRadius);
             }
 
-            // Jika GPS belum aktif dan user memilih radius tertentu (default <= 5 km) tanpa filter kota khusus
-            if (!userGPS && currentKajianRadius < 9999 && currentKajianCity === 'all' && !searchVal) {
+            // Jika GPS belum aktif dan user memilih radius tertentu (default <= 5 km)
+            if (!userGPS && currentKajianRadius < 9999 && !searchVal) {
                 grid.innerHTML = `
                     <div class="kajian-empty">
                         <div class="kajian-empty-icon">📍</div>
@@ -2112,16 +2085,6 @@
                 return;
             }
 
-            // Filter by City fallback (if selected and not 'all')
-            if (currentKajianCity !== 'all') {
-                processed = processed.filter(item => {
-                    const c = (item.city || '').toLowerCase();
-                    const addr = (item.addr || '').toLowerCase();
-                    const filter = currentKajianCity.toLowerCase();
-                    return c.includes(filter) || addr.includes(filter);
-                });
-            }
-
             // Filter by Search Query (Speaker, Topic, Book, Mosque)
             if (searchVal) {
                 processed = processed.filter(item => {
@@ -2136,8 +2099,7 @@
             }
 
             if (countInfo) {
-                const statusSuffix = currentKajianTimeFilter === 'active_upcoming' ? 'sedang & belum berlangsung' : 'semua waktu';
-                countInfo.textContent = `Menampilkan ${processed.length} jadwal kajian (${statusSuffix})`;
+                countInfo.textContent = `Menampilkan ${processed.length} jadwal kajian (sedang & akan datang)`;
             }
 
             if (processed.length === 0) {
@@ -2157,7 +2119,7 @@
                     <div class="kajian-empty">
                         <div class="kajian-empty-icon">🔍</div>
                         <h3>Tidak Ada Kajian dalam Radius ≤ ${currentKajianRadius} km</h3>
-                        <p>${isRadiusFilter ? `Belum ada kajian aktif/akan datang dalam radius ≤ ${currentKajianRadius} km dari posisi Anda.${nearestHint}` : 'Tidak ada jadwal kajian aktif atau akan datang yang cocok dengan filter saat ini.'}</p>
+                        <p>${isRadiusFilter ? `Belum ada kajian aktif/akan datang dalam radius ≤ ${currentKajianRadius} km dari posisi Anda.${nearestHint}` : 'Tidak ada jadwal kajian aktif atau akan datang yang cocok dengan kata kunci saat ini.'}</p>
                         <div style="display: flex; gap: 0.5rem; justify-content: center; margin-top: 1rem; flex-wrap: wrap;">
                             ${isRadiusFilter && currentKajianRadius < 10 ? `
                             <button type="button" class="btn btn-primary" onclick="setKajianRadius(10, null)" style="padding: 0.5rem 1rem; font-size: 0.85rem;">
@@ -2171,9 +2133,6 @@
                             ` : ''}
                             <button type="button" class="btn btn-secondary" onclick="setKajianRadius(9999, null)" style="padding: 0.5rem 1rem; font-size: 0.85rem;">
                                 Tampilkan Semua Wilayah
-                            </button>
-                            <button type="button" class="btn btn-secondary" onclick="showAllTimeKajian()" style="padding: 0.5rem 1rem; font-size: 0.85rem;">
-                                Tampilkan Termasuk yang Sudah Selesai
                             </button>
                         </div>
                     </div>
@@ -2292,28 +2251,6 @@
         }
 
         function handleKajianFilter() {
-            renderKajianList();
-        }
-
-        function handleDateChange(val) {
-            currentKajianDate = val;
-            fetchKajianSchedules(val);
-        }
-
-        function handleCityFilter(val) {
-            currentKajianCity = val;
-            renderKajianList();
-        }
-
-        function handleTimeFilter(val) {
-            currentKajianTimeFilter = val;
-            renderKajianList();
-        }
-
-        function showAllTimeKajian() {
-            currentKajianTimeFilter = 'all';
-            const selectEl = document.getElementById('kajian-time-filter');
-            if (selectEl) selectEl.value = 'all';
             renderKajianList();
         }
 

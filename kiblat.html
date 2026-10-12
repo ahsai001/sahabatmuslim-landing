@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kompas Arah Kiblat Online Akurat & Presisi — Sahabat Muslim</title>
+    <meta name="description" content="Kompas Arah Kiblat online akurat berbasis sensor perangkat dan GPS. Tentukan arah Ka'bah (Makkah) secara presisi di mana pun Anda berada tanpa perlu aplikasi tambahan.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --green-900: #064e3b;
+            --green-800: #065f46;
+            --green-700: #047857;
+            --green-600: #059669;
+            --green-500: #10b981;
+            --green-100: #d1fae5;
+            --green-50: #ecfdf5;
+            --gold-500: #d4a843;
+            --gold-400: #e2b960;
+            --gold-300: #f0d78a;
+            --white: #ffffff;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--gray-800);
+            background: #fbfdfc;
+            line-height: 1.6;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--gray-200);
+            z-index: 100;
+            padding: 1rem 2rem;
+        }
+
+        .nav-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: var(--green-800);
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--green-700), var(--green-600));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+        }
+
+        .logo-text {
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--gray-600);
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--green-700);
+            font-weight: 600;
+        }
+
+        /* Hero */
+        .kiblat-hero {
+            padding: 7.5rem 2rem 2.25rem;
+            background: linear-gradient(180deg, #ecfdf5 0%, #ffffff 100%);
+            text-align: center;
+        }
+
+        .kiblat-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #d1fae5;
+            color: #065f46;
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 0.4rem 1rem;
+            border-radius: 9999px;
+            margin-bottom: 0.75rem;
+        }
+
+        .kiblat-hero h1 {
+            font-size: 2.35rem;
+            font-weight: 800;
+            color: var(--gray-900);
+            margin-bottom: 0.6rem;
+        }
+
+        .kiblat-hero h1 span {
+            color: var(--green-700);
+        }
+
+        .kiblat-hero p {
+            color: var(--gray-600);
+            max-width: 650px;
+            margin: 0 auto;
+            font-size: 1.05rem;
+        }
+
+        /* Section Container */
+        .kiblat-section {
+            padding: 1rem 2rem 5rem;
+        }
+
+        .kiblat-container {
+            max-width: 860px;
+            margin: 0 auto;
+        }
+
+        /* Controls Card */
+        .kiblat-controls-card {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 18px;
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 1.75rem;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.03);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .kiblat-controls-left {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .kiblat-city-select {
+            padding: 0.65rem 1rem;
+            border-radius: 10px;
+            border: 1px solid var(--gray-200);
+            font-size: 0.9rem;
+            font-family: inherit;
+            outline: none;
+            background: var(--gray-50);
+            cursor: pointer;
+            min-width: 180px;
+        }
+
+        .btn-gps {
+            padding: 0.65rem 1.2rem;
+            background: linear-gradient(135deg, var(--green-800), var(--green-600));
+            color: var(--white);
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .btn-gps:hover {
+            opacity: 0.95;
+            transform: translateY(-1px);
+        }
+
+        /* Stats Grid */
+        .kiblat-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .kiblat-stat-card {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 16px;
+            padding: 1.25rem;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+
+        .kiblat-stat-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--gray-600);
+            margin-bottom: 0.35rem;
+        }
+
+        .kiblat-stat-val {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--green-900);
+        }
+
+        /* Compass Visual Card */
+        .compass-card {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 24px;
+            padding: 2.5rem 1.5rem;
+            text-align: center;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.04);
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .compass-viewport {
+            width: 320px;
+            height: 320px;
+            margin: 0 auto 1.5rem;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Static device heading indicator needle pointing UP */
+        .device-needle {
+            position: absolute;
+            top: 2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 22px solid #ef4444;
+            z-index: 10;
+            filter: drop-shadow(0 2px 4px rgba(239, 68, 68, 0.4));
+        }
+
+        /* Dial that rotates with sensor */
+        .compass-circle-outer {
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #f8fafc 0%, #edf2f7 100%);
+            border: 4px solid var(--gray-200);
+            box-shadow: inset 0 4px 10px rgba(0,0,0,0.06), 0 10px 25px rgba(0,0,0,0.05);
+            position: relative;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .compass-circle-outer.aligned {
+            border-color: #10b981;
+            box-shadow: 0 0 30px rgba(16, 185, 129, 0.4), inset 0 0 15px rgba(16, 185, 129, 0.2);
+        }
+
+        .compass-dial {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transition: transform 0.15s cubic-bezier(0.1, 0.7, 0.1, 1);
+        }
+
+        /* Degree ticks & Cardinals on dial */
+        .cardinal {
+            position: absolute;
+            font-weight: 800;
+            font-size: 1.05rem;
+            transform: translate(-50%, -50%);
+        }
+
+        .cardinal-n { top: 22px; left: 50%; color: #ef4444; }
+        .cardinal-e { top: 50%; right: 10px; color: var(--gray-700); transform: translateY(-50%); }
+        .cardinal-s { bottom: 10px; left: 50%; color: var(--gray-700); }
+        .cardinal-w { top: 50%; left: 22px; color: var(--gray-700); transform: translateY(-50%); }
+
+        /* Kaaba Marker Container (rotates to qiblaBearing on dial) */
+        .kaaba-marker-rotator {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .kaaba-icon-pin {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .kaaba-emoji {
+            font-size: 1.85rem;
+            filter: drop-shadow(0 2px 6px rgba(0,0,0,0.3));
+        }
+
+        .kaaba-label-text {
+            font-size: 0.65rem;
+            font-weight: 800;
+            background: #064e3b;
+            color: #d1fae5;
+            padding: 1px 5px;
+            border-radius: 4px;
+            margin-top: -2px;
+            letter-spacing: 0.5px;
+        }
+
+        /* Center Hub */
+        .compass-center-hub {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--green-700), var(--green-900));
+            border: 3px solid white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.1rem;
+            z-index: 5;
+        }
+
+        /* Status Banners */
+        .kiblat-aligned-banner {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #ecfdf5;
+            border: 1.5px solid #10b981;
+            color: #065f46;
+            padding: 0.75rem 1.5rem;
+            border-radius: 9999px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2);
+            animation: pulse-glow 1.5s infinite;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        .kiblat-hint-banner {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #f8fafc;
+            border: 1px solid var(--gray-200);
+            color: var(--gray-700);
+            padding: 0.65rem 1.25rem;
+            border-radius: 9999px;
+            font-size: 0.92rem;
+            font-weight: 500;
+        }
+
+        /* Calibration Card */
+        .calibration-card {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 18px;
+            padding: 1.5rem 1.75rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+            margin-bottom: 2rem;
+        }
+
+        .calibration-icon {
+            font-size: 2rem;
+            flex-shrink: 0;
+        }
+
+        .calibration-info h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 0.25rem;
+        }
+
+        .calibration-info p {
+            font-size: 0.88rem;
+            color: var(--gray-600);
+            line-height: 1.5;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--gray-900);
+            color: var(--gray-600);
+            padding: 4rem 2rem 2rem;
+        }
+
+        .footer-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 3rem;
+        }
+
+        .footer-brand .logo {
+            color: var(--white);
+            margin-bottom: 1rem;
+        }
+
+        .footer-brand p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .footer-col h4 {
+            color: var(--white);
+            font-size: 0.95rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .footer-col a {
+            display: block;
+            color: var(--gray-600);
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-bottom: 0.75rem;
+            transition: color 0.2s;
+        }
+
+        .footer-col a:hover {
+            color: var(--green-500);
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 3rem auto 0;
+            padding-top: 2rem;
+            border-top: 1px solid var(--gray-800);
+            text-align: center;
+            font-size: 0.85rem;
+            color: #9ca3af;
+        }
+
+        .footer-bottom a {
+            color: #6ee7b7;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .footer-bottom a:hover {
+            color: #a7f3d0;
+            text-decoration: underline;
+        }
+
+        /* Toast */
+        .dzikir-toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--gray-900);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 9999px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            z-index: 1000;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .dzikir-toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            nav { padding: 1rem; }
+            .nav-links { display: none; }
+            .kiblat-hero { padding: 6rem 1rem 1.5rem; }
+            .kiblat-hero h1 { font-size: 1.85rem; }
+            .kiblat-section { padding: 1rem 1rem 4rem; }
+            .kiblat-stats-grid { grid-template-columns: 1fr; }
+            .compass-viewport { width: 280px; height: 280px; }
+            .compass-circle-outer { width: 260px; height: 260px; }
+            .footer-inner { grid-template-columns: 1fr; gap: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <nav>
+        <div class="nav-inner">
+            <a href="/" class="logo">
+                <div class="logo-icon">🕌</div>
+                <span class="logo-text">Sahabat Muslim</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="/">Beranda</a></li>
+                <li><a href="/#jadwal-sholat">Jadwal Sholat</a></li>
+                <li><a href="/kajian">Jadwal Kajian</a></li>
+                <li><a href="/dzikir">Dzikir Harian</a></li>
+                <li><a href="/doa">Doa Harian</a></li>
+                <li><a href="/quran">Al-Qur'an</a></li>
+                <li><a href="/kiblat" class="active">Arah Kiblat</a></li>
+                <li><a href="/#fitur">Fitur</a></li>
+                <li><a href="/#daftar">Daftar</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="kiblat-hero">
+        <div class="kiblat-badge">🧭 Kompas Presisi Ka'bah</div>
+        <h1>Penunjuk <span>Arah Kiblat</span> Online</h1>
+        <p>Tentukan arah kiblat sholat ke Ka'bah (Makkah Al-Mukarramah) secara tepat dan presisi menggunakan sensor kompas perangkat dan kalkulasi geodetik akurat.</p>
+    </section>
+
+    <!-- Main Section -->
+    <section class="kiblat-section">
+        <div class="kiblat-container">
+
+            <!-- Controls Card -->
+            <div class="kiblat-controls-card">
+                <div class="kiblat-controls-left">
+                    <button type="button" class="btn-gps" id="btn-detect-gps" onclick="window.smKiblat.detectGPS()">
+                        <span>🎯</span> Deteksi Lokasi Saya (GPS)
+                    </button>
+                    <select id="kiblat-city-select" class="kiblat-city-select" onchange="window.smKiblat.onCitySelectChange(this.value)">
+                        <option value="Jakarta" selected>Jakarta</option>
+                        <option value="Bandung">Bandung</option>
+                        <option value="Surabaya">Surabaya</option>
+                        <option value="Semarang">Semarang</option>
+                        <option value="Yogyakarta">Yogyakarta</option>
+                        <option value="Medan">Medan</option>
+                        <option value="Banda Aceh">Banda Aceh</option>
+                        <option value="Palembang">Palembang</option>
+                        <option value="Padang">Padang</option>
+                        <option value="Makassar">Makassar</option>
+                        <option value="Denpasar">Denpasar</option>
+                        <option value="Banjarmasin">Banjarmasin</option>
+                        <option value="Balikpapan">Balikpapan</option>
+                        <option value="Pontianak">Pontianak</option>
+                        <option value="Manado">Manado</option>
+                        <option value="Mataram">Mataram</option>
+                        <option value="Kupang">Kupang</option>
+                        <option value="Ambon">Ambon</option>
+                        <option value="Jayapura">Jayapura</option>
+                    </select>
+                </div>
+
+                <button type="button" class="btn-gps" id="btn-enable-sensor" style="display: none; background: #0284c7;" onclick="window.smKiblat.requestSensorPermission()">
+                    <span>📱</span> Aktifkan Sensor Kompas
+                </button>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="kiblat-stats-grid">
+                <div class="kiblat-stat-card">
+                    <div class="kiblat-stat-label">Sudut Arah Kiblat</div>
+                    <div class="kiblat-stat-val" id="kiblat-bearing-display">295.2°</div>
+                    <div style="font-size: 0.78rem; color: var(--gray-600); margin-top: 2px;">dari Arah Utara Sejati</div>
+                </div>
+                <div class="kiblat-stat-card">
+                    <div class="kiblat-stat-label">Jarak ke Ka'bah</div>
+                    <div class="kiblat-stat-val" id="kiblat-distance-display">7.922 km</div>
+                    <div style="font-size: 0.78rem; color: var(--gray-600); margin-top: 2px;">Makkah Al-Mukarramah</div>
+                </div>
+                <div class="kiblat-stat-card">
+                    <div class="kiblat-stat-label">Lokasi Anda</div>
+                    <div class="kiblat-stat-val" id="kiblat-location-display" style="font-size: 1.15rem; margin-top: 0.35rem;">Jakarta</div>
+                    <div style="font-size: 0.78rem; color: var(--gray-600); margin-top: 2px;">Terdeteksi</div>
+                </div>
+            </div>
+
+            <!-- Compass Visual Card -->
+            <div class="compass-card">
+                <div class="compass-viewport">
+                    <!-- Static arrow needle pointing top of device -->
+                    <div class="device-needle" title="Arah Depan Perangkat"></div>
+
+                    <!-- Dial circle that rotates against device heading -->
+                    <div class="compass-circle-outer" id="compass-circle-outer">
+                        <div class="compass-dial" id="compass-dial">
+                            <!-- Cardinals -->
+                            <div class="cardinal cardinal-n">U</div>
+                            <div class="cardinal cardinal-e">T</div>
+                            <div class="cardinal cardinal-s">S</div>
+                            <div class="cardinal cardinal-w">B</div>
+
+                            <!-- Kaaba Marker on dial -->
+                            <div class="kaaba-marker-rotator" id="kaaba-marker">
+                                <div class="kaaba-icon-pin">
+                                    <span class="kaaba-emoji">🕋</span>
+                                    <span class="kaaba-label-text">KIBLAT</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Center Hub -->
+                        <div class="compass-center-hub">🧭</div>
+                    </div>
+                </div>
+
+                <!-- Status Feedback Banner -->
+                <div id="kiblat-status-box" style="margin-top: 1rem;">
+                    <div class="kiblat-hint-banner">
+                        <span>🧭</span> Arahkan bagian atas ponsel hingga sejajar dengan ikon Ka'bah 🕋
+                    </div>
+                </div>
+
+                <div style="margin-top: 1.5rem; font-size: 0.85rem; color: var(--gray-600);" id="compass-heading-display">
+                    Arah Perangkat: 0°
+                </div>
+
+                <!-- Google Maps Link -->
+                <div style="margin-top: 1.5rem;">
+                    <a href="#" id="kiblat-gmaps-btn" target="_blank" rel="noopener noreferrer" class="btn-gps" style="text-decoration: none; padding: 0.6rem 1.4rem;">
+                        <span>🗺️</span> Buka Rute Menuju Ka'bah di Google Maps ↗
+                    </a>
+                </div>
+            </div>
+
+            <!-- Calibration & Tips Card -->
+            <div class="calibration-card">
+                <div class="calibration-icon">💡</div>
+                <div class="calibration-info">
+                    <h4>Petunjuk Kalibrasi Sensor & Akurasi Kompas</h4>
+                    <p>
+                        1. Pastikan ponsel Anda dijauhkan dari medan magnetik kuat seperti magnet casing, besi, laptop, atau speaker.<br>
+                        2. Jika penunjuk kompas terasa kurang responsif atau melenceng, lakukan kalibrasi dengan mengayunkan ponsel membentuk <strong>pola angka 8 (∞) di udara</strong> sebanyak 2–3 kali.<br>
+                        3. Letakkan ponsel secara mendatar (horizontal) di atas permukaan rata atau telapak tangan saat mengarahkan kiblat.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Toast Notification -->
+    <div class="dzikir-toast" id="kiblat-toast"></div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <div class="logo">
+                    <div class="logo-icon">🕌</div>
+                    <span class="logo-text">Sahabat Muslim</span>
+                </div>
+                <p>Platform All-in-One untuk Kaum Muslimin. Membantu ibadah harian, menuntut ilmu, dan mempererat ukhuwah.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Navigasi</h4>
+                <a href="/">Beranda</a>
+                <a href="/#jadwal-sholat">Jadwal Sholat</a>
+                <a href="/kajian">Jadwal Kajian</a>
+                <a href="/dzikir">Dzikir Harian</a>
+                <a href="/doa">Doa Harian</a>
+                <a href="/quran">Al-Qur'an Online</a>
+                <a href="/kiblat">Arah Kiblat</a>
+            </div>
+            <div class="footer-col">
+                <h4>Fitur Ibadah</h4>
+                <a href="/#jadwal-sholat">Waktu Sholat 5 Waktu</a>
+                <a href="/quran">Al-Qur'an 30 Juz</a>
+                <a href="/dzikir">Dzikir Pagi Petang</a>
+                <a href="/doa">Kumpulan 227 Doa Sunnah</a>
+            </div>
+            <div class="footer-col">
+                <h4>Legal & Info</h4>
+                <a href="#">Kebijakan Privasi</a>
+                <a href="#">Ketentuan Layanan</a>
+                <a href="#">Hubungi Kami</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 Sahabat Muslim — Dibuat dengan ❤️ oleh <a href="https://ahsailabs.my.id/" target="_blank" rel="noopener">AhsaiLabs</a>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/kiblat.js?v=1"></script>
+</body>
+</html>

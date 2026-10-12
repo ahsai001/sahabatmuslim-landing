@@ -898,6 +898,42 @@
             color: var(--gray-600);
         }
 
+        .time-status-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.6rem;
+            border-radius: var(--radius-full);
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            white-space: nowrap;
+        }
+
+        .time-status-tag.ongoing {
+            background: #dcfce7;
+            color: #15803d;
+            border: 1px solid #86efac;
+            animation: pulseOngoing 2s infinite ease-in-out;
+        }
+
+        .time-status-tag.upcoming {
+            background: #e0f2fe;
+            color: #0369a1;
+            border: 1px solid #7dd3fc;
+        }
+
+        .time-status-tag.passed {
+            background: #f3f4f6;
+            color: #6b7280;
+            border: 1px solid #e5e7eb;
+        }
+
+        @keyframes pulseOngoing {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.75; }
+        }
+
         .audience-tag {
             font-size: 0.72rem;
             font-weight: 600;
@@ -1266,12 +1302,17 @@
                 </div>
 
                 <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                    <select id="kajian-date-filter" class="prayer-select" style="min-width: 140px; padding: 0.65rem 1rem;" onchange="handleDateChange(this.value)">
+                    <select id="kajian-time-filter" class="prayer-select" style="min-width: 175px; padding: 0.65rem 1rem;" onchange="handleTimeFilter(this.value)">
+                        <option value="active_upcoming" selected>⚡ Sedang & Akan Datang</option>
+                        <option value="all">Semua Waktu (Termasuk Selesai)</option>
+                    </select>
+
+                    <select id="kajian-date-filter" class="prayer-select" style="min-width: 130px; padding: 0.65rem 1rem;" onchange="handleDateChange(this.value)">
                         <option value="today">Hari Ini</option>
                         <option value="tomorrow">Besok</option>
                     </select>
 
-                    <select id="kajian-city-fallback" class="prayer-select" style="min-width: 160px; padding: 0.65rem 1rem;" onchange="handleCityFilter(this.value)">
+                    <select id="kajian-city-fallback" class="prayer-select" style="min-width: 150px; padding: 0.65rem 1rem;" onchange="handleCityFilter(this.value)">
                         <option value="all">Semua Kota</option>
                         <option value="Jakarta">DKI Jakarta</option>
                         <option value="Depok">Kota Depok</option>
@@ -1837,6 +1878,7 @@
         let currentKajianRadius = 9999; // default: tampilkan semua sampai GPS aktif / filter dipilih
         let currentKajianDate = 'today';
         let currentKajianCity = 'all';
+        let currentKajianTimeFilter = 'active_upcoming'; // 'active_upcoming' (sedang/belum berlangsung) atau 'all'
 
         // Haversine Distance Formula (km)
         function calculateDistanceKm(lat1, lon1, lat2, lon2) {
@@ -1856,13 +1898,99 @@
             }
             if (distKm < 1) {
                 const meters = Math.round(distKm * 1000);
-                return `<span class="distance-tag near">⚡ ${meters} m dari Anda</span>`;
+                return `<span class="distance-tag near">⚡ ${meters} m</span>`;
             } else if (distKm <= 5) {
-                return `<span class="distance-tag near">📍 ${distKm.toFixed(1)} km dari Anda</span>`;
+                return `<span class="distance-tag near">📍 ${distKm.toFixed(1)} km</span>`;
             } else if (distKm <= 15) {
-                return `<span class="distance-tag mid">🚗 ${distKm.toFixed(1)} km dari Anda</span>`;
+                return `<span class="distance-tag mid">🚗 ${distKm.toFixed(1)} km</span>`;
             } else {
-                return `<span class="distance-tag far">🌐 ${distKm.toFixed(1)} km dari Anda</span>`;
+                return `<span class="distance-tag far">🌐 ${distKm.toFixed(1)} km</span>`;
+            }
+        }
+
+        function cleanTimeLabel(t) {
+            if (!t) return '';
+            const s = t.trim().toLowerCase();
+            if (s === 'bada_subuh') return "Ba'da Subuh";
+            if (s === 'bada_dzuhur') return "Ba'da Dzuhur";
+            if (s === 'bada_ashar') return "Ba'da Ashar";
+            if (s === 'bada_maghrib') return "Ba'da Maghrib";
+            if (s === 'bada_isya') return "Ba'da Isya";
+            if (s === 'syuruq') return "Syuruq";
+            if (s === 'menjelang_maghrib') return "Menjelang Maghrib";
+            if (s === 'selesai') return "Selesai";
+            return t;
+        }
+
+        function formatKajianTimeDisplay(timeStart, timeEnd) {
+            const start = cleanTimeLabel(timeStart);
+            const end = cleanTimeLabel(timeEnd);
+
+            if (!start && !end) return 'Waktu Mengikuti Panitia';
+            if (start && end) {
+                const isStartClock = start.includes(':');
+                const isEndClock = end.includes(':');
+                return `${start}${isStartClock ? ' WIB' : ''} - ${end}${isEndClock ? ' WIB' : ''}`;
+            }
+            if (start) {
+                const isStartClock = start.includes(':');
+                return `${start}${isStartClock ? ' WIB' : ''} - Selesai`;
+            }
+            return end;
+        }
+
+        function getKajianTimeStatus(item, targetDate) {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const todayStr = `${year}-${month}-${day}`;
+
+            // Jika jadwal untuk besok atau tanggal mendatang, status otomatis 'upcoming'
+            if (targetDate === 'tomorrow' || (item.date && item.date > todayStr)) {
+                return { status: 'upcoming', label: 'Akan Datang' };
+            }
+
+            // Jika tanggal lampau
+            if (item.date && item.date < todayStr) {
+                return { status: 'passed', label: 'Sudah Selesai' };
+            }
+
+            const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+            function parseToMinutes(t, isEnd, startM) {
+                if (!t) return isEnd ? (startM !== null ? startM + 105 : 1440) : null;
+                const str = t.trim().toLowerCase();
+                if (str.includes(':')) {
+                    const parts = str.split(':');
+                    const h = parseInt(parts[0], 10);
+                    const m = parseInt(parts[1], 10);
+                    if (!isNaN(h) && !isNaN(m)) return h * 60 + m;
+                }
+                if (str.includes('subuh')) return isEnd ? 360 : 300;     // 05:00 - 06:00
+                if (str.includes('dzuhur')) return isEnd ? 810 : 735;    // 12:15 - 13:30
+                if (str.includes('ashar')) return isEnd ? 1020 : 930;    // 15:30 - 17:00
+                if (str.includes('maghrib')) return isEnd ? 1140 : 1095; // 18:15 - 19:00
+                if (str.includes('isya')) return isEnd ? 1245 : 1170;    // 19:30 - 20:45
+                if (str.includes('syuruq')) return 360;                  // 06:00
+                if (str.includes('menjelang_maghrib')) return 1070;      // 17:50
+                if (str.includes('selesai')) return startM !== null ? startM + 105 : 1440;
+                return isEnd ? (startM !== null ? startM + 105 : 1440) : null;
+            }
+
+            const startM = parseToMinutes(item.time_start, false, null);
+            const endM = parseToMinutes(item.time_end, true, startM);
+
+            if (startM === null && !item.time_end) {
+                return { status: 'upcoming', label: 'Hari Ini' };
+            }
+
+            if (endM < currentMinutes) {
+                return { status: 'passed', label: 'Sudah Selesai' };
+            } else if (startM !== null && startM <= currentMinutes && endM >= currentMinutes) {
+                return { status: 'ongoing', label: 'Sedang Berlangsung' };
+            } else {
+                return { status: 'upcoming', label: 'Akan Datang' };
             }
         }
 
@@ -1875,7 +2003,7 @@
                 <div class="kajian-empty">
                     <div class="kajian-empty-icon">⏳</div>
                     <h3>Mengambil Jadwal Kajian...</h3>
-                    <p>Menghubungkan ke database kajian dan menghitung radius jarak dari lokasi Anda.</p>
+                    <p>Menghubungkan ke database kajian dan menghitung waktu serta radius jarak dari lokasi Anda.</p>
                 </div>
             `;
 
@@ -1925,21 +2053,33 @@
 
             if (!grid) return;
 
-            // Compute distance for each kajian if userGPS exists
+            // Compute distance and time status for each kajian
             let processed = allKajianData.map(item => {
                 let dist = null;
                 if (userGPS && item.lat && item.lng) {
                     dist = calculateDistanceKm(userGPS.lat, userGPS.lng, parseFloat(item.lat), parseFloat(item.lng));
                 }
-                return { ...item, distanceKm: dist };
+                const timeInfo = getKajianTimeStatus(item, currentKajianDate);
+                return { ...item, distanceKm: dist, timeInfo };
             });
 
-            // Sort: if GPS is active, sort by nearest distance first
+            // Filter: Hanya yang sedang berlangsung atau belum berlangsung (default)
+            if (currentKajianTimeFilter === 'active_upcoming') {
+                processed = processed.filter(item => item.timeInfo.status === 'ongoing' || item.timeInfo.status === 'upcoming');
+            }
+
+            // Sort: prioritize nearest distance if GPS active, otherwise ongoing first
             if (userGPS) {
                 processed.sort((a, b) => {
                     if (a.distanceKm === null) return 1;
                     if (b.distanceKm === null) return -1;
                     return a.distanceKm - b.distanceKm;
+                });
+            } else {
+                processed.sort((a, b) => {
+                    if (a.timeInfo.status === 'ongoing' && b.timeInfo.status !== 'ongoing') return -1;
+                    if (b.timeInfo.status === 'ongoing' && a.timeInfo.status !== 'ongoing') return 1;
+                    return 0;
                 });
             }
 
@@ -1972,7 +2112,8 @@
             }
 
             if (countInfo) {
-                countInfo.textContent = `Menampilkan ${processed.length} jadwal kajian`;
+                const statusSuffix = currentKajianTimeFilter === 'active_upcoming' ? 'sedang & belum berlangsung' : 'semua waktu';
+                countInfo.textContent = `Menampilkan ${processed.length} jadwal kajian (${statusSuffix})`;
             }
 
             if (processed.length === 0) {
@@ -1980,8 +2121,8 @@
                 grid.innerHTML = `
                     <div class="kajian-empty">
                         <div class="kajian-empty-icon">🔍</div>
-                        <h3>Tidak Ada Kajian Ditemukan</h3>
-                        <p>${isRadiusFilter ? `Tidak ada kajian dalam radius ≤ ${currentKajianRadius} km dari posisi Anda.` : 'Tidak ada jadwal kajian yang cocok dengan kata kunci atau filter pencarian Anda.'}</p>
+                        <h3>Tidak Ada Kajian Sesuai Kriteria</h3>
+                        <p>${isRadiusFilter ? `Tidak ada kajian sedang/akan datang dalam radius ≤ ${currentKajianRadius} km dari posisi Anda.` : 'Tidak ada jadwal kajian aktif atau akan datang yang cocok dengan filter saat ini.'}</p>
                         <div style="display: flex; gap: 0.5rem; justify-content: center; margin-top: 1rem; flex-wrap: wrap;">
                             ${isRadiusFilter ? `
                             <button type="button" class="btn btn-primary" onclick="setKajianRadius(30, null)" style="padding: 0.5rem 1rem; font-size: 0.85rem;">
@@ -1990,6 +2131,9 @@
                             ` : ''}
                             <button type="button" class="btn btn-secondary" onclick="setKajianRadius(9999, null)" style="padding: 0.5rem 1rem; font-size: 0.85rem;">
                                 Tampilkan Semua Wilayah
+                            </button>
+                            <button type="button" class="btn btn-secondary" onclick="showAllTimeKajian()" style="padding: 0.5rem 1rem; font-size: 0.85rem;">
+                                Tampilkan Termasuk yang Sudah Selesai
                             </button>
                         </div>
                     </div>
@@ -2006,13 +2150,25 @@
                     (k.lat && k.lng ? `https://www.google.com/maps/dir/?api=1&destination=${k.lat},${k.lng}` : 
                     `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((k.loc_name || '') + ' ' + (k.addr || ''))}`);
 
-                const timeStr = (k.time_start || '') + (k.time_end ? ` - ${k.time_end} WIB` : ' WIB - Selesai');
+                const timeStr = formatKajianTimeDisplay(k.time_start, k.time_end);
+
+                let timeStatusBadge = '';
+                if (k.timeInfo.status === 'ongoing') {
+                    timeStatusBadge = '<span class="time-status-tag ongoing">🟢 Sedang Berlangsung</span>';
+                } else if (k.timeInfo.status === 'upcoming') {
+                    timeStatusBadge = '<span class="time-status-tag upcoming">⏳ Akan Datang</span>';
+                } else if (k.timeInfo.status === 'passed') {
+                    timeStatusBadge = '<span class="time-status-tag passed">⚪ Selesai</span>';
+                }
 
                 return `
                     <div class="kajian-card">
                         <div>
                             <div class="kajian-card-top">
-                                ${distanceHtml}
+                                <div style="display: flex; gap: 0.35rem; align-items: center; flex-wrap: wrap;">
+                                    ${distanceHtml}
+                                    ${timeStatusBadge}
+                                </div>
                                 <span class="audience-tag">${audience}</span>
                             </div>
 
@@ -2101,6 +2257,18 @@
 
         function handleCityFilter(val) {
             currentKajianCity = val;
+            renderKajianList();
+        }
+
+        function handleTimeFilter(val) {
+            currentKajianTimeFilter = val;
+            renderKajianList();
+        }
+
+        function showAllTimeKajian() {
+            currentKajianTimeFilter = 'all';
+            const selectEl = document.getElementById('kajian-time-filter');
+            if (selectEl) selectEl.value = 'all';
             renderKajianList();
         }
 

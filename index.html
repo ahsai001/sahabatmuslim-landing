@@ -1961,7 +1961,8 @@
             const currentMinutes = now.getHours() * 60 + now.getMinutes();
 
             function parseToMinutes(t, isEnd, startM) {
-                if (!t) return isEnd ? (startM !== null ? startM + 105 : 1440) : null;
+                const DEFAULT_DURATION_MINS = 75; // Standar durasi kajian rata-rata 1 jam 15 menit jika tanpa jam selesai tertulis
+                if (!t) return isEnd ? (startM !== null ? startM + DEFAULT_DURATION_MINS : 1440) : null;
                 const str = t.trim().toLowerCase();
                 if (str.includes(':')) {
                     const parts = str.split(':');
@@ -1970,14 +1971,14 @@
                     if (!isNaN(h) && !isNaN(m)) return h * 60 + m;
                 }
                 if (str.includes('subuh')) return isEnd ? 360 : 300;     // 05:00 - 06:00
-                if (str.includes('dzuhur')) return isEnd ? 810 : 735;    // 12:15 - 13:30
-                if (str.includes('ashar')) return isEnd ? 1020 : 930;    // 15:30 - 17:00
-                if (str.includes('maghrib')) return isEnd ? 1140 : 1095; // 18:15 - 19:00
+                if (str.includes('dzuhur')) return isEnd ? 795 : 735;    // 12:15 - 13:15
+                if (str.includes('ashar')) return isEnd ? 1005 : 930;    // 15:30 - 16:45
+                if (str.includes('maghrib')) return isEnd ? 1155 : 1095; // 18:15 - 19:15
                 if (str.includes('isya')) return isEnd ? 1245 : 1170;    // 19:30 - 20:45
                 if (str.includes('syuruq')) return 360;                  // 06:00
                 if (str.includes('menjelang_maghrib')) return 1070;      // 17:50
-                if (str.includes('selesai')) return startM !== null ? startM + 105 : 1440;
-                return isEnd ? (startM !== null ? startM + 105 : 1440) : null;
+                if (str.includes('selesai')) return startM !== null ? startM + DEFAULT_DURATION_MINS : 1440;
+                return isEnd ? (startM !== null ? startM + DEFAULT_DURATION_MINS : 1440) : null;
             }
 
             const startM = parseToMinutes(item.time_start, false, null);

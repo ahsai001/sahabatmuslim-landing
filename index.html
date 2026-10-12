@@ -358,47 +358,7 @@
         .fi-pink { background: #fce7f3; color: #be185d; }
         .fi-orange { background: #ffedd5; color: #c2410c; }
 
-        /* Countdown */
-        .countdown {
-            padding: 4rem 2rem;
-            background: var(--green-800);
-            color: white;
-            text-align: center;
-        }
 
-        .countdown h2 {
-            font-size: 1.75rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .countdown p {
-            color: var(--green-200);
-            margin-bottom: 2rem;
-        }
-
-        .countdown-timer {
-            display: flex;
-            gap: 1.5rem;
-            justify-content: center;
-            margin-bottom: 2rem;
-        }
-
-        .countdown-item {
-            text-align: center;
-        }
-
-        .countdown-number {
-            font-size: 3rem;
-            font-weight: 700;
-            color: var(--gold-400);
-            line-height: 1;
-        }
-
-        .countdown-label {
-            font-size: 0.85rem;
-            color: var(--green-200);
-            margin-top: 0.25rem;
-        }
 
         /* Email Signup */
         .signup {
@@ -1169,8 +1129,7 @@
         @media (max-width: 768px) {
             .hero h1 { font-size: 2rem; }
             .nav-links { display: none; }
-            .countdown-timer { gap: 1rem; }
-            .countdown-number { font-size: 2rem; }
+
             .prayer-topbar { flex-direction: column; align-items: stretch; }
             .prayer-controls { flex-direction: column; align-items: stretch; }
             .prayer-select { max-width: 100%; }
@@ -1199,7 +1158,6 @@
                 <li><a href="#jadwal-sholat">Jadwal Sholat</a></li>
                 <li><a href="#jadwal-kajian">Jadwal Kajian</a></li>
                 <li><a href="#fitur">Fitur</a></li>
-                <li><a href="#launch">Launch</a></li>
                 <li><a href="#daftar">Daftar</a></li>
             </ul>
         </div>
@@ -1552,30 +1510,7 @@
         </div>
     </section>
 
-    <!-- Countdown -->
-    <section class="countdown" id="launch">
-        <h2>Insya Allah Launching</h2>
-        <p>Doakan agar segera hadir dan membawa keberkahan</p>
-        <div class="countdown-timer">
-            <div class="countdown-item">
-                <div class="countdown-number" id="days">--</div>
-                <div class="countdown-label">Hari</div>
-            </div>
-            <div class="countdown-item">
-                <div class="countdown-number" id="hours">--</div>
-                <div class="countdown-label">Jam</div>
-            </div>
-            <div class="countdown-item">
-                <div class="countdown-number" id="minutes">--</div>
-                <div class="countdown-label">Menit</div>
-            </div>
-            <div class="countdown-item">
-                <div class="countdown-number" id="seconds">--</div>
-                <div class="countdown-label">Detik</div>
-            </div>
-        </div>
-        <a href="#daftar" class="btn btn-primary" style="background: var(--gold-500); color: var(--gray-900);">Bantu Doa & Dukung</a>
-    </section>
+
 
     <!-- Email Signup -->
     <section class="signup" id="daftar">
@@ -1607,31 +1542,6 @@
     </footer>
 
     <script>
-        // Countdown timer (target: 1 Januari 2027)
-        function updateCountdown() {
-            const target = new Date('2027-01-01T00:00:00+07:00');
-            const now = new Date();
-            const diff = target - now;
-
-            if (diff <= 0) {
-                document.getElementById('days').textContent = '0';
-                document.getElementById('hours').textContent = '0';
-                document.getElementById('minutes').textContent = '0';
-                document.getElementById('seconds').textContent = '0';
-                return;
-            }
-
-            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-            document.getElementById('days').textContent = days;
-            document.getElementById('hours').textContent = hours;
-            document.getElementById('minutes').textContent = minutes;
-            document.getElementById('seconds').textContent = seconds;
-        }
-
         // Dev Mode check: tambahkan ?isdev=1 di URL untuk melihat detail fitur yang belum tersedia tanpa blur
         function checkDevMode() {
             try {
@@ -1642,9 +1552,6 @@
             } catch (e) {}
         }
         checkDevMode();
-
-        updateCountdown();
-        setInterval(updateCountdown, 1000);
 
         // Signup handler - Kirim & Simpan ke PostgreSQL
         async function handleSignup(e) {

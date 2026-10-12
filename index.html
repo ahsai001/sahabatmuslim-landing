@@ -2007,7 +2007,10 @@
 
                 if (!res.ok) throw new Error('Status API: ' + res.status);
                 const data = await res.json();
-                allKajianData = Array.isArray(data) ? data : [];
+                allKajianData = (Array.isArray(data) ? data : []).map((item, idx) => ({
+                    ...item,
+                    id: item.id || `kajian_${idx}_${Date.now()}`
+                }));
                 renderKajianList();
             } catch (err) {
                 console.error('Gagal mengambil jadwal kajian:', err);
@@ -2197,7 +2200,7 @@
                                 <a href="${gmapsLink}" target="_blank" rel="noopener noreferrer" class="btn-maps">
                                     <span>🗺️</span> Rute Google Maps
                                 </a>
-                                <button type="button" class="btn-share" onclick="shareKajian('${encodeURIComponent(k.topic || 'Kajian')}', '${encodeURIComponent(k.speaker || '')}', '${encodeURIComponent(k.loc_name || '')}', '${encodeURIComponent(gmapsLink)}')" title="Bagikan Info">
+                                <button type="button" class="btn-share" onclick="shareKajian('${k.id}')" title="Bagikan Info">
                                     📲 Bagikan
                                 </button>
                             </div>
@@ -2207,19 +2210,107 @@
             }).join('');
         }
 
-        function shareKajian(topic, speaker, loc, mapsUrl) {
-            const text = `📢 *Info Kajian Sunnah Terdekat*\n\n🎙️ *Pemateri:* ${decodeURIComponent(speaker)}\n📚 *Tema:* ${decodeURIComponent(topic)}\n🕌 *Lokasi:* ${decodeURIComponent(loc)}\n\n🗺️ *Petunjuk Arah:* ${decodeURIComponent(mapsUrl)}\n\n_Ditemukan melalui Sahabat Muslim (https://sahabatmuslim.ahsailabs.my.id)_`;
+        function showKajianToast(message) {
+            let toast = document.getElementById('kajian-toast');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'kajian-toast';
+                toast.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#15803d;color:#ffffff;padding:12px 24px;border-radius:50px;font-size:0.9rem;font-weight:600;box-shadow:0 10px 30px rgba(0,0,0,0.25);z-index:999999;display:flex;align-items:center;gap:10px;transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);opacity:0;pointer-events:none;';
+                document.body.appendChild(toast);
+            }
+            toast.innerHTML = message;
+            toast.style.opacity = '1';
+            toast.style.transform = 'translateX(-50%) translateY(0)';
+            clearTimeout(toast._timer);
+            toast._timer = setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(-50%) translateY(10px)';
+            }, 3500);
+        }
+
+        function copyKajianToClipboard(text) {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showKajianToast('📋 Info kajian disalin ke clipboard! Silakan tempel di WhatsApp / medsos.');
+                }).catch(() => {
+                    fallbackClipboardExec(text);
+                });
+            } else {
+                fallbackClipboardExec(text);
+            }
+        }
+
+        function fallbackClipboardExec(text) {
+            try {
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                textArea.style.position = 'fixed';
+                textArea.style.left = '-9999px';
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showKajianToast('📋 Info kajian disalin ke clipboard! Silakan tempel di WhatsApp / medsos.');
+            } catch (e) {
+                window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
+            }
+        }
+
+        function shareKajian(id) {
+            const k = allKajianData.find(item => String(item.id) === String(id));
+            if (!k) return;
+
+            const gmapsLink = k.gmaps_url || 
+                (k.lat && k.lng ? `https://www.google.com/maps/dir/?api=1&destination=${k.lat},${k.lng}` : 
+                `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((k.loc_name || '') + ' ' + (k.addr || ''))}`);
+
+            const timeStr = formatKajianTimeDisplay(k.time_start, k.time_end);
+            const dateStr = k.day ? `${k.day.toUpperCase()} (${k.date || ''})` : (k.date || '');
+
+            const lines = [
+                '📢 *INFO KAJIAN SUNNAH*',
+                '',
+                `🎙️ *Pemateri:* ${k.speaker || 'Ustadz Pemateri'}`,
+                `📚 *Tema:* ${k.topic || 'Kajian Islam Ilmiah'}`
+            ];
+
+            if (k.book) {
+                lines.push(`📖 *Kitab:* ${k.book}`);
+            }
+
+            lines.push(`⏰ *Waktu:* ${timeStr} • ${dateStr}`);
+            if (k.loc_name) {
+                lines.push(`🕌 *Lokasi:* ${k.loc_name}`);
+            }
+            if (k.addr) {
+                lines.push(`📍 *Alamat:* ${k.addr}`);
+            }
+            if (k.notes) {
+                lines.push(`📝 *Keterangan:* ${k.notes}`);
+            }
+
+            lines.push('');
+            lines.push('🗺️ *Petunjuk Arah (Google Maps):*');
+            lines.push(gmapsLink);
+            lines.push('');
+            lines.push('_Ditemukan melalui Sahabat Muslim:_');
+            lines.push('https://sahabatmuslim.ahsailabs.my.id/#jadwal-kajian');
+
+            const shareText = lines.join('\n');
+            const shareTitle = `${k.topic || 'Kajian Sunnah'} - ${k.speaker || ''}`;
+
             if (navigator.share) {
                 navigator.share({
-                    title: decodeURIComponent(topic),
-                    text: text
-                }).catch(() => {});
-            } else {
-                navigator.clipboard.writeText(text).then(() => {
-                    alert('Informasi kajian disalin ke clipboard! Silakan paste di WhatsApp / Telegram.');
-                }).catch(() => {
-                    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
+                    title: shareTitle,
+                    text: shareText
+                }).catch(err => {
+                    if (!err || err.name !== 'AbortError') {
+                        copyKajianToClipboard(shareText);
+                    }
                 });
+            } else {
+                copyKajianToClipboard(shareText);
             }
         }
 

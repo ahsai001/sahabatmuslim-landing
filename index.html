@@ -1287,8 +1287,8 @@
                     <span style="font-size: 0.82rem; font-weight: 600; color: var(--gray-600);">Radius Jarak:</span>
                     <div class="radius-pill-group">
                         <button type="button" class="radius-pill active" onclick="setKajianRadius(5, this)">≤ 5 km</button>
+                        <button type="button" class="radius-pill" onclick="setKajianRadius(10, this)">≤ 10 km</button>
                         <button type="button" class="radius-pill" onclick="setKajianRadius(15, this)">≤ 15 km</button>
-                        <button type="button" class="radius-pill" onclick="setKajianRadius(30, this)">≤ 30 km</button>
                         <button type="button" class="radius-pill" onclick="setKajianRadius(9999, this)">Semua</button>
                     </div>
                 </div>
@@ -1901,6 +1901,8 @@
                 return `<span class="distance-tag near">⚡ ${meters} m</span>`;
             } else if (distKm <= 5) {
                 return `<span class="distance-tag near">📍 ${distKm.toFixed(1)} km</span>`;
+            } else if (distKm <= 10) {
+                return `<span class="distance-tag mid">🚗 ${distKm.toFixed(1)} km</span>`;
             } else if (distKm <= 15) {
                 return `<span class="distance-tag mid">🚗 ${distKm.toFixed(1)} km</span>`;
             } else {
@@ -2156,14 +2158,14 @@
                         <h3>Tidak Ada Kajian dalam Radius ≤ ${currentKajianRadius} km</h3>
                         <p>${isRadiusFilter ? `Belum ada kajian aktif/akan datang dalam radius ≤ ${currentKajianRadius} km dari posisi Anda.${nearestHint}` : 'Tidak ada jadwal kajian aktif atau akan datang yang cocok dengan filter saat ini.'}</p>
                         <div style="display: flex; gap: 0.5rem; justify-content: center; margin-top: 1rem; flex-wrap: wrap;">
+                            ${isRadiusFilter && currentKajianRadius < 10 ? `
+                            <button type="button" class="btn btn-primary" onclick="setKajianRadius(10, null)" style="padding: 0.5rem 1rem; font-size: 0.85rem;">
+                                Perluas ke 10 km
+                            </button>
+                            ` : ''}
                             ${isRadiusFilter && currentKajianRadius < 15 ? `
                             <button type="button" class="btn btn-primary" onclick="setKajianRadius(15, null)" style="padding: 0.5rem 1rem; font-size: 0.85rem;">
                                 Perluas ke 15 km
-                            </button>
-                            ` : ''}
-                            ${isRadiusFilter ? `
-                            <button type="button" class="btn btn-secondary" onclick="setKajianRadius(30, null)" style="padding: 0.5rem 1rem; font-size: 0.85rem;">
-                                Perluas ke 30 km
                             </button>
                             ` : ''}
                             <button type="button" class="btn btn-secondary" onclick="setKajianRadius(9999, null)" style="padding: 0.5rem 1rem; font-size: 0.85rem;">
@@ -2269,8 +2271,8 @@
                 btnEl.classList.add('active');
             } else {
                 if (radiusKm === 5 && pills[0]) pills[0].classList.add('active');
-                else if (radiusKm === 15 && pills[1]) pills[1].classList.add('active');
-                else if (radiusKm === 30 && pills[2]) pills[2].classList.add('active');
+                else if (radiusKm === 10 && pills[1]) pills[1].classList.add('active');
+                else if (radiusKm === 15 && pills[2]) pills[2].classList.add('active');
                 else if (pills[3]) pills[3].classList.add('active');
             }
 

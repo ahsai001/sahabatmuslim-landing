@@ -433,10 +433,11 @@
 
         /* Footer */
         footer {
-            padding: 3rem 2rem;
-            background: var(--gray-900);
-            color: var(--gray-400);
+            padding: 3.5rem 2rem 2.5rem;
+            background: #09131f;
+            color: #e2e8f0;
             text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         .footer-inner {
@@ -453,22 +454,42 @@
         }
 
         .footer-links a {
-            color: var(--gray-400);
+            color: #94a3b8;
             text-decoration: none;
-            font-size: 0.9rem;
+            font-size: 0.92rem;
+            font-weight: 500;
+            transition: color 0.2s;
         }
 
         .footer-links a:hover {
-            color: white;
+            color: #ffffff;
         }
 
         .footer-divider {
-            border-top: 1px solid var(--gray-700);
-            margin: 1.5rem 0;
+            border-top: 1px solid #1e293b;
+            margin: 1.75rem auto;
+            max-width: 600px;
         }
 
         .footer-copy {
-            font-size: 0.85rem;
+            font-size: 0.95rem;
+            color: #f8fafc;
+            line-height: 1.7;
+            font-weight: 500;
+        }
+
+        .footer-copy a {
+            color: #f59e0b;
+            font-weight: 700;
+            text-decoration: underline;
+            text-underline-offset: 4px;
+            text-decoration-thickness: 1.5px;
+            transition: color 0.2s, text-decoration-color 0.2s;
+        }
+
+        .footer-copy a:hover {
+            color: #fbbf24;
+            text-decoration-color: #fbbf24;
         }
 
         /* Jadwal Sholat Section */
@@ -1563,10 +1584,10 @@
             <p>Jadikan yang pertama tahu saat Sahabat Muslim resmi diluncurkan</p>
         </div>
         <form class="signup-form" onsubmit="handleSignup(event)">
-            <input type="email" placeholder="Masukkan email kamu" required id="email-input">
-            <button type="submit" class="btn btn-primary">Daftar</button>
+            <input type="email" placeholder="Masukkan alamat email Anda" required id="email-input" autocomplete="email">
+            <button type="submit" class="btn btn-primary" id="btn-signup">Daftar Early Access</button>
         </form>
-        <p id="signup-msg" style="margin-top: 1rem; color: var(--green-700); display: none;"></p>
+        <p id="signup-msg" style="margin-top: 1.25rem; font-size: 0.95rem; font-weight: 600; line-height: 1.5; display: none;"></p>
     </section>
 
     <!-- Footer -->
@@ -1625,14 +1646,61 @@
         updateCountdown();
         setInterval(updateCountdown, 1000);
 
-        // Signup handler (placeholder)
-        function handleSignup(e) {
+        // Signup handler - Kirim & Simpan ke PostgreSQL
+        async function handleSignup(e) {
             e.preventDefault();
-            const email = document.getElementById('email-input').value;
+            const emailInput = document.getElementById('email-input');
+            const submitBtn = document.getElementById('btn-signup') || e.target.querySelector('button[type="submit"]');
             const msg = document.getElementById('signup-msg');
-            msg.textContent = '✅ Jazakallahu khairan! ' + email + ' sudah terdaftar.';
-            msg.style.display = 'block';
-            document.getElementById('email-input').value = '';
+            const email = (emailInput?.value || '').trim();
+
+            if (!email) return;
+
+            const originalBtnText = submitBtn ? submitBtn.innerText : 'Daftar Early Access';
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerText = 'Menyimpan...';
+            }
+
+            try {
+                const res = await fetch('/api/subscribe', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        source: 'landing_page'
+                    })
+                });
+
+                const data = await res.json().catch(() => ({}));
+
+                if (res.ok && data.success) {
+                    msg.innerHTML = `✅ ${data.message || 'Jazakallahu khairan! Email Anda berhasil didaftarkan.'}`;
+                    msg.style.color = 'var(--green-700)';
+                    msg.style.display = 'block';
+                    if (emailInput) emailInput.value = '';
+                    if (typeof showKajianToast === 'function') {
+                        showKajianToast('✅ Pendaftaran berhasil! Jazakallahu khairan.');
+                    }
+                } else {
+                    const errorText = data.error || 'Terjadi kendala saat mendaftarkan email. Silakan coba lagi.';
+                    msg.innerHTML = `⚠️ ${errorText}`;
+                    msg.style.color = '#dc2626';
+                    msg.style.display = 'block';
+                }
+            } catch (err) {
+                console.error('Signup error:', err);
+                msg.innerHTML = '⚠️ Gagal terhubung ke server. Silakan periksa koneksi internet Anda atau coba lagi nanti.';
+                msg.style.color = '#dc2626';
+                msg.style.display = 'block';
+            } finally {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = originalBtnText;
+                }
+            }
         }
 
         function notifyFeaturePending(featureName) {

@@ -83,14 +83,15 @@
 
         if (currentSearch) {
             const q = currentSearch.toLowerCase();
-            list = list.filter(it =>
-                (it.nama || '').toLowerCase().includes(q) ||
-                (it.tr || '').toLowerCase().includes(q) ||
-                (it.idn || '').toLowerCase().includes(q) ||
-                (it.grup || '').toLowerCase().includes(q) ||
-                (it.tag || '').toLowerCase().includes(q) ||
-                (it.tentang || '').toLowerCase().includes(q)
-            );
+            list = list.filter(it => {
+                const tagStr = Array.isArray(it.tag) ? it.tag.join(' ') : (it.tag || '');
+                return (it.nama || '').toLowerCase().includes(q) ||
+                    (it.tr || '').toLowerCase().includes(q) ||
+                    (it.idn || '').toLowerCase().includes(q) ||
+                    (it.grup || '').toLowerCase().includes(q) ||
+                    tagStr.toLowerCase().includes(q) ||
+                    (it.tentang || '').toLowerCase().includes(q);
+            });
         }
 
         return list;
@@ -125,6 +126,7 @@
         items.forEach((item, idx) => {
             const isFav = favorites.has(item.id);
             const formattedArabic = (item.ar || '').replace(/\n/g, '<br>');
+            const tagStr = Array.isArray(item.tag) ? item.tag.join(', ') : (item.tag || '');
 
             html += `
             <div class="dzikir-card" id="doa-${item.id}">
@@ -167,7 +169,7 @@
 
                 <div class="dzikir-card-actions">
                     <span style="font-size: 0.8rem; color: #64748b;">
-                        ${item.tag ? '🏷️ ' + escapeHtml(item.tag) : ''}
+                        ${tagStr ? '🏷️ ' + escapeHtml(tagStr) : ''}
                     </span>
 
                     <div class="dzikir-secondary-actions">
@@ -187,7 +189,11 @@
     }
 
     function escapeHtml(str) {
-        if (!str) return '';
+        if (!str && str !== 0) return '';
+        if (typeof str !== 'string') {
+            if (Array.isArray(str)) str = str.join(', ');
+            else str = String(str);
+        }
         return str
             .replace(/&/g, '&amp;')
             .replace(/</g, '&lt;')

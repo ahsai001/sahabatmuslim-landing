@@ -1276,9 +1276,9 @@
             <div class="kajian-topbar">
                 <div class="kajian-loc-status">
                     <span id="kajian-loc-badge" class="loc-badge">
-                        <span>📍</span> <span id="kajian-loc-text">Lokasi: Semua Wilayah</span>
+                        <span>📍</span> <span id="kajian-loc-text">Lokasi: Sekitar Anda (≤ 5 km)</span>
                     </span>
-                    <button type="button" class="btn-gps" id="btn-detect-kajian-gps" onclick="detectKajianGPS()" style="padding: 0.35rem 0.75rem; font-size: 0.82rem;">
+                    <button type="button" class="btn-gps" id="btn-detect-kajian-gps" onclick="detectKajianGPS(true)" style="padding: 0.35rem 0.75rem; font-size: 0.82rem;">
                         <span>🎯</span> Update GPS Saya
                     </button>
                 </div>
@@ -1286,10 +1286,10 @@
                 <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
                     <span style="font-size: 0.82rem; font-weight: 600; color: var(--gray-600);">Radius Jarak:</span>
                     <div class="radius-pill-group">
-                        <button type="button" class="radius-pill" onclick="setKajianRadius(5, this)">≤ 5 km</button>
+                        <button type="button" class="radius-pill active" onclick="setKajianRadius(5, this)">≤ 5 km</button>
                         <button type="button" class="radius-pill" onclick="setKajianRadius(15, this)">≤ 15 km</button>
                         <button type="button" class="radius-pill" onclick="setKajianRadius(30, this)">≤ 30 km</button>
-                        <button type="button" class="radius-pill active" onclick="setKajianRadius(9999, this)">Semua</button>
+                        <button type="button" class="radius-pill" onclick="setKajianRadius(9999, this)">Semua</button>
                     </div>
                 </div>
             </div>
@@ -1875,7 +1875,7 @@
          * ------------------------------------------------------------- */
         let allKajianData = [];
         let userGPS = null; // { lat, lng }
-        let currentKajianRadius = 9999; // default: tampilkan semua sampai GPS aktif / filter dipilih
+        let currentKajianRadius = 5; // default: <= 5 km
         let currentKajianDate = 'today';
         let currentKajianCity = 'all';
         let currentKajianTimeFilter = 'active_upcoming'; // 'active_upcoming' (sedang/belum berlangsung) atau 'all'
@@ -2083,9 +2083,30 @@
                 });
             }
 
-            // Filter by Radius
+            // Filter by Radius (jika GPS sudah aktif)
             if (userGPS && currentKajianRadius < 9999) {
                 processed = processed.filter(item => item.distanceKm !== null && item.distanceKm <= currentKajianRadius);
+            }
+
+            // Jika GPS belum aktif dan user memilih radius tertentu (default <= 5 km) tanpa filter kota khusus
+            if (!userGPS && currentKajianRadius < 9999 && currentKajianCity === 'all' && !searchVal) {
+                grid.innerHTML = `
+                    <div class="kajian-empty">
+                        <div class="kajian-empty-icon">📍</div>
+                        <h3>Mencari Kajian dalam Radius ≤ ${currentKajianRadius} km</h3>
+                        <p>Akses lokasi (GPS) diperlukan untuk menampilkan kajian terdekat dalam radius ${currentKajianRadius} km dari posisi Anda.</p>
+                        <div style="display: flex; gap: 0.5rem; justify-content: center; margin-top: 1rem; flex-wrap: wrap;">
+                            <button type="button" class="btn btn-primary" onclick="detectKajianGPS(true)" style="padding: 0.5rem 1.2rem; font-size: 0.85rem;">
+                                🎯 Aktifkan GPS Sekarang
+                            </button>
+                            <button type="button" class="btn btn-secondary" onclick="setKajianRadius(9999, null)" style="padding: 0.5rem 1.2rem; font-size: 0.85rem;">
+                                Tampilkan Semua Wilayah
+                            </button>
+                        </div>
+                    </div>
+                `;
+                if (countInfo) countInfo.textContent = `Menunggu izin lokasi GPS (radius ≤ ${currentKajianRadius} km)`;
+                return;
             }
 
             // Filter by City fallback (if selected and not 'all')
@@ -2118,14 +2139,30 @@
 
             if (processed.length === 0) {
                 const isRadiusFilter = userGPS && currentKajianRadius < 9999;
+                let nearestHint = '';
+                if (isRadiusFilter && allKajianData.length > 0) {
+                    const withDist = allKajianData
+                        .map(item => (item.lat && item.lng && userGPS) ? calculateDistanceKm(userGPS.lat, userGPS.lng, parseFloat(item.lat), parseFloat(item.lng)) : null)
+                        .filter(d => d !== null && !isNaN(d))
+                        .sort((a, b) => a - b);
+                    if (withDist.length > 0) {
+                        nearestHint = ` Kajian terdekat berjarak sekitar ${withDist[0].toFixed(1)} km dari Anda.`;
+                    }
+                }
+
                 grid.innerHTML = `
                     <div class="kajian-empty">
                         <div class="kajian-empty-icon">🔍</div>
-                        <h3>Tidak Ada Kajian Sesuai Kriteria</h3>
-                        <p>${isRadiusFilter ? `Tidak ada kajian sedang/akan datang dalam radius ≤ ${currentKajianRadius} km dari posisi Anda.` : 'Tidak ada jadwal kajian aktif atau akan datang yang cocok dengan filter saat ini.'}</p>
+                        <h3>Tidak Ada Kajian dalam Radius ≤ ${currentKajianRadius} km</h3>
+                        <p>${isRadiusFilter ? `Belum ada kajian aktif/akan datang dalam radius ≤ ${currentKajianRadius} km dari posisi Anda.${nearestHint}` : 'Tidak ada jadwal kajian aktif atau akan datang yang cocok dengan filter saat ini.'}</p>
                         <div style="display: flex; gap: 0.5rem; justify-content: center; margin-top: 1rem; flex-wrap: wrap;">
+                            ${isRadiusFilter && currentKajianRadius < 15 ? `
+                            <button type="button" class="btn btn-primary" onclick="setKajianRadius(15, null)" style="padding: 0.5rem 1rem; font-size: 0.85rem;">
+                                Perluas ke 15 km
+                            </button>
+                            ` : ''}
                             ${isRadiusFilter ? `
-                            <button type="button" class="btn btn-primary" onclick="setKajianRadius(30, null)" style="padding: 0.5rem 1rem; font-size: 0.85rem;">
+                            <button type="button" class="btn btn-secondary" onclick="setKajianRadius(30, null)" style="padding: 0.5rem 1rem; font-size: 0.85rem;">
                                 Perluas ke 30 km
                             </button>
                             ` : ''}
@@ -2237,9 +2274,14 @@
                 else if (pills[3]) pills[3].classList.add('active');
             }
 
+            const locText = document.getElementById('kajian-loc-text');
+            if (locText && userGPS) {
+                locText.innerHTML = `GPS Terkunci (≤ ${radiusKm < 9999 ? radiusKm + ' km' : 'Semua'})`;
+            }
+
             // Jika user memilih filter jarak tertentu tapi GPS belum aktif, tawarkan aktivasi GPS
             if (radiusKm < 9999 && !userGPS) {
-                detectKajianGPS();
+                detectKajianGPS(true);
                 return;
             }
 
@@ -2272,13 +2314,13 @@
             renderKajianList();
         }
 
-        function detectKajianGPS() {
+        function detectKajianGPS(interactive = true) {
             const locText = document.getElementById('kajian-loc-text');
             const locBadge = document.getElementById('kajian-loc-badge');
             const gpsBtn = document.getElementById('btn-detect-kajian-gps');
 
             if (!navigator.geolocation) {
-                alert('Browser Anda tidak mendukung deteksi GPS.');
+                if (interactive) alert('Browser Anda tidak mendukung deteksi GPS.');
                 return;
             }
 
@@ -2294,7 +2336,7 @@
                         lng: pos.coords.longitude
                     };
                     if (locText) {
-                        locText.innerHTML = `GPS Terkunci (Radius Aktif)`;
+                        locText.innerHTML = `GPS Terkunci (≤ ${currentKajianRadius < 9999 ? currentKajianRadius + ' km' : 'Semua'})`;
                     }
                     if (locBadge) {
                         locBadge.classList.add('active');
@@ -2302,13 +2344,6 @@
                     if (gpsBtn) {
                         gpsBtn.disabled = false;
                         gpsBtn.innerHTML = '<span>✅</span> Lokasi Aktif';
-                    }
-                    // Jika saat ini mode radius masih 'Semua', ubah ke <= 15 km agar langsung menampilkan kajian terdekat
-                    if (currentKajianRadius >= 9999) {
-                        currentKajianRadius = 15;
-                        const pills = document.querySelectorAll('.radius-pill');
-                        pills.forEach(p => p.classList.remove('active'));
-                        if (pills[1]) pills[1].classList.add('active');
                     }
                     // Render ulang dengan kalkulasi jarak dari koordinat user
                     renderKajianList();
@@ -2319,11 +2354,9 @@
                         gpsBtn.disabled = false;
                         gpsBtn.innerHTML = '<span>🎯</span> Update GPS Saya';
                     }
-                    alert('Izin lokasi tidak diberikan atau GPS belum aktif. Menampilkan seluruh wilayah.');
-                    currentKajianRadius = 9999;
-                    const pills = document.querySelectorAll('.radius-pill');
-                    pills.forEach(p => p.classList.remove('active'));
-                    if (pills[3]) pills[3].classList.add('active');
+                    if (interactive) {
+                        alert('Izin lokasi tidak diberikan atau GPS belum aktif. Silakan pilih kota manual atau klik tombol Semua Wilayah.');
+                    }
                     renderKajianList();
                 },
                 { timeout: 10000, enableHighAccuracy: false }
@@ -2343,7 +2376,7 @@
                         };
                         const locText = document.getElementById('kajian-loc-text');
                         const locBadge = document.getElementById('kajian-loc-badge');
-                        if (locText) locText.innerHTML = `Lokasi Terdeteksi (GPS)`;
+                        if (locText) locText.innerHTML = `Lokasi Terdeteksi (≤ ${currentKajianRadius < 9999 ? currentKajianRadius + ' km' : 'Semua'})`;
                         if (locBadge) locBadge.classList.add('active');
                     }
                 }
@@ -2357,6 +2390,10 @@
             isAppInitDone = true;
             initPrayerPreferences();
             tryInheritGPS();
+            // Otomatis minta GPS agar filter default <= 5 km langsung bekerja
+            if (!userGPS && navigator.geolocation) {
+                detectKajianGPS(false);
+            }
             fetchKajianSchedules('today');
         }
 

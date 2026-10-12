@@ -230,17 +230,28 @@
         }
 
         .feature-card {
-            padding: 2rem;
-            border-radius: 12px;
+            padding: 1.75rem;
+            border-radius: 14px;
             border: 1px solid var(--gray-200);
             background: var(--white);
             transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
         .feature-card:hover {
             border-color: var(--green-200);
             box-shadow: 0 4px 20px rgba(5, 150, 105, 0.08);
             transform: translateY(-2px);
+        }
+
+        .feature-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+            gap: 0.5rem;
         }
 
         .feature-icon {
@@ -251,7 +262,30 @@
             align-items: center;
             justify-content: center;
             font-size: 1.5rem;
-            margin-bottom: 1rem;
+            flex-shrink: 0;
+        }
+
+        .feature-status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.25rem 0.65rem;
+            border-radius: 999px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .feature-status-badge.status-live {
+            background: var(--green-100);
+            color: var(--green-800);
+            border: 1px solid var(--green-200);
+        }
+
+        .feature-status-badge.status-pending {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fde68a;
         }
 
         .feature-card h3 {
@@ -263,8 +297,75 @@
 
         .feature-card p {
             color: var(--gray-600);
-            font-size: 0.9rem;
+            font-size: 0.88rem;
             line-height: 1.6;
+        }
+
+        .feature-status-note {
+            background: #f8fafc;
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            padding: 0.7rem 0.85rem;
+            font-size: 0.78rem;
+            color: var(--gray-600);
+            margin-top: 1.25rem;
+            line-height: 1.5;
+            display: flex;
+            gap: 0.5rem;
+            align-items: flex-start;
+        }
+
+        .feature-status-note.note-live {
+            background: var(--green-50);
+            border-color: var(--green-200);
+            color: var(--green-900);
+        }
+
+        .feature-status-note .note-icon {
+            font-size: 0.95rem;
+            flex-shrink: 0;
+            line-height: 1.4;
+        }
+
+        .feature-card-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 0.55rem 0.85rem;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            text-decoration: none;
+            margin-top: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+            border: none;
+        }
+
+        .feature-card-btn.btn-live {
+            background: var(--green-50);
+            color: var(--green-800);
+            border: 1px solid var(--green-200);
+        }
+
+        .feature-card-btn.btn-live:hover {
+            background: var(--green-700);
+            color: #ffffff;
+            border-color: var(--green-700);
+        }
+
+        .feature-card-btn.btn-pending {
+            background: #ffffff;
+            color: var(--gray-700);
+            border: 1.5px solid var(--gray-200);
+        }
+
+        .feature-card-btn.btn-pending:hover {
+            background: #f8fafc;
+            border-color: var(--gray-300);
+            color: var(--gray-900);
         }
 
         .fi-green { background: var(--green-100); color: var(--green-700); }
@@ -1327,45 +1428,172 @@
             <p>Semua yang dibutuhkan kaum muslimin sehari-hari, tersedia di satu tempat</p>
         </div>
         <div class="features-grid">
+            <!-- 1. Ibadah & Spiritual (Sebagian sudah aktif di web) -->
             <div class="feature-card">
-                <div class="feature-icon fi-green">🕌</div>
-                <h3>Ibadah & Spiritual</h3>
-                <p>Jadwal sholat akurat, Quran digital dengan tafsir, doa harian, dzikir & wirid, kalender Hijriah, dan arah kiblat.</p>
+                <div>
+                    <div class="feature-card-header">
+                        <div class="feature-icon fi-green">🕌</div>
+                        <span class="feature-status-badge status-live">🟢 Jadwal Sholat Aktif</span>
+                    </div>
+                    <h3>Ibadah & Spiritual</h3>
+                    <p>Jadwal sholat presisi, kalender Hijriah, Quran digital berserta tafsir, doa harian, dzikir pagi petang, dan penunjuk arah kiblat.</p>
+                </div>
+                <div>
+                    <div class="feature-status-note note-live">
+                        <span class="note-icon">✨</span>
+                        <span>Jadwal Sholat & Kalender Hijriah sudah aktif di web ini. Fitur Al-Qur'an dan doa dzikir insya Allah dalam tahap pengembangan.</span>
+                    </div>
+                    <a href="#jadwal-sholat" class="feature-card-btn btn-live">
+                        Buka Jadwal Sholat ↗
+                    </a>
+                </div>
             </div>
+
+            <!-- 2. Pendidikan & Kajian (Jadwal Kajian sudah aktif di web) -->
             <div class="feature-card">
-                <div class="feature-icon fi-gold">📚</div>
-                <h3>Pendidikan & Kajian</h3>
-                <p>Kelas online bahasa Arab & Al-Quran, video kajian ustadz, artikel Islam bermanfaat, dan quiz harian.</p>
+                <div>
+                    <div class="feature-card-header">
+                        <div class="feature-icon fi-gold">📚</div>
+                        <span class="feature-status-badge status-live">🟢 Jadwal Kajian Aktif</span>
+                    </div>
+                    <h3>Pendidikan & Kajian</h3>
+                    <p>Jadwal kajian sunnah terdekat berbasis GPS, kelas online bahasa Arab & Al-Quran, rekaman video asatidzah, dan kuis wawasan Islam.</p>
+                </div>
+                <div>
+                    <div class="feature-status-note note-live">
+                        <span class="note-icon">✨</span>
+                        <span>Jadwal Kajian Sunnah Terdekat sudah aktif di web ini. Kelas online dan kuis ilmu syar'i sedang kami persiapkan.</span>
+                    </div>
+                    <a href="#jadwal-kajian" class="feature-card-btn btn-live">
+                        Lihat Jadwal Kajian ↗
+                    </a>
+                </div>
             </div>
+
+            <!-- 3. Marketplace Halal (Belum Tersedia) -->
             <div class="feature-card">
-                <div class="feature-icon fi-blue">🛒</div>
-                <h3>Marketplace Halal</h3>
-                <p>Jual beli produk halal: baju muslim, herbal, makanan, aksesoris. Rekening bersama & rating penjual.</p>
+                <div>
+                    <div class="feature-card-header">
+                        <div class="feature-icon fi-blue">🛒</div>
+                        <span class="feature-status-badge status-pending">⏳ Insya Allah Segera Hadir</span>
+                    </div>
+                    <h3>Marketplace Halal</h3>
+                    <p>Ekosistem jual beli produk halal terkurasi: busana muslim, herbal sunnah, kuliner halal, dan buku-buku Islam terpercaya.</p>
+                </div>
+                <div>
+                    <div class="feature-status-note">
+                        <span class="note-icon">🌱</span>
+                        <span>Fitur ini belum tersedia untuk publik. Saat ini sedang dalam tahap kurasi mitra produk halal dan penyiapan sistem transaksi aman.</span>
+                    </div>
+                    <button type="button" class="feature-card-btn btn-pending" onclick="notifyFeaturePending('Marketplace Halal')">
+                        Kabar Rilis via Email 🔔
+                    </button>
+                </div>
             </div>
+
+            <!-- 4. Sosial & Komunitas (Belum Tersedia) -->
             <div class="feature-card">
-                <div class="feature-icon fi-purple">💬</div>
-                <h3>Sosial & Komunitas</h3>
-                <p>Forum diskusi, grup komunitas per wilayah/kajian, chat private & grup, dan donasi online.</p>
+                <div>
+                    <div class="feature-card-header">
+                        <div class="feature-icon fi-purple">💬</div>
+                        <span class="feature-status-badge status-pending">⏳ Insya Allah Segera Hadir</span>
+                    </div>
+                    <h3>Sosial & Komunitas</h3>
+                    <p>Wadah ukhuwah Islamiyah, forum diskusi ilmiah, grup kajian per wilayah domisili, dan penyaluran infaq/donasi kemanusiaan terpercaya.</p>
+                </div>
+                <div>
+                    <div class="feature-status-note">
+                        <span class="note-icon">🌱</span>
+                        <span>Fitur ini belum tersedia. Sedang kami persiapkan dengan tata kelola adab Islami agar menjadi ruang silaturahmi yang aman & berkah.</span>
+                    </div>
+                    <button type="button" class="feature-card-btn btn-pending" onclick="notifyFeaturePending('Sosial & Komunitas')">
+                        Kabar Rilis via Email 🔔
+                    </button>
+                </div>
             </div>
+
+            <!-- 5. Keuangan Muslim (Belum Tersedia) -->
             <div class="feature-card">
-                <div class="feature-icon fi-green">💰</div>
-                <h3>Keuangan Muslim</h3>
-                <p>Kalkulator zakat otomatis, catatan keuangan halal, info investasi syariah, dan asuransi takaful.</p>
+                <div>
+                    <div class="feature-card-header">
+                        <div class="feature-icon fi-green">💰</div>
+                        <span class="feature-status-badge status-pending">⏳ Insya Allah Segera Hadir</span>
+                    </div>
+                    <h3>Keuangan Muslim</h3>
+                    <p>Kalkulator zakat maal & profesi otomatis, pencatatan keuangan halal, panduan muamalah syariah, dan literasi investasi bebas riba.</p>
+                </div>
+                <div>
+                    <div class="feature-status-note">
+                        <span class="note-icon">🌱</span>
+                        <span>Fitur ini belum tersedia. Modul kalkulator zakat & edukasi keuangan syariah sedang kami susun bersama asatidzah berkompeten.</span>
+                    </div>
+                    <button type="button" class="feature-card-btn btn-pending" onclick="notifyFeaturePending('Keuangan Muslim')">
+                        Kabar Rilis via Email 🔔
+                    </button>
+                </div>
             </div>
+
+            <!-- 6. Kesehatan Islami (Belum Tersedia) -->
             <div class="feature-card">
-                <div class="feature-icon fi-orange">🏥</div>
-                <h3>Kesehatan Islami</h3>
-                <p>Tips sehat sunnah, pola makan Nabi, jadwal vaksin keluarga, dan rekomendasi rumah sakit syariah.</p>
+                <div>
+                    <div class="feature-card-header">
+                        <div class="feature-icon fi-orange">🏥</div>
+                        <span class="feature-status-badge status-pending">⏳ Insya Allah Segera Hadir</span>
+                    </div>
+                    <h3>Kesehatan Islami</h3>
+                    <p>Edukasi gaya hidup sehat ala sunnah Nabi, panduan thibbun nabawi, konsultasi kesehatan keluarga, dan direktori faskes syariah.</p>
+                </div>
+                <div>
+                    <div class="feature-status-note">
+                        <span class="note-icon">🌱</span>
+                        <span>Fitur ini belum tersedia. Panduan kesehatan nabawi dan rujukan medis berbasis sunnah sedang kami kompilasi secara terpadu.</span>
+                    </div>
+                    <button type="button" class="feature-card-btn btn-pending" onclick="notifyFeaturePending('Kesehatan Islami')">
+                        Kabar Rilis via Email 🔔
+                    </button>
+                </div>
             </div>
+
+            <!-- 7. Pernikahan Muslim (Belum Tersedia) -->
             <div class="feature-card">
-                <div class="feature-icon fi-pink">💍</div>
-                <h3>Pernikahan Muslim</h3>
-                <p>Taaruf online halal, panduan persiapan nikah, undangan digital, dan doa pernikahan.</p>
+                <div>
+                    <div class="feature-card-header">
+                        <div class="feature-icon fi-pink">💍</div>
+                        <span class="feature-status-badge status-pending">⏳ Insya Allah Segera Hadir</span>
+                    </div>
+                    <h3>Pernikahan Muslim</h3>
+                    <p>Layanan taaruf syar'i terjaga privasinya dengan perantara mahram, bimbingan pranikah sakinah, serta doa & adab walimah.</p>
+                </div>
+                <div>
+                    <div class="feature-status-note">
+                        <span class="note-icon">🌱</span>
+                        <span>Fitur ini belum tersedia. Sistem taaruf beradab dengan pendampingan perantara keluarga sedang kami matangkan keamanannya.</span>
+                    </div>
+                    <button type="button" class="feature-card-btn btn-pending" onclick="notifyFeaturePending('Pernikahan Muslim')">
+                        Kabar Rilis via Email 🔔
+                    </button>
+                </div>
             </div>
+
+            <!-- 8. Konten Islami (Belum Tersedia) -->
             <div class="feature-card">
-                <div class="feature-icon fi-gold">📖</div>
-                <h3>Konten Islami</h3>
-                <p>Kultum singkat, nasehat harian, cerita sahabat Nabi, dan galeri kaligrafi.</p>
+                <div>
+                    <div class="feature-card-header">
+                        <div class="feature-icon fi-gold">📖</div>
+                        <span class="feature-status-badge status-pending">⏳ Insya Allah Segera Hadir</span>
+                    </div>
+                    <h3>Konten Islami</h3>
+                    <p>Nasihat harian penyejuk hati, kultum ringkas, mutiara hikmah salafus shalih, kisah inspiratif sahabat Nabi, dan kaligrafi indah.</p>
+                </div>
+                <div>
+                    <div class="feature-status-note">
+                        <span class="note-icon">🌱</span>
+                        <span>Fitur ini belum tersedia. Tim konten sedang mengkurasi kumpulan nasehat shahih dan kisah teladan agar berfaedah maksimal.</span>
+                    </div>
+                    <button type="button" class="feature-card-btn btn-pending" onclick="notifyFeaturePending('Konten Islami')">
+                        Kabar Rilis via Email 🔔
+                    </button>
+                </div>
             </div>
         </div>
     </section>
@@ -1461,6 +1689,20 @@
             msg.textContent = '✅ Jazakallahu khairan! ' + email + ' sudah terdaftar.';
             msg.style.display = 'block';
             document.getElementById('email-input').value = '';
+        }
+
+        function notifyFeaturePending(featureName) {
+            if (typeof showKajianToast === 'function') {
+                showKajianToast(`🌱 Fitur <strong>${featureName}</strong> sedang dalam perancangan & pengembangan.`);
+            }
+            const signupSec = document.getElementById('daftar');
+            if (signupSec) {
+                signupSec.scrollIntoView({ behavior: 'smooth' });
+            }
+            const emailInput = document.getElementById('email-input');
+            if (emailInput) {
+                setTimeout(() => emailInput.focus(), 600);
+            }
         }
 
         /* -------------------------------------------------------------

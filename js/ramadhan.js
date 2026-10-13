@@ -685,12 +685,12 @@
         document.querySelectorAll('.ramadhan-tab-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 const tab = btn.getAttribute('data-tab');
-                switchTab(tab);
+                switchTab(tab, { fromUser: true });
             });
         });
     }
 
-    function switchTab(tabId) {
+    function switchTab(tabId, opts = {}) {
         STATE.activeTab = tabId;
         window.history.replaceState(null, '', `#${tabId}`);
 
@@ -702,7 +702,20 @@
             pane.classList.toggle('active', pane.id === `tab-${tabId}`);
         });
 
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        // Jangan lompat ke atas halaman. Hanya jika bar tab sudah terscroll
+        // melewati navbar, sejajarkan bar tab tepat di bawah navbar agar
+        // konten tab baru langsung terlihat dari awal.
+        if (opts.fromUser) {
+            const bar = document.querySelector('.ramadhan-tabs-section');
+            const nav = document.querySelector('nav');
+            if (bar) {
+                const navH = nav ? nav.getBoundingClientRect().height : 0;
+                const barTop = bar.getBoundingClientRect().top;
+                if (barTop < navH) {
+                    window.scrollTo({ top: window.scrollY + barTop - navH - 8, behavior: 'smooth' });
+                }
+            }
+        }
     }
 
     // -------------------------------------------------------------

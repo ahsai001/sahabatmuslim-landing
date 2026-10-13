@@ -122,6 +122,11 @@
         renderMutabaahCalendar();
         renderMutabaahChecklist();
         updateHybridUI();
+
+        // If user profile is already logged in, sync latest data from PostgreSQL
+        if (STATE.userProfile && (STATE.userProfile.sub || STATE.userProfile.email)) {
+            fetchFromPostgres(STATE.userProfile.sub || STATE.userProfile.email);
+        }
     }
 
     function loadStoredLocation() {

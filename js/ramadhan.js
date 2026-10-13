@@ -244,6 +244,74 @@
         }
     }
 
+    // Smart Merge Algorithm (Union of worship records, nothing is lost)
+    function smartMergeData(cloudPayload) {
+        if (!cloudPayload) return { hasMergeChanges: false, hadLocalData: false, hadCloudData: false };
+
+        let hasMergeChanges = false;
+
+        // 1. Merge Quran Progress (Union of completed juz numbers)
+        const localJuz = Array.isArray(STATE.quranProgress.completed) ? STATE.quranProgress.completed : [];
+        const cloudJuz = (cloudPayload.quranProgress && Array.isArray(cloudPayload.quranProgress.completed)) 
+            ? cloudPayload.quranProgress.completed 
+            : [];
+
+        const mergedJuzSet = new Set([...localJuz, ...cloudJuz]);
+        const mergedCompleted = Array.from(mergedJuzSet).sort((a, b) => a - b);
+
+        const cloudTarget = (cloudPayload.quranProgress && cloudPayload.quranProgress.target) || 1;
+        const localTarget = STATE.quranProgress.target || 1;
+        const mergedTarget = Math.max(localTarget, cloudTarget);
+
+        if (mergedCompleted.length !== localJuz.length || mergedTarget !== localTarget) {
+            hasMergeChanges = true;
+        }
+
+        STATE.quranProgress = {
+            target: mergedTarget,
+            completed: mergedCompleted
+        };
+
+        // 2. Merge Mutabaah Data (True in either side stays True)
+        const cloudMutabaah = cloudPayload.mutabaahData || {};
+        const localMutabaah = STATE.mutabaahData || {};
+        const mergedMutabaah = { ...localMutabaah };
+
+        const allDays = new Set([...Object.keys(localMutabaah), ...Object.keys(cloudMutabaah)]);
+        allDays.forEach(dayKey => {
+            const localDay = localMutabaah[dayKey] || {};
+            const cloudDay = cloudMutabaah[dayKey] || {};
+            const mergedDay = { ...localDay };
+
+            MUTABAAH_ITEMS.forEach(item => {
+                if (localDay[item.id] === true || cloudDay[item.id] === true) {
+                    if (mergedDay[item.id] !== true) {
+                        hasMergeChanges = true;
+                    }
+                    mergedDay[item.id] = true;
+                }
+            });
+
+            mergedMutabaah[dayKey] = mergedDay;
+        });
+
+        STATE.mutabaahData = mergedMutabaah;
+
+        // 3. Merge City
+        if (cloudPayload.city && (!STATE.city || STATE.city === 'Jakarta')) {
+            STATE.city = cloudPayload.city;
+        }
+
+        const hadLocalData = localJuz.length > 0 || Object.keys(localMutabaah).some(k => Object.values(localMutabaah[k]).some(v => v === true));
+        const hadCloudData = cloudJuz.length > 0 || Object.keys(cloudMutabaah).some(k => Object.values(cloudMutabaah[k]).some(v => v === true));
+
+        return {
+            hasMergeChanges,
+            hadLocalData,
+            hadCloudData
+        };
+    }
+
     async function fetchFromPostgres(userId) {
         if (!userId) return;
         try {
@@ -252,25 +320,23 @@
             if (res.ok && json.ok && json.found && json.data) {
                 const cloudPayload = json.data.payload;
                 if (cloudPayload) {
-                    if (cloudPayload.quranProgress) {
-                        STATE.quranProgress = cloudPayload.quranProgress;
-                    }
-                    if (cloudPayload.mutabaahData) {
-                        // Merge or replace
-                        STATE.mutabaahData = {
-                            ...STATE.mutabaahData,
-                            ...cloudPayload.mutabaahData
-                        };
-                    }
-                    if (cloudPayload.city) {
-                        STATE.city = cloudPayload.city;
+                    const mergeResult = smartMergeData(cloudPayload);
+                    saveUserData(false);
+                    renderQuranPlanner();
+                    renderMutabaahCalendar();
+                    renderMutabaahChecklist();
+
+                    if (mergeResult.hadLocalData && mergeResult.hadCloudData) {
+                        showToast('Alhamdulillah! Data perangkat dan cloud berhasil disatukan (Smart Merge). ☁️🔄');
+                        // Push merged result back to cloud immediately
+                        await syncToPostgres(true);
+                    } else if (mergeResult.hadCloudData) {
+                        showToast('Alhamdulillah! Data amalan berhasil dipulihkan dari PostgreSQL server. ☁️✅');
                     }
                 }
-                saveUserData(false);
-                renderQuranPlanner();
-                renderMutabaahCalendar();
-                renderMutabaahChecklist();
-                showToast('Alhamdulillah! Data amalan dipulihkan dari PostgreSQL server. ☁️🔄');
+            } else if (res.ok && json.ok && !json.found) {
+                // Cloud was empty, push local data to cloud
+                await syncToPostgres(true);
             }
         } catch (err) {
             console.warn('Fetch from PostgreSQL error:', err);

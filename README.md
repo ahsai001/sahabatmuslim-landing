@@ -35,7 +35,7 @@ Platform web ibadah digital all-in-one yang ringan, cepat, responsif, dan kaya f
 - **Live Countdown Sholat & Berbuka**: Penghitung mundur real-time menuju waktu imsak/sahur atau waktu berbuka puasa/maghrib.
 - **Target & Planner Khatam Qur'an**: Checklist 30 Juz interaktif dengan target 1x, 2x, 3x khatam, progress bar, dan tombol cepat buka surah di Al-Qur'an.
 - **Mutaba'ah Yaumiyah Adaptif**: Checklist 12 amalan harian yang menyesuaikan konteks bulan (puasa wajib vs puasa sunnah, tarawih vs Qiyamul Lail/tahajjud).
-- **Panduan & Doa Shahih Lengkap**: Doa buka puasa shahih (HR. Abu Dawud), niat puasa Senin-Kamis, niat puasa Ayyamul Bidh, niat puasa Ramadhan, doa Lailatul Qadar, doa bukber, dan doa zakat fitrah.
+- **Panduan Sunnah & Doa Shahih Lengkap**: Penjelasan fiqih sunnah bahwa niat puasa cukup di dalam hati (*an-niyyatu mahalluhal qalb*) tanpa melafazkan teks lisan buatan, serta doa-doa shahih: doa buka puasa shahih (HR. Abu Dawud no. 2357), doa berbuka di rumah orang lain, ucapan ketika dicela saat puasa, dan doa malam Lailatul Qadar.
 - **Fitur Cetak / PDF**: Desain cetak siap pakai untuk kalender ibadah bulanan masjid/keluarga.
 
 ### 3. 📖 Al-Qur'an Online 30 Juz (`quran.html`)

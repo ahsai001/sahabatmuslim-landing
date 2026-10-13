@@ -2,11 +2,1770 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="refresh" content="0; url=/ramadhan#imsakiyah">
-    <title>Jadwal Imsakiyah Ramadhan — Sahabat Muslim</title>
-    <script>window.location.replace("/ramadhan#imsakiyah");</script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pusat Ibadah Hijriyah & Ramadhan — Sahabat Muslim</title>
+    <meta name="description" content="Kalender Hijriyah 12 Bulan, Jadwal Sholat & Imsakiyah, Panduan Puasa Sunnah (Senin-Kamis, Ayyamul Bidh) & Wajib Ramadhan, Target Khatam Qur'an, dan Mutaba'ah Yaumiyah.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+        :root {
+            --green-900: #064e3b;
+            --green-800: #065f46;
+            --green-700: #047857;
+            --green-600: #059669;
+            --green-500: #10b981;
+            --green-200: #a7f3d0;
+            --green-100: #d1fae5;
+            --green-50: #ecfdf5;
+            --gold-600: #b45309;
+            --gold-500: #d97706;
+            --gold-400: #f59e0b;
+            --gold-100: #fef3c7;
+            --gold-50: #fffbeb;
+            --white: #ffffff;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--gray-800);
+            background: #fbfdfc;
+            line-height: 1.6;
+        }
+
+        .arabic {
+            font-family: 'Amiri', serif;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255,255,255,0.96);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--gray-200);
+            z-index: 100;
+            padding: 1rem 2rem;
+        }
+
+        .nav-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: var(--green-800);
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--green-700), var(--green-600));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+        }
+
+        .logo-text {
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--gray-600);
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--green-700);
+            font-weight: 600;
+        }
+
+        .badge-special {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white !important;
+            padding: 0.25rem 0.65rem;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            box-shadow: 0 2px 6px rgba(217, 119, 6, 0.25);
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: transparent;
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            width: 40px;
+            height: 40px;
+            font-size: 1.35rem;
+            color: var(--gray-700);
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .mobile-menu-btn * {
+            pointer-events: none;
+        }
+
+        /* Hybrid Account Bar */
+        .hybrid-account-bar {
+            margin-top: 72px;
+            background: #f0fdf4;
+            border-bottom: 1px solid var(--green-200);
+            padding: 0.75rem 1.5rem;
+        }
+
+        .hybrid-bar-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .hybrid-status {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .guest-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: white;
+            padding: 0.35rem 0.85rem;
+            border-radius: 9999px;
+            border: 1px solid var(--green-200);
+            font-size: 0.85rem;
+            color: var(--gray-700);
+        }
+
+        .guest-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #10b981;
+        }
+
+        .user-avatar-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            background: white;
+            padding: 0.3rem 0.85rem 0.3rem 0.4rem;
+            border-radius: 9999px;
+            border: 1px solid var(--green-300);
+        }
+
+        .user-avatar-img {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .user-avatar-info {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.2;
+        }
+
+        .user-name {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--gray-800);
+        }
+
+        .user-status-text {
+            font-size: 0.7rem;
+            color: var(--green-700);
+        }
+
+        .hybrid-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-hybrid {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.4rem 0.85rem;
+            font-size: 0.82rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .btn-hybrid-primary {
+            background: var(--green-700);
+            color: white;
+        }
+
+        .btn-hybrid-primary:hover {
+            background: var(--green-800);
+        }
+
+        .btn-hybrid-outline {
+            background: white;
+            border-color: var(--gray-300);
+            color: var(--gray-700);
+        }
+
+        .btn-hybrid-outline:hover {
+            background: var(--gray-50);
+            border-color: var(--gray-400);
+        }
+
+        /* Hero & Countdown Banner */
+        .ramadhan-hero {
+            padding: 2.5rem 1.5rem 2rem;
+            background: linear-gradient(180deg, #ecfdf5 0%, #ffffff 100%);
+            text-align: center;
+        }
+
+        .ramadhan-hero-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .hero-badge-ramadhan {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: var(--gold-100);
+            color: var(--gold-600);
+            border: 1px solid var(--gold-400);
+            padding: 0.4rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .ramadhan-hero h1 {
+            font-size: 2.3rem;
+            font-weight: 800;
+            color: var(--green-900);
+            margin-bottom: 0.75rem;
+            letter-spacing: -0.5px;
+        }
+
+        .ramadhan-hero p {
+            font-size: 1.05rem;
+            color: var(--gray-600);
+            max-width: 650px;
+            margin: 0 auto 1.75rem;
+        }
+
+        /* Countdown Card */
+        .countdown-card {
+            background: linear-gradient(135deg, var(--green-800), var(--green-900));
+            color: white;
+            border-radius: 20px;
+            padding: 2rem 1.5rem;
+            box-shadow: 0 15px 35px rgba(6, 78, 59, 0.25);
+            max-width: 720px;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .countdown-card::before {
+            content: '🌙';
+            position: absolute;
+            right: -15px;
+            top: -15px;
+            font-size: 7rem;
+            opacity: 0.08;
+            pointer-events: none;
+        }
+
+        .countdown-target-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.25rem;
+            border-bottom: 1px solid rgba(255,255,255,0.15);
+            padding-bottom: 0.75rem;
+        }
+
+        .countdown-target-label {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--gold-300);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .countdown-target-time {
+            font-size: 0.95rem;
+            background: rgba(255,255,255,0.15);
+            padding: 0.2rem 0.75rem;
+            border-radius: 9999px;
+            font-weight: 600;
+        }
+
+        .countdown-digits-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .countdown-digit-box {
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 12px;
+            min-width: 80px;
+            padding: 0.75rem 0.5rem;
+            text-align: center;
+        }
+
+        .countdown-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            line-height: 1;
+            font-variant-numeric: tabular-nums;
+            color: #ffffff;
+        }
+
+        .countdown-unit {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(255,255,255,0.7);
+            margin-top: 0.35rem;
+        }
+
+        .countdown-sep {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--gold-300);
+            line-height: 1;
+        }
+
+        .countdown-subtext {
+            font-size: 0.88rem;
+            color: rgba(255,255,255,0.85);
+            margin-bottom: 1.25rem;
+        }
+
+        .countdown-cta-row {
+            display: flex;
+            justify-content: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-cd {
+            background: rgba(255,255,255,0.95);
+            color: var(--green-900);
+            border: none;
+            padding: 0.55rem 1.25rem;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.88rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .btn-cd:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        /* Segmented Tabs Navigation */
+        .ramadhan-tabs-section {
+            max-width: 1200px;
+            margin: 2rem auto 1rem;
+            padding: 0 1.5rem;
+        }
+
+        .ramadhan-tabs-bar {
+            display: flex;
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: 16px;
+            padding: 0.5rem;
+            gap: 0.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .ramadhan-tab-btn {
+            flex: 1;
+            min-width: 170px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.85rem 1rem;
+            border-radius: 12px;
+            border: none;
+            background: transparent;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--gray-600);
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .ramadhan-tab-btn:hover {
+            background: var(--gray-50);
+            color: var(--gray-900);
+        }
+
+        .ramadhan-tab-btn.active {
+            background: var(--green-700);
+            color: white;
+            box-shadow: 0 4px 12px rgba(4, 120, 87, 0.25);
+        }
+
+        /* Tab Panes */
+        .ramadhan-tab-pane {
+            display: none;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1.5rem 1.5rem 4rem;
+        }
+
+        .ramadhan-tab-pane.active {
+            display: block;
+            animation: fadeIn 0.25s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Section Card Base */
+        .section-card {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: 18px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+            margin-bottom: 2rem;
+        }
+
+        .section-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.25rem;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        .section-card-title h2 {
+            font-size: 1.45rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-card-title p {
+            font-size: 0.9rem;
+            color: var(--gray-500);
+            margin-top: 0.25rem;
+        }
+
+        /* Tab 1: Imsakiyah Controls & Table */
+        .imsakiyah-controls {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .control-select {
+            padding: 0.65rem 1.25rem;
+            border: 1.5px solid var(--gray-200);
+            border-radius: 10px;
+            font-size: 0.92rem;
+            font-weight: 500;
+            background: white;
+            color: var(--gray-800);
+            outline: none;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        .control-select:focus {
+            border-color: var(--green-600);
+        }
+
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.65rem 1.25rem;
+            border-radius: 10px;
+            border: 1px solid var(--gray-200);
+            background: white;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--gray-700);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-action:hover {
+            background: var(--gray-50);
+            border-color: var(--gray-300);
+        }
+
+        .table-responsive-container {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            border: 1px solid var(--gray-200);
+            border-radius: 14px;
+        }
+
+        .imsakiyah-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.92rem;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .fasting-pill {
+            display: inline-block;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 0.2rem 0.55rem;
+            border-radius: 9999px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .fasting-pill.wajib {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+        }
+
+        .fasting-pill.sunnah {
+            background: #fef3c7;
+            color: #b45309;
+            border: 1px solid #f59e0b;
+        }
+
+        .fasting-pill.haram {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #f87171;
+        }
+
+        .pill-mini {
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 0.15rem 0.45rem;
+            border-radius: 6px;
+            margin-left: 0.4rem;
+            vertical-align: middle;
+        }
+
+        .pill-mini.wajib {
+            background: #10b981;
+            color: white;
+        }
+
+        .pill-mini.sunnah {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .pill-mini.mubah {
+            background: var(--gray-200);
+            color: var(--gray-700);
+        }
+
+        .pill-mini.haram {
+            background: #ef4444;
+            color: white;
+        }
+
+        .badge-amalan-note {
+            display: inline-block;
+            font-size: 0.8rem;
+            font-weight: 700;
+            background: #fef3c7;
+            color: #b45309;
+            border: 1px solid #f59e0b;
+            padding: 0.15rem 0.6rem;
+            border-radius: 9999px;
+            margin-left: 0.5rem;
+            vertical-align: middle;
+        }
+
+        .dot-wajib, .dot-sunnah {
+            display: inline-block;
+            font-size: 0.75rem;
+            margin-right: 2px;
+        }
+
+        .imsakiyah-table th {
+            background: var(--gray-50);
+            color: var(--gray-700);
+            font-weight: 700;
+            padding: 1rem 0.85rem;
+            border-bottom: 2px solid var(--gray-200);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .imsakiyah-table td {
+            padding: 0.9rem 0.85rem;
+            border-bottom: 1px solid var(--gray-100);
+            color: var(--gray-700);
+        }
+
+        .imsakiyah-table tr:hover td {
+            background: #fafcfb;
+        }
+
+        .imsakiyah-table .col-day {
+            text-align: left;
+            padding-left: 1.25rem;
+            font-weight: 600;
+            color: var(--green-800);
+        }
+
+        .imsakiyah-table .col-date {
+            text-align: left;
+            color: var(--gray-500);
+            font-size: 0.85rem;
+        }
+
+        .time-imsak {
+            color: var(--gold-600);
+            background: #fefce8;
+            font-weight: 700;
+        }
+
+        .time-maghrib {
+            color: var(--green-700);
+            background: var(--green-50);
+            font-weight: 700;
+        }
+
+        .time-muted {
+            color: var(--gray-400);
+        }
+
+        .row-today td {
+            background: #ecfdf5 !important;
+            font-weight: 700;
+            border-top: 2px solid var(--green-500);
+            border-bottom: 2px solid var(--green-500);
+        }
+
+        .today-badge {
+            display: inline-block;
+            background: var(--green-600);
+            color: white;
+            font-size: 0.7rem;
+            padding: 0.15rem 0.5rem;
+            border-radius: 9999px;
+            font-weight: 700;
+            margin-left: 0.4rem;
+        }
+
+        /* Tab 2: Khatam Qur'an Planner */
+        .quran-stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .quran-stat-card {
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            text-align: center;
+        }
+
+        .quran-stat-val {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--green-800);
+            line-height: 1.1;
+        }
+
+        .quran-stat-label {
+            font-size: 0.8rem;
+            color: var(--gray-500);
+            margin-top: 0.25rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .progress-box {
+            background: var(--gray-100);
+            border-radius: 9999px;
+            height: 14px;
+            overflow: hidden;
+            margin: 1rem 0;
+            position: relative;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, var(--green-600), var(--green-500));
+            height: 100%;
+            width: 0%;
+            border-radius: 9999px;
+            transition: width 0.4s ease;
+        }
+
+        .juz-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .juz-card {
+            background: white;
+            border: 1.5px solid var(--gray-200);
+            border-radius: 14px;
+            padding: 1.15rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.2s;
+        }
+
+        .juz-card:hover {
+            border-color: var(--green-400);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.05);
+        }
+
+        .juz-card.completed {
+            background: #f0fdf4;
+            border-color: var(--green-500);
+        }
+
+        .juz-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .juz-checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: var(--gray-900);
+            cursor: pointer;
+        }
+
+        .juz-checkbox-label input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--green-600);
+            cursor: pointer;
+        }
+
+        .juz-status-pill {
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.2rem 0.5rem;
+            border-radius: 6px;
+            background: var(--gray-100);
+            color: var(--gray-600);
+        }
+
+        .juz-card.completed .juz-status-pill {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .juz-surah-info {
+            font-size: 0.85rem;
+            color: var(--gray-600);
+            margin-bottom: 1rem;
+            line-height: 1.4;
+        }
+
+        .btn-read-juz {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 0.45rem;
+            border-radius: 8px;
+            background: white;
+            border: 1px solid var(--gray-300);
+            color: var(--green-700);
+            font-size: 0.82rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .btn-read-juz:hover {
+            background: var(--green-50);
+            border-color: var(--green-500);
+        }
+
+        /* Tab 3: Mutaba'ah Yaumiyah (Habit Tracker) */
+        .mutabaah-days-wrapper {
+            margin-bottom: 2rem;
+        }
+
+        .mutabaah-days-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+
+        .mutabaah-day-btn {
+            background: white;
+            border: 1.5px solid var(--gray-200);
+            border-radius: 10px;
+            padding: 0.5rem 0.25rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.15s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .mutabaah-day-btn:hover {
+            border-color: var(--green-500);
+        }
+
+        .mutabaah-day-btn.active {
+            border-color: var(--green-700);
+            background: var(--green-50);
+            box-shadow: 0 0 0 2px var(--green-600);
+        }
+
+        .mutabaah-day-btn .day-label {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--gray-800);
+        }
+
+        .mutabaah-day-btn .day-ratio {
+            font-size: 0.7rem;
+            color: var(--gray-500);
+            margin-top: 0.15rem;
+        }
+
+        .badge-full {
+            border-color: #10b981 !important;
+            background: #ecfdf5 !important;
+        }
+
+        .badge-full .day-ratio {
+            color: #065f46 !important;
+            font-weight: 700;
+        }
+
+        .badge-partial {
+            border-color: #f59e0b !important;
+        }
+
+        .mutabaah-score-badge {
+            display: inline-block;
+            padding: 0.4rem 1rem;
+            border-radius: 9999px;
+            background: var(--gray-100);
+            color: var(--gray-700);
+            font-size: 0.88rem;
+            font-weight: 700;
+        }
+
+        .mutabaah-score-badge.score-good {
+            background: #fef3c7;
+            color: #b45309;
+        }
+
+        .mutabaah-score-badge.score-full {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .mutabaah-checklist {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 0.85rem;
+            margin-top: 1.25rem;
+        }
+
+        .mutabaah-item-card {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: white;
+            border: 1.5px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .mutabaah-item-card:hover {
+            border-color: var(--green-400);
+            background: #fcfdfc;
+        }
+
+        .mutabaah-item-card.item-checked {
+            border-color: var(--green-500);
+            background: #f0fdf4;
+        }
+
+        .mutabaah-item-card input[type="checkbox"] {
+            display: none;
+        }
+
+        .mutabaah-item-icon {
+            font-size: 1.75rem;
+            line-height: 1;
+        }
+
+        .mutabaah-item-text {
+            flex: 1;
+        }
+
+        .mutabaah-item-text strong {
+            display: block;
+            font-size: 0.95rem;
+            color: var(--gray-900);
+            margin-bottom: 0.15rem;
+        }
+
+        .mutabaah-item-text p {
+            font-size: 0.8rem;
+            color: var(--gray-500);
+            line-height: 1.3;
+        }
+
+        .mutabaah-item-check-indicator {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            border: 2px solid var(--gray-300);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.85rem;
+            font-weight: 700;
+            transition: all 0.2s;
+        }
+
+        .mutabaah-item-card.item-checked .mutabaah-item-check-indicator {
+            background: var(--green-600);
+            border-color: var(--green-600);
+        }
+
+        /* Tab 4: Panduan & Doa */
+        .doa-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .doa-ramadhan-card {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+        }
+
+        .doa-ramadhan-card h3 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--green-900);
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .doa-arabic-box {
+            background: var(--green-50);
+            border-radius: 12px;
+            padding: 1.25rem 1rem;
+            margin-bottom: 0.75rem;
+            text-align: right;
+            direction: rtl;
+        }
+
+        .doa-arabic-text {
+            font-family: 'Amiri', serif;
+            font-size: 1.45rem;
+            line-height: 2.2;
+            color: var(--green-900);
+        }
+
+        .doa-latin {
+            font-size: 0.88rem;
+            font-style: italic;
+            color: var(--gray-600);
+            margin-bottom: 0.5rem;
+            line-height: 1.5;
+        }
+
+        .doa-arti {
+            font-size: 0.85rem;
+            color: var(--gray-700);
+            line-height: 1.5;
+            margin-bottom: 0.5rem;
+        }
+
+        .doa-riwayat {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+            font-weight: 600;
+        }
+
+        /* Modals */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-card {
+            background: white;
+            border-radius: 20px;
+            max-width: 520px;
+            width: 100%;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-close-btn {
+            position: absolute;
+            top: 1.25rem;
+            right: 1.25rem;
+            background: var(--gray-100);
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray-600);
+        }
+
+        .modal-close-btn:hover {
+            background: var(--gray-200);
+            color: var(--gray-900);
+        }
+
+        /* Toast */
+        .ramadhan-toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--gray-900);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            z-index: 9999;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
+        }
+
+        .ramadhan-toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--gray-900);
+            color: var(--gray-400);
+            padding: 4rem 2rem 2rem;
+            margin-top: 2rem;
+        }
+
+        .footer-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 3rem;
+        }
+
+        .footer-brand p {
+            font-size: 0.9rem;
+            margin-top: 0.75rem;
+            line-height: 1.6;
+        }
+
+        .footer-col h4 {
+            color: white;
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+        }
+
+        .footer-col a {
+            display: block;
+            color: var(--gray-400);
+            text-decoration: none;
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+            transition: color 0.2s;
+        }
+
+        .footer-col a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 3rem auto 0;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
+            font-size: 0.8rem;
+        }
+
+        .footer-bottom a {
+            color: var(--green-400);
+            text-decoration: none;
+        }
+
+        /* Print styles */
+        @media print {
+            nav, .hybrid-account-bar, .ramadhan-tabs-bar, .countdown-card, footer, .imsakiyah-controls, .btn-action, .ramadhan-toast, .mobile-menu-btn {
+                display: none !important;
+            }
+            body, .section-card {
+                background: white !important;
+                box-shadow: none !important;
+                border: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            .ramadhan-tab-pane {
+                display: block !important;
+                padding: 0 !important;
+            }
+            #tab-quran, #tab-mutabaah, #tab-panduan {
+                display: none !important;
+            }
+            .table-responsive-container {
+                border: 1px solid #000 !important;
+            }
+            .imsakiyah-table th, .imsakiyah-table td {
+                border: 1px solid #ddd !important;
+                padding: 0.5rem !important;
+            }
+            .print-header {
+                display: block !important;
+                text-align: center;
+                margin-bottom: 1rem;
+            }
+        }
+
+        .print-header {
+            display: none;
+        }
+
+        /* Responsive Mobile */
+        @media (max-width: 768px) {
+            .mobile-menu-btn { display: inline-flex; }
+            .nav-links {
+                position: fixed;
+                top: 70px;
+                left: 0;
+                width: 100%;
+                background: rgba(255, 255, 255, 0.98);
+                backdrop-filter: blur(12px);
+                -webkit-backdrop-filter: blur(12px);
+                border-bottom: 1px solid var(--gray-200);
+                box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+                flex-direction: column;
+                gap: 0;
+                padding: 0.5rem 1.25rem 1.25rem;
+                max-height: calc(100vh - 70px);
+                overflow-y: auto;
+                display: none;
+                z-index: 99;
+            }
+            .nav-links.active {
+                display: flex;
+            }
+            .nav-links li {
+                border-bottom: 1px solid var(--gray-100);
+                width: 100%;
+            }
+            .nav-links li:last-child {
+                border-bottom: none;
+            }
+            .nav-links a {
+                display: flex;
+                align-items: center;
+                padding: 0.8rem 0.5rem;
+                font-size: 0.95rem;
+                font-weight: 600;
+                color: var(--gray-800);
+            }
+            .ramadhan-hero h1 {
+                font-size: 1.85rem;
+            }
+            .countdown-digit-box {
+                min-width: 65px;
+                padding: 0.5rem 0.25rem;
+            }
+            .countdown-number {
+                font-size: 1.85rem;
+            }
+            .footer-inner {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            .section-card {
+                padding: 1.25rem;
+            }
+            .mutabaah-checklist {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-    <p>Mengalihkan ke <a href="/ramadhan#imsakiyah">Jadwal Imsakiyah Ramadhan</a>...</p>
+
+    <!-- Navigation Header -->
+    <nav>
+        <div class="nav-inner">
+            <a href="/" class="logo">
+                <div class="logo-icon">🕌</div>
+                <span class="logo-text">Sahabat Muslim</span>
+            </a>
+            <button class="mobile-menu-btn" id="mobile-menu-toggle" aria-label="Menu Navigasi" onclick="toggleMobileMenu(event)">
+                <span>☰</span>
+            </button>
+            <ul class="nav-links">
+                <li><a href="/#jadwal-sholat">Jadwal Sholat</a></li>
+                <li><a href="/ramadhan" class="badge-special">Ibadah Hijriyah 🌙</a></li>
+                <li><a href="/kajian">Jadwal Kajian</a></li>
+                <li><a href="/dzikir">Dzikir Harian</a></li>
+                <li><a href="/doa">Doa Harian</a></li>
+                <li><a href="/quran">Al-Qur'an</a></li>
+                <li><a href="/kiblat">Arah Kiblat</a></li>
+                <li><a href="https://ruqyah.ahsailabs.my.id/" target="_blank" rel="noopener noreferrer">Ruqyah ↗</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hybrid Account Bar -->
+    <div class="hybrid-account-bar">
+        <div class="hybrid-bar-inner">
+            <div class="hybrid-status" id="hybrid-user-badge">
+                <div class="guest-pill">
+                    <span class="guest-dot"></span>
+                    <span class="guest-text"><strong>Mode Tamu</strong> (Tersimpan di Perangkat Ini)</span>
+                </div>
+            </div>
+            <div class="hybrid-actions">
+                <button type="button" class="btn-hybrid btn-hybrid-primary" id="hybrid-login-btn" onclick="window.RamadhanApp.triggerGoogleLogin()">
+                    <span>☁️ Cadangkan / Masuk Akun</span>
+                </button>
+                <button type="button" class="btn-hybrid btn-hybrid-outline" onclick="window.RamadhanApp.exportBackup()">
+                    <span>💾 Ekspor JSON</span>
+                </button>
+                <label class="btn-hybrid btn-hybrid-outline" style="cursor: pointer;">
+                    <span>📥 Impor</span>
+                    <input type="file" accept=".json" onchange="window.RamadhanApp.importBackup(event)" style="display: none;">
+                </label>
+                <button type="button" class="btn-hybrid btn-hybrid-outline" id="hybrid-logout-btn" style="display: none;" onclick="window.RamadhanApp.logoutUser()">
+                    <span>Keluar</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hero & Countdown Banner -->
+    <header class="ramadhan-hero">
+        <div class="ramadhan-hero-container">
+            <div class="hero-badge-ramadhan" id="hero-badge-hijri">
+                <span>🌙</span>
+                <span>Pusat Ibadah Hijriyah & Ramadhan</span>
+            </div>
+            <h1 id="hero-title-hijri">Pusat Ibadah Hijriyah</h1>
+            <p id="hero-desc-hijri">Jadwal Sholat & Imsakiyah 12 Bulan Hijriyah, Live Countdown Sholat/Berbuka, Target Khatam Qur'an, & Catatan Amal Harian.</p>
+            <div id="hero-fasting-tip" style="margin-top: -0.75rem; margin-bottom: 1.5rem; font-size: 0.88rem; color: var(--gold-600); background: var(--gold-50); display: inline-block; padding: 0.35rem 1rem; border-radius: 9999px; border: 1px solid var(--gold-100);">
+                <strong>Anjuran Puasa Sunnah:</strong> Senin-Kamis & Ayyamul Bidh (13, 14, 15 Hijriyah)
+            </div>
+
+            <!-- Live Countdown Card -->
+            <div class="countdown-card">
+                <div class="countdown-target-header">
+                    <span class="countdown-target-label" id="countdown-target-label">
+                        <span>⏳</span> Menuju Waktu Berbuka Puasa
+                    </span>
+                    <span class="countdown-target-time" id="countdown-target-time">Memuat...</span>
+                </div>
+                <div class="countdown-digits-wrapper">
+                    <div class="countdown-digit-box">
+                        <div class="countdown-number" id="cd-hours">00</div>
+                        <div class="countdown-unit">Jam</div>
+                    </div>
+                    <div class="countdown-sep">:</div>
+                    <div class="countdown-digit-box">
+                        <div class="countdown-number" id="cd-minutes">00</div>
+                        <div class="countdown-unit">Menit</div>
+                    </div>
+                    <div class="countdown-sep">:</div>
+                    <div class="countdown-digit-box">
+                        <div class="countdown-number" id="cd-seconds">00</div>
+                        <div class="countdown-unit">Detik</div>
+                    </div>
+                </div>
+                <p class="countdown-subtext" id="countdown-subtext">Memperbarui jadwal berdasarkan kota pilihan Anda...</p>
+                <div class="countdown-cta-row">
+                    <button class="btn-cd" onclick="window.RamadhanApp.openDoaBukaModal()">
+                        <span>🤲</span> Doa Berbuka Puasa Shahih
+                    </button>
+                    <button class="btn-cd" onclick="window.RamadhanApp.printImsakiyah()">
+                        <span>🖨️</span> Cetak / Simpan Jadwal
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Segmented Tab Navigation -->
+    <section class="ramadhan-tabs-section">
+        <div class="ramadhan-tabs-bar">
+            <button type="button" class="ramadhan-tab-btn active" data-tab="imsakiyah">
+                <span>🗓️</span> Jadwal & Kalender
+            </button>
+            <button type="button" class="ramadhan-tab-btn" data-tab="quran">
+                <span>📖</span> Target Khatam Qur'an
+            </button>
+            <button type="button" class="ramadhan-tab-btn" data-tab="mutabaah">
+                <span>✍️</span> Mutaba'ah Yaumiyah
+            </button>
+            <button type="button" class="ramadhan-tab-btn" data-tab="panduan">
+                <span>🤲</span> Panduan & Doa
+            </button>
+        </div>
+    </section>
+
+    <!-- TAB 1: JADWAL KALENDER HIJRIYAH & IMSAKIYAH -->
+    <main class="ramadhan-tab-pane active" id="tab-imsakiyah">
+        <div class="section-card">
+            <div class="print-header">
+                <h2 id="hero-print-title">JADWAL KALENDER & IBADAH HIJRIYAH</h2>
+                <p>Sahabat Muslim — https://sahabatmuslim.ahsailabs.my.id/ramadhan</p>
+            </div>
+
+            <div class="section-card-header">
+                <div class="section-card-title">
+                    <h2>🗓️ Kalender Ibadah — <span id="imsakiyah-active-city-label" style="color: var(--green-700);">Jakarta</span></h2>
+                    <p>Waktu Imsak, Subuh, Terbit, Dzuhur, Ashar, Maghrib, dan Isya serta indikator puasa sunnah & wajib.</p>
+                </div>
+                <div class="imsakiyah-controls">
+                    <select id="hijri-month-select" class="control-select" onchange="window.RamadhanApp.onHijriMonthChange(this.value)" style="border-color: var(--gold-400); font-weight: 600;">
+                        <!-- Populated by JS: 12 Hijri Months -->
+                    </select>
+                    <select id="imsakiyah-city-select" class="control-select" onchange="window.RamadhanApp.onCityChange(this.value)">
+                        <!-- Populated by JS -->
+                    </select>
+                    <button type="button" class="btn-action" onclick="window.RamadhanApp.useGPS()">
+                        <span>📍 Lokasi Saya</span>
+                    </button>
+                    <button type="button" class="btn-action" onclick="window.RamadhanApp.printImsakiyah()">
+                        <span>🖨️ Cetak / PDF</span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="imsakiyah-loading" style="text-align: center; padding: 3rem; color: var(--gray-500);">
+                <div style="font-size: 2rem; margin-bottom: 0.5rem; animation: pulse 1s infinite;">⏳</div>
+                <p>Memuat jadwal kalender ibadah...</p>
+            </div>
+
+            <div id="imsakiyah-content" style="display: none;">
+                <div class="table-responsive-container">
+                    <table class="imsakiyah-table">
+                        <thead>
+                            <tr>
+                                <th>Tanggal Hijriyah</th>
+                                <th>Tanggal Masehi</th>
+                                <th>Imsak</th>
+                                <th>Subuh</th>
+                                <th>Terbit</th>
+                                <th>Dzuhur</th>
+                                <th>Ashar</th>
+                                <th>Maghrib (Buka)</th>
+                                <th>Isya</th>
+                            </tr>
+                        </thead>
+                        <tbody id="imsakiyah-table-body">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- TAB 2: TARGET & PLANNER KHATAM QUR'AN -->
+    <main class="ramadhan-tab-pane" id="tab-quran">
+        <div class="section-card">
+            <div class="section-card-header">
+                <div class="section-card-title">
+                    <h2>📖 Target & Planner Khatam Qur'an</h2>
+                    <p>Atur target tilawah harian dan centang setiap Juz yang telah Anda selesaikan di bulan suci Ramadhan.</p>
+                </div>
+                <div class="imsakiyah-controls">
+                    <label style="font-size: 0.88rem; font-weight: 600; color: var(--gray-700);">Target Khatam:</label>
+                    <select id="quran-target-select" class="control-select" onchange="window.RamadhanApp.changeQuranTarget(this.value)">
+                        <option value="1">1x Khatam (1 Juz / hari)</option>
+                        <option value="2">2x Khatam (2 Juz / hari)</option>
+                        <option value="3">3x Khatam (3 Juz / hari)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Stats Bar -->
+            <div class="quran-stats-bar">
+                <div class="quran-stat-card">
+                    <div class="quran-stat-val" id="quran-stat-completed">0 Juz</div>
+                    <div class="quran-stat-label">Selesai Dibaca</div>
+                </div>
+                <div class="quran-stat-card">
+                    <div class="quran-stat-val" id="quran-stat-remaining">30 Juz</div>
+                    <div class="quran-stat-label">Sisa Tilawah</div>
+                </div>
+                <div class="quran-stat-card">
+                    <div class="quran-stat-val" id="quran-progress-percent">0%</div>
+                    <div class="quran-stat-label">Progress Khatam</div>
+                </div>
+                <div class="quran-stat-card">
+                    <div class="quran-stat-val" id="quran-stat-pace" style="font-size: 1.25rem; line-height: 1.4;">1 Juz / hari</div>
+                    <div class="quran-stat-label">Kecepatan Ideal</div>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="progress-box">
+                <div class="progress-fill" id="quran-progress-fill"></div>
+            </div>
+
+            <!-- Grid 30 Juz -->
+            <div class="juz-grid" id="quran-juz-grid">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+    </main>
+
+    <!-- TAB 3: MUTABA'AH YAUMIYAH -->
+    <main class="ramadhan-tab-pane" id="tab-mutabaah">
+        <div class="section-card">
+            <div class="section-card-header">
+                <div class="section-card-title">
+                    <h2>✍️ Mutaba'ah Yaumiyah (Catatan Amalan Sepanjang Tahun)</h2>
+                    <p>Pantau konsistensi ibadah harian Anda (Sholat 5 waktu, Puasa Wajib / Sunnah, Tilawah, Sedekah, Qiyamul Lail). Otomatis menyesuaikan hari Senin-Kamis & Ayyamul Bidh.</p>
+                </div>
+                <div>
+                    <span class="mutabaah-score-badge" id="mutabaah-score-badge">0 dari 12 Amalan Selesai (0%)</span>
+                </div>
+            </div>
+
+            <!-- Kalender Hari 1-30 -->
+            <div class="mutabaah-days-wrapper">
+                <label style="font-size: 0.85rem; font-weight: 700; color: var(--gray-600); text-transform: uppercase;">Pilih Tanggal Hijriyah:</label>
+                <div class="mutabaah-days-grid" id="mutabaah-days-grid">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <!-- Checklist Amalan Hari Terpilih -->
+            <h3 id="mutabaah-current-day-title" style="font-size: 1.2rem; color: var(--green-900); margin-top: 1rem;">
+                Catatan Amalan: Hari Ini
+            </h3>
+
+            <div class="mutabaah-checklist" id="mutabaah-checklist-items">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+    </main>
+
+    <!-- TAB 4: PANDUAN SUNNAH & DOA PUASA -->
+    <main class="ramadhan-tab-pane" id="tab-panduan">
+        <div class="section-card">
+            <div class="section-card-header">
+                <div class="section-card-title">
+                    <h2>🤲 Kumpulan Doa Shahih & Panduan Puasa Sesuai Sunnah</h2>
+                    <p>Lafaz doa-doa shahih dan adab berpuasa yang diajarkan Rasulullah ﷺ tanpa penambahan lafaz niat lisan yang tidak berdasar dalil.</p>
+                </div>
+            </div>
+
+            <!-- Fiqih Niat Sesuai Sunnah (Dalam Hati) -->
+            <div style="background: #f0fdf4; border: 1.5px solid var(--green-300); border-radius: 14px; padding: 1.25rem 1.5rem; margin-bottom: 2rem;">
+                <h3 style="color: var(--green-900); font-size: 1.1rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <span>💡</span> Kedudukan Niat Puasa Menurut Sunnah Shahih
+                </h3>
+                <p style="font-size: 0.9rem; color: var(--gray-700); line-height: 1.6; margin-bottom: 0.75rem;">
+                    Menurut kesepakatan ulama mu'tabar (termasuk Imam An-Nawawi dalam <em>Raudhatuth Thalibin</em> dan Syaikhul Islam Ibnu Taimiyyah), <strong>niat bertempat di dalam hati (an-niyyatu mahalluhal qalb)</strong> dan <strong>tidak perlu dilafazkan secara lisan</strong>. Tidak ada satu pun riwayat shahih dari Rasulullah ﷺ maupun para sahabat yang melafazkan niat puasa (seperti lafaz <em>nawaitu shauma...</em>).
+                </p>
+                <ul style="font-size: 0.85rem; color: var(--gray-600); margin-left: 1.25rem; line-height: 1.6;">
+                    <li><strong>Puasa Wajib (Ramadhan & Qadha):</strong> Cukup bertekad dalam hati di malam hari sebelum terbit fajar (HR. Abu Dawud no. 2454: <em>"Barangsiapa yang tidak berniat puasa sebelum fajar, maka tidak ada puasa baginya"</em>). Aktivitas makan sahur atau keinginan berpuasa esok hari sudah otomatis dihukumi sebagai niat sah.</li>
+                    <li><strong>Puasa Sunnah (Senin-Kamis, Ayyamul Bidh, dll):</strong> Boleh berniat di pagi/siang hari sebelum zawal (waktu dzuhur) asalkan belum makan, minum, atau membatalkan puasa sejak fajar (HR. Muslim no. 1154).</li>
+                </ul>
+            </div>
+
+            <div class="doa-cards-grid">
+                <!-- Doa Buka Puasa Shahih -->
+                <div class="doa-ramadhan-card">
+                    <h3>🌙 Doa Berbuka Puasa yang Shahih</h3>
+                    <div class="doa-arabic-box">
+                        <div class="doa-arabic-text">ذَهَبَ الظَّمَأُ وَابْتَلَّتِ الْعُرُوقُ، وَثَبَتَ الأَجْرُ إِنْ شَاءَ اللهُ</div>
+                    </div>
+                    <p class="doa-latin">"Dzahabazh zhoma'u wabtallatil 'uruuqu wa tsabatal ajru in syaa Allah"</p>
+                    <p class="doa-arti"><strong>Artinya:</strong> "Telah hilang dahaga, telah basah urat-urat, dan telah tetap pahala jika Allah menghendaki."</p>
+                    <span class="doa-riwayat">HR. Abu Dawud no. 2357, Ad-Daruquthni no. 2279 (Hasan) • Dibaca setelah membatalkan puasa.</span>
+                </div>
+
+                <!-- Doa Makan di Rumah Orang Lain / Bukber -->
+                <div class="doa-ramadhan-card">
+                    <h3>🍽️ Doa Berbuka di Rumah Orang Lain (Undangan Buka Puasa)</h3>
+                    <div class="doa-arabic-box">
+                        <div class="doa-arabic-text">أَفْطَرَ عِنْدَكُمُ الصَّائِمُونَ، وَأَكَلَ طَعَامَكُمُ الأَبْرَارُ، وَصَلَّتْ عَلَيْكُمُ الْمَلاَئِكَةُ</div>
+                    </div>
+                    <p class="doa-latin">"Afthara 'indakumush shoo-imuuna, wa akala tho'aamakumul abrooru, wa shollat 'alaikumul malaa-ikah"</p>
+                    <p class="doa-arti"><strong>Artinya:</strong> "Semoga orang-orang yang berpuasa berbuka di tempatmu, orang-orang shalih memakan makananmu, dan para malaikat mendoakanmu."</p>
+                    <span class="doa-riwayat">HR. Abu Dawud no. 3854, Ahmad (Shahih)</span>
+                </div>
+
+                <!-- Doa Ketika Dicela saat Puasa -->
+                <div class="doa-ramadhan-card">
+                    <h3>🛡️ Ucapan Ketika Dicela / Dimusuhi Saat Berpuasa</h3>
+                    <div class="doa-arabic-box">
+                        <div class="doa-arabic-text">إِنِّي صَائِمٌ، إِنِّي صَائِمٌ</div>
+                    </div>
+                    <p class="doa-latin">"Innii shoo-imun, innii shoo-imun"</p>
+                    <p class="doa-arti"><strong>Artinya:</strong> "Sesungguhnya aku sedang berpuasa, sesungguhnya aku sedang berpuasa."</p>
+                    <span class="doa-riwayat">HR. Bukhari no. 1894, Muslim no. 1151</span>
+                </div>
+
+                <!-- Doa Malam Lailatul Qadar -->
+                <div class="doa-ramadhan-card">
+                    <h3>✨ Doa Menjumpai Malam Lailatul Qadar</h3>
+                    <div class="doa-arabic-box">
+                        <div class="doa-arabic-text">اللَّهُمَّ إِنَّكَ عَفُوٌّ تُحِبُّ الْعَفْوَ فَاعْفُ عَنِّي</div>
+                    </div>
+                    <p class="doa-latin">"Allahumma innaka 'afuwwun tuhibbul 'afwa fa'fu 'annii"</p>
+                    <p class="doa-arti"><strong>Artinya:</strong> "Ya Allah, sesungguhnya Engkau Maha Pemaaf dan mencintai kemaafan, maka maafkanlah aku."</p>
+                    <span class="doa-riwayat">HR. Tirmidzi no. 3513, Ibnu Majah no. 3850 (Shahih) • Diajarkan Nabi ﷺ kepada Ummul Mukminin 'Aisyah radhiyallahu 'anha.</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal Doa Buka Puasa -->
+    <div class="modal-overlay" id="doa-buka-modal" onclick="if(event.target === this) window.RamadhanApp.closeDoaBukaModal()">
+        <div class="modal-card">
+            <button class="modal-close-btn" onclick="window.RamadhanApp.closeDoaBukaModal()">✕</button>
+            <h3 style="font-size: 1.3rem; color: var(--green-900); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                <span>🌙</span> Doa Berbuka Puasa yang Shahih
+            </h3>
+            <div class="doa-arabic-box">
+                <div class="doa-arabic-text">ذَهَبَ الظَّمَأُ وَابْتَلَّتِ الْعُرُوقُ، وَثَبَتَ الأَجْرُ إِنْ شَاءَ اللهُ</div>
+            </div>
+            <p class="doa-latin" style="font-size: 0.95rem;">"Dzahabazh zhoma'u wabtallatil 'uruuqu wa tsabatal ajru in syaa Allah"</p>
+            <p class="doa-arti" style="font-size: 0.9rem; margin-top: 0.5rem;">
+                <strong>Artinya:</strong> "Telah hilang dahaga, telah basah urat-urat, dan telah tetap pahala jika Allah menghendaki."
+            </p>
+            <div style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid var(--gray-200); font-size: 0.8rem; color: var(--gray-500);">
+                <strong>Derajat Hadits:</strong> HR. Abu Dawud no. 2357, dinilai Hasan oleh Syaikh Al-Albani. Dibaca sesaat setelah membatalkan puasa (setelah mencicipi kurma atau seteguk air).
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Login / Hybrid Profile -->
+    <div class="modal-overlay" id="login-modal" onclick="if(event.target === this) window.RamadhanApp.closeLoginModal()">
+        <div class="modal-card">
+            <button class="modal-close-btn" onclick="window.RamadhanApp.closeLoginModal()">✕</button>
+            <h3 style="font-size: 1.25rem; color: var(--green-900); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                <span>☁️</span> Cadangkan & Sinkronkan Progres
+            </h3>
+            <p style="font-size: 0.88rem; color: var(--gray-600); margin-bottom: 1.5rem;">
+                Data checklist ibadah & tilawah Anda tersimpan di perangkat ini. Anda bisa menghubungkan akun Google atau mencadangkan ke file JSON agar aman saat ganti perangkat.
+            </p>
+
+            <!-- Google GSI Sign In Button Container -->
+            <div style="margin-bottom: 1.5rem; text-align: center;">
+                <div id="g_id_onload"
+                     data-client_id="YOUR_GOOGLE_CLIENT_ID"
+                     data-callback="handleGoogleCredentialResponse"
+                     data-auto_prompt="false">
+                </div>
+                <div class="g_id_signin" data-type="standard" data-shape="rectangular" data-theme="outline" data-text="signin_with" data-size="large" data-logo_alignment="left"></div>
+            </div>
+
+            <div style="position: relative; text-align: center; margin: 1.25rem 0;">
+                <hr style="border: none; border-top: 1px solid var(--gray-200);">
+                <span style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: white; padding: 0 0.75rem; font-size: 0.75rem; color: var(--gray-400);">atau simpan profil nama</span>
+            </div>
+
+            <form onsubmit="window.RamadhanApp.handleManualProfile(event)">
+                <div style="margin-bottom: 0.85rem;">
+                    <label style="display: block; font-size: 0.82rem; font-weight: 600; color: var(--gray-700); margin-bottom: 0.35rem;">Nama Anda</label>
+                    <input type="text" id="manual-name-input" required placeholder="Contoh: Ahmad Saifullah" style="width: 100%; padding: 0.65rem 1rem; border: 1.5px solid var(--gray-300); border-radius: 8px; font-size: 0.9rem;">
+                </div>
+                <div style="margin-bottom: 1.25rem;">
+                    <label style="display: block; font-size: 0.82rem; font-weight: 600; color: var(--gray-700); margin-bottom: 0.35rem;">Email (Opsional)</label>
+                    <input type="email" id="manual-email-input" placeholder="nama@email.com" style="width: 100%; padding: 0.65rem 1rem; border: 1.5px solid var(--gray-300); border-radius: 8px; font-size: 0.9rem;">
+                </div>
+                <button type="submit" class="btn-hybrid btn-hybrid-primary" style="width: 100%; justify-content: center; padding: 0.75rem; font-size: 0.92rem;">
+                    Simpan Profil Perangkat
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="ramadhan-toast" class="ramadhan-toast"></div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <a href="/" class="logo" style="color: white;">
+                    <div class="logo-icon">🕌</div>
+                    <span class="logo-text">Sahabat Muslim</span>
+                </a>
+                <p>Platform all-in-one kaum muslimin untuk jadwal sholat, imsakiyah Ramadhan, Al-Qur'an 30 juz, kumpulan doa sunnah, jadwal kajian, dan arah kiblat.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Fitur Ibadah</h4>
+                <a href="/ramadhan">Ibadah >Imsakiyah & Ramadhan 🌙< Kalender Hijriyah 🌙</a>
+                <a href="/#jadwal-sholat">Waktu Sholat 5 Waktu</a>
+                <a href="/quran">Al-Qur'an 30 Juz</a>
+                <a href="/dzikir">Dzikir Pagi Petang</a>
+                <a href="/doa">Kumpulan 227 Doa Sunnah</a>
+                <a href="/kiblat">Kompas Arah Kiblat</a>
+                <a href="https://ruqyah.ahsailabs.my.id/" target="_blank" rel="noopener noreferrer">Ruqyah Syar'iyyah ↗</a>
+            </div>
+            <div class="footer-col">
+                <h4>Legal & Info</h4>
+                <a href="#">Kebijakan Privasi</a>
+                <a href="#">Ketentuan Layanan</a>
+                <a href="https://ahsai.my.id/" target="_blank" rel="noopener">Pengembang (AhsaiLabs)</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 Sahabat Muslim — Dibuat dengan ❤️ oleh <a href="https://ahsailabs.my.id/" target="_blank" rel="noopener">AhsaiLabs</a>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/nav.js?v=3"></script>
+    <script src="js/ramadhan.js?v=5"></script>
 </body>
 </html>

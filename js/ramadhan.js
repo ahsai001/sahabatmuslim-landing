@@ -95,7 +95,7 @@
         cityLabel: "DKI Jakarta",
         coords: null,
         method: "20", // 20 = Kemenag RI
-        activeTab: "imsakiyah", // imsakiyah, quran, mutabaah, panduan
+        activeTab: "imsakiyah", // imsakiyah, quran, mutabaah
         hijriYear: 1447,
         hijriMonth: 9, // 1 - 12 (Default 9 / Ramadhan)
         todayHijriDate: null,
@@ -245,7 +245,7 @@
 
         // Check hash or URL param for initial tab
         const hash = window.location.hash.replace('#', '');
-        if (['imsakiyah', 'quran', 'mutabaah', 'panduan'].includes(hash)) {
+        if (['imsakiyah', 'quran', 'mutabaah'].includes(hash)) {
             switchTab(hash);
         } else {
             switchTab('imsakiyah');

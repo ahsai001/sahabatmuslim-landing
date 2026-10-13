@@ -27,13 +27,16 @@ Platform web ibadah digital all-in-one yang ringan, cepat, responsif, dan kaya f
 - Koreksi penanggalan Hijriyah (-1, 0, +1) tersinkronisasi kalender Kemenag RI (MyQuran API).
 - Countdown interaktif menuju waktu sholat berikutnya.
 
-### 2. 🌙 Pusat Ibadah Ramadhan 1447 H / 2026 M (`ramadhan.html` & `/imsakiyah`)
-- **Tabel Imsakiyah 30 Hari**: Jadwal Imsak, Subuh, Terbit, Dzuhur, Ashar, Maghrib (Buka), dan Isya sebulan penuh.
-- **Live Countdown Berbuka & Imsak**: Penghitung mundur real-time dengan status sahur/puasa.
+### 2. 🌙 Pusat Ibadah & Kalender Hijriyah 12 Bulan (`ramadhan.html`, `ibadah.html`, `/imsakiyah`)
+- **Kalender Hijriyah 12 Bulan Sepanjang Tahun**: Jadwal Imsak, Subuh, Terbit, Dzuhur, Ashar, Maghrib, dan Isya untuk seluruh bulan Hijriyah (Muharram s/d Dzulhijjah).
+- **Deteksi Puasa Cerdas**:
+  - *Bulan Ramadhan (Bulan 9)*: Puasa Wajib Ramadhan sebulan penuh & Sholat Tarawih/Witir.
+  - *Di Luar Ramadhan*: Otomatis mendeteksi Puasa Sunnah Senin & Kamis, Puasa Sunnah Ayyamul Bidh (13, 14, 15 Hijriyah), Puasa Asyura & Tasu'a (Muharram), Puasa Tarwiyah & Arafah (Dzulhijjah), serta larangan puasa pada Hari Raya & Tasyrik.
+- **Live Countdown Sholat & Berbuka**: Penghitung mundur real-time menuju waktu imsak/sahur atau waktu berbuka puasa/maghrib.
 - **Target & Planner Khatam Qur'an**: Checklist 30 Juz interaktif dengan target 1x, 2x, 3x khatam, progress bar, dan tombol cepat buka surah di Al-Qur'an.
-- **Mutaba'ah Yaumiyah (Habit Tracker 30 Hari)**: Kalender 30 hari dengan 12 checklist amalan harian (puasa, sholat berjamaah, tarawih, sedekah, dzikir, ilmu).
-- **Panduan & Doa Shahih Ramadhan**: Doa buka puasa shahih (HR. Abu Dawud), niat puasa, doa Lailatul Qadar, doa bukber, dan doa zakat fitrah.
-- **Fitur Cetak / PDF**: Desain cetak siap pakai untuk kalender imsakiyah masjid/keluarga.
+- **Mutaba'ah Yaumiyah Adaptif**: Checklist 12 amalan harian yang menyesuaikan konteks bulan (puasa wajib vs puasa sunnah, tarawih vs Qiyamul Lail/tahajjud).
+- **Panduan & Doa Shahih Lengkap**: Doa buka puasa shahih (HR. Abu Dawud), niat puasa Senin-Kamis, niat puasa Ayyamul Bidh, niat puasa Ramadhan, doa Lailatul Qadar, doa bukber, dan doa zakat fitrah.
+- **Fitur Cetak / PDF**: Desain cetak siap pakai untuk kalender ibadah bulanan masjid/keluarga.
 
 ### 3. 📖 Al-Qur'an Online 30 Juz (`quran.html`)
 - 114 Surah lengkap berbasis API `equran.id` v2 (matching repo `ahsai001/quran-id-online`).

@@ -1,14 +1,37 @@
 /**
- * Sahabat Muslim — Pusat Ibadah Ramadhan 1447 H / 2026 M
- * Modul: Jadwal Imsakiyah 30 Hari, Target Khatam Qur'an, Mutaba'ah Yaumiyah, & Hybrid Auth
+ * Sahabat Muslim — Kalender & Pusat Ibadah Hijriyah
+ * Fitur:
+ * 1. Kalender & Jadwal Sholat 12 Bulan Hijriyah (Imsak, Subuh, Terbit, Dhuha, Dzuhur, Ashar, Maghrib, Isya)
+ * 2. Deteksi Puasa Cerdas:
+ *    - Puasa Wajib Ramadhan (Bulan 9)
+ *    - Puasa Sunnah Senin & Kamis (Setiap hari Senin & Kamis)
+ *    - Puasa Sunnah Ayyamul Bidh (13, 14, 15 Hijriyah)
+ *    - Puasa Sunnah Khusus: Asyura & Tasu'a (Muharram), Arafah & Tarwiyah (Dzulhijjah), Syawal, Sya'ban
+ * 3. Live Countdown Sholat / Imsak / Berbuka
+ * 4. Target & Planner Khatam Qur'an (30 Juz)
+ * 5. Mutaba'ah Yaumiyah Sepanjang Tahun (Menyesuaikan Puasa Wajib / Sunnah & Qiyamul Lail / Tarawih)
+ * 6. Panduan Doa & Niat Puasa
+ * 7. Hybrid Storage (Local Browser + Cloud PostgreSQL Sync dengan Smart Merge)
  */
 
 (function () {
     // -------------------------------------------------------------
     // DATA CONSTANTS & STATE
     // -------------------------------------------------------------
-    const RAMADHAN_YEAR_HIJRI = 1447;
-    const RAMADHAN_MONTH_HIJRI = 9;
+    const HIJRI_MONTHS = [
+        { number: 1, name: "Muharram", arabic: "مُحَرَّم", specialFasting: "Puasa Tasu'a & Asyura (9 & 10 Muharram)" },
+        { number: 2, name: "Safar", arabic: "صَفَر", specialFasting: "Puasa Sunnah Senin-Kamis & Ayyamul Bidh" },
+        { number: 3, name: "Rabi'ul Awwal", arabic: "رَبِيعُ الأَوَّل", specialFasting: "Puasa Sunnah Senin-Kamis & Ayyamul Bidh" },
+        { number: 4, name: "Rabi'ul Akhir", arabic: "رَبِيعُ الآخِر", specialFasting: "Puasa Sunnah Senin-Kamis & Ayyamul Bidh" },
+        { number: 5, name: "Jumadil Ula", arabic: "جُمَادَى الأُولَى", specialFasting: "Puasa Sunnah Senin-Kamis & Ayyamul Bidh" },
+        { number: 6, name: "Jumadil Akhir", arabic: "جُمَادَى الآخِرَة", specialFasting: "Puasa Sunnah Senin-Kamis & Ayyamul Bidh" },
+        { number: 7, name: "Rajab", arabic: "رَجَب", specialFasting: "Bulan Haram (Dianjurkan Memperbanyak Puasa Sunnah)" },
+        { number: 8, name: "Sya'ban", arabic: "شَعْبَان", specialFasting: "Memperbanyak Puasa Sunnah Menjelang Ramadhan" },
+        { number: 9, name: "Ramadhan", arabic: "رَمَضَان", specialFasting: "Puasa Wajib Sebulan Penuh & Qiyam Ramadhan" },
+        { number: 10, name: "Syawal", arabic: "شَوَّال", specialFasting: "Puasa Sunnah 6 Hari Syawal (Pahala Setahun Penuh)" },
+        { number: 11, name: "Dzulqa'dah", arabic: "ذُو القَعْدَة", specialFasting: "Bulan Haram (Puasa Sunnah Senin-Kamis & Ayyamul Bidh)" },
+        { number: 12, name: "Dzulhijjah", arabic: "ذُو الحِجَّة", specialFasting: "1-9 Dzulhijjah, Puasa Tarwiyah (8) & Arafah (9)" }
+    ];
 
     const CITIES = [
         { name: "Jakarta", label: "DKI Jakarta", lat: -6.2088, lng: 106.8456 },
@@ -67,46 +90,157 @@
         { juz: 30, surahStart: 78, surahName: "An-Naba' 1 - An-Nas 6" }
     ];
 
-    const MUTABAAH_ITEMS = [
-        { id: "puasa", label: "Puasa Ramadhan", icon: "🌙", desc: "Menjalankan ibadah puasa wajib hari ini" },
-        { id: "subuh", label: "Sholat Subuh", icon: "🕌", desc: "Sholat Subuh tepat waktu (diutamakan berjamaah)" },
-        { id: "dzuhur", label: "Sholat Dzuhur", icon: "🕌", desc: "Sholat Dzuhur tepat waktu" },
-        { id: "ashar", label: "Sholat Ashar", icon: "🕌", desc: "Sholat Ashar tepat waktu" },
-        { id: "maghrib", label: "Sholat Maghrib", icon: "🕌", desc: "Sholat Maghrib tepat waktu" },
-        { id: "isya", label: "Sholat Isya", icon: "🕌", desc: "Sholat Isya tepat waktu" },
-        { id: "tarawih", label: "Tarawih & Witir", icon: "🤲", desc: "Sholat Qiyamul Lail / Tarawih & Witir" },
-        { id: "tilawah", label: "Tilawah Al-Qur'an", icon: "📖", desc: "Membaca Al-Qur'an (minimal 1 Juz atau target harian)" },
-        { id: "sedekah", label: "Sedekah Subuh / Harian", icon: "💰", desc: "Berbagi sedekah / infaq kepada yang membutuhkan" },
-        { id: "dzikir_pagi", label: "Dzikir Pagi", icon: "📿", desc: "Membaca wirid dzikir pagi sunnah" },
-        { id: "dzikir_petang", label: "Dzikir Petang", icon: "📿", desc: "Membaca wirid dzikir petang sunnah" },
-        { id: "ilmu", label: "Kultum / Menuntut Ilmu", icon: "📚", desc: "Menyimak ceramah kajian / membaca tafsir" }
-    ];
-
     const STATE = {
         city: "Jakarta",
         cityLabel: "DKI Jakarta",
         coords: null,
         method: "20", // 20 = Kemenag RI
         activeTab: "imsakiyah", // imsakiyah, quran, mutabaah, panduan
+        hijriYear: 1447,
+        hijriMonth: 9, // 1 - 12 (Default 9 / Ramadhan)
+        todayHijriDate: null,
         selectedMutabaahDay: 1,
-        imsakiyahData: [],
+        calendarData: [], // 29 or 30 days
         countdownTimer: null,
         userProfile: null,
         quranProgress: {
-            target: 1, // 1x khatam, 2x, 3x
-            completed: [] // Array of completed juz numbers [1, 2, ...]
+            target: 1,
+            completed: []
         },
-        mutabaahData: {} // { "day_1": { puasa: true, subuh: true, ... }, ... }
+        mutabaahData: {} // keys: "m9_d1", "m8_d15", or legacy "day_1"
     };
+
+    // -------------------------------------------------------------
+    // FASTING & PRAYER HELPERS
+    // -------------------------------------------------------------
+    function getFastingInfo(hijriDay, hijriMonth, gregorianWeekdayEn) {
+        const monthNum = parseInt(hijriMonth, 10);
+        const dayNum = parseInt(hijriDay, 10);
+        const weekday = (gregorianWeekdayEn || '').toLowerCase();
+
+        // 1. Bulan Ramadhan
+        if (monthNum === 9) {
+            return {
+                type: "wajib",
+                title: "Puasa Wajib Ramadhan",
+                badge: "Wajib",
+                isRecommended: true,
+                desc: "Menjalankan kewajiban rukun Islam puasa Ramadhan hari ini"
+            };
+        }
+
+        // 2. Hari Tasyrik (11, 12, 13 Dzulhijjah) & Hari Raya (1 Syawal & 10 Dzulhijjah) -> Haram Puasa
+        if (monthNum === 10 && dayNum === 1) {
+            return {
+                type: "haram",
+                title: "Idul Fitri (Haram Berpuasa)",
+                badge: "Haram",
+                isRecommended: false,
+                desc: "Hari raya Idul Fitri — Diharamkan berpuasa"
+            };
+        }
+        if (monthNum === 12 && [10, 11, 12, 13].includes(dayNum)) {
+            return {
+                type: "haram",
+                title: dayNum === 10 ? "Idul Adha (Haram Berpuasa)" : `Hari Tasyrik ke-${dayNum - 9} (Haram Puasa)`,
+                badge: "Haram",
+                isRecommended: false,
+                desc: "Hari Raya Idul Adha & Hari Tasyrik — Diharamkan berpuasa"
+            };
+        }
+
+        // 3. Puasa Ayyamul Bidh (13, 14, 15 Hijriyah)
+        if ([13, 14, 15].includes(dayNum) && monthNum !== 12) {
+            return {
+                type: "sunnah",
+                title: `Puasa Sunnah Ayyamul Bidh (${dayNum} ${HIJRI_MONTHS[monthNum - 1].name})`,
+                badge: "Ayyamul Bidh",
+                isRecommended: true,
+                desc: "Puasa hari-hari putih pertengahan bulan Hijriyah (Pahala seperti puasa setahun penuh)"
+            };
+        }
+
+        // 4. Puasa Khusus Bulan-Bulan Tertentu
+        if (monthNum === 1) {
+            if (dayNum === 9) return { type: "sunnah", title: "Puasa Sunnah Tasu'a (9 Muharram)", badge: "Sunnah", isRecommended: true, desc: "Penyelaras puasa Asyura yang dianjurkan Rasulullah ﷺ" };
+            if (dayNum === 10) return { type: "sunnah", title: "Puasa Sunnah Asyura (10 Muharram)", badge: "Asyura", isRecommended: true, desc: "Menghapuskan dosa setahun yang lalu (HR. Muslim)" };
+        }
+        if (monthNum === 12) {
+            if (dayNum === 8) return { type: "sunnah", title: "Puasa Sunnah Tarwiyah (8 Dzulhijjah)", badge: "Sunnah", isRecommended: true, desc: "Amalan puasa di awal bulan Dzulhijjah" };
+            if (dayNum === 9) return { type: "sunnah", title: "Puasa Sunnah Arafah (9 Dzulhijjah)", badge: "Arafah", isRecommended: true, desc: "Menghapuskan dosa 2 tahun (setahun lalu & setahun akan datang - HR. Muslim)" };
+        }
+
+        // 5. Puasa Senin & Kamis
+        if (weekday === 'monday') {
+            return {
+                type: "sunnah",
+                title: "Puasa Sunnah Hari Senin",
+                badge: "Senin",
+                isRecommended: true,
+                desc: "Hari disetorkannya amalan & hari kelahiran Rasulullah ﷺ (HR. Muslim & Tirmidzi)"
+            };
+        }
+        if (weekday === 'thursday') {
+            return {
+                type: "sunnah",
+                title: "Puasa Sunnah Hari Kamis",
+                badge: "Kamis",
+                isRecommended: true,
+                desc: "Hari diangkatnya amalan kepada Allah Subhanahu wa Ta'ala (HR. Tirmidzi)"
+            };
+        }
+
+        // 6. Hari biasa di luar Ramadhan
+        return {
+            type: "mubah",
+            title: "Puasa Sunnah / Qadha",
+            badge: "Sunnah / Qadha",
+            isRecommended: false,
+            desc: "Puasa Daud, puasa sunnah mutlak, atau menunaikan qadha puasa wajib"
+        };
+    }
+
+    function getMutabaahItemsForMonth(monthNum, dayNum, weekdayEn) {
+        const isRamadhan = (parseInt(monthNum, 10) === 9);
+        const fastingInfo = getFastingInfo(dayNum, monthNum, weekdayEn);
+
+        return [
+            {
+                id: "puasa",
+                label: fastingInfo.title,
+                icon: isRamadhan ? "🌙" : "✨",
+                desc: fastingInfo.desc,
+                badge: fastingInfo.badge,
+                badgeType: fastingInfo.type
+            },
+            { id: "subuh", label: "Sholat Subuh", icon: "🕌", desc: "Sholat Subuh tepat waktu (diutamakan berjamaah)" },
+            { id: "dzuhur", label: "Sholat Dzuhur", icon: "🕌", desc: "Sholat Dzuhur tepat waktu" },
+            { id: "ashar", label: "Sholat Ashar", icon: "🕌", desc: "Sholat Ashar tepat waktu" },
+            { id: "maghrib", label: "Sholat Maghrib", icon: "🕌", desc: "Sholat Maghrib tepat waktu" },
+            { id: "isya", label: "Sholat Isya", icon: "🕌", desc: "Sholat Isya tepat waktu" },
+            {
+                id: "qiyam",
+                label: isRamadhan ? "Tarawih & Witir" : "Qiyamul Lail / Tahajjud & Witir",
+                icon: "🤲",
+                desc: isRamadhan ? "Sholat Qiyam Ramadhan (Tarawih) berjamaah / sendiri" : "Sholat malam (Tahajjud & Witir) mendekatkan diri kepada Allah"
+            },
+            { id: "tilawah", label: "Tilawah Al-Qur'an", icon: "📖", desc: "Membaca Al-Qur'an (minimal 1 Juz atau target harian)" },
+            { id: "sedekah", label: "Sedekah Subuh / Harian", icon: "💰", desc: "Berbagi sedekah / infaq kepada yang membutuhkan" },
+            { id: "dzikir_pagi", label: "Dzikir Pagi", icon: "📿", desc: "Membaca wirid dzikir pagi sesuai sunnah" },
+            { id: "dzikir_petang", label: "Dzikir Petang", icon: "📿", desc: "Membaca wirid dzikir petang sesuai sunnah" },
+            { id: "ilmu", label: "Kajian / Menuntut Ilmu", icon: "📚", desc: "Menyimak ceramah kajian agama / membaca tafsir" }
+        ];
+    }
 
     // -------------------------------------------------------------
     // INITIALIZATION & STORAGE
     // -------------------------------------------------------------
-    function init() {
+    async function init() {
         loadStoredLocation();
         loadStoredUserData();
         setupTabs();
         populateCitySelect();
+        populateHijriMonthSelect();
         initGoogleSignIn();
 
         // Check hash or URL param for initial tab
@@ -117,7 +251,8 @@
             switchTab('imsakiyah');
         }
 
-        fetchImsakiyahData();
+        await fetchCurrentHijriDate();
+        await fetchCalendarData();
         renderQuranPlanner();
         renderMutabaahCalendar();
         renderMutabaahChecklist();
@@ -127,6 +262,38 @@
         if (STATE.userProfile && (STATE.userProfile.sub || STATE.userProfile.email)) {
             fetchFromPostgres(STATE.userProfile.sub || STATE.userProfile.email);
         }
+    }
+
+    async function fetchCurrentHijriDate() {
+        try {
+            const todayStr = getTodayFormatted();
+            const res = await fetch(`https://api.aladhan.com/v1/gToH?date=${todayStr}`);
+            const json = await res.json();
+            if (json.code === 200 && json.data && json.data.hijri) {
+                STATE.todayHijriDate = json.data.hijri;
+                const currentMonthNum = parseInt(json.data.hijri.month.number, 10);
+                const currentYearNum = parseInt(json.data.hijri.year, 10);
+
+                // Auto set month to current real-time Hijri month if not yet customized by user
+                const savedMonth = sessionStorage.getItem('sm_selected_hijri_month');
+                if (!savedMonth) {
+                    STATE.hijriMonth = currentMonthNum;
+                    STATE.hijriYear = currentYearNum;
+                }
+                const monthSelect = document.getElementById('hijri-month-select');
+                if (monthSelect) monthSelect.value = String(STATE.hijriMonth);
+            }
+        } catch (e) {
+            console.warn('Gagal mendeteksi tanggal Hijriyah hari ini:', e);
+        }
+    }
+
+    function populateHijriMonthSelect() {
+        const select = document.getElementById('hijri-month-select');
+        if (!select) return;
+        select.innerHTML = HIJRI_MONTHS.map(m =>
+            `<option value="${m.number}" ${m.number === STATE.hijriMonth ? 'selected' : ''}>${m.number}. ${m.name} (${m.arabic})${m.number === 9 ? ' 🌙' : ''}</option>`
+        ).join('');
     }
 
     function loadStoredLocation() {
@@ -152,11 +319,11 @@
     function loadStoredUserData() {
         try {
             // User Profile (Hybrid Auth)
-            const savedUser = localStorage.getItem('sm_ramadhan_user');
+            const savedUser = localStorage.getItem('sm_ramadhan_user') || localStorage.getItem('sm_hijri_user');
             if (savedUser) STATE.userProfile = JSON.parse(savedUser);
 
             // Quran Progress
-            const savedQuran = localStorage.getItem('sm_ramadhan_quran');
+            const savedQuran = localStorage.getItem('sm_ramadhan_quran') || localStorage.getItem('sm_hijri_quran');
             if (savedQuran) {
                 const parsed = JSON.parse(savedQuran);
                 STATE.quranProgress = {
@@ -166,10 +333,10 @@
             }
 
             // Mutabaah Data
-            const savedMutabaah = localStorage.getItem('sm_ramadhan_mutabaah');
+            const savedMutabaah = localStorage.getItem('sm_ramadhan_mutabaah') || localStorage.getItem('sm_hijri_mutabaah');
             if (savedMutabaah) STATE.mutabaahData = JSON.parse(savedMutabaah);
         } catch (e) {
-            console.warn('Gagal membaca data ramadhan', e);
+            console.warn('Gagal membaca data ibadah', e);
         }
     }
 
@@ -177,11 +344,17 @@
 
     function saveUserData(autoSync = true) {
         try {
+            localStorage.setItem('sm_hijri_quran', JSON.stringify(STATE.quranProgress));
+            localStorage.setItem('sm_hijri_mutabaah', JSON.stringify(STATE.mutabaahData));
+            // Backwards compatibility for Ramadhan keys
             localStorage.setItem('sm_ramadhan_quran', JSON.stringify(STATE.quranProgress));
             localStorage.setItem('sm_ramadhan_mutabaah', JSON.stringify(STATE.mutabaahData));
+
             if (STATE.userProfile) {
+                localStorage.setItem('sm_hijri_user', JSON.stringify(STATE.userProfile));
                 localStorage.setItem('sm_ramadhan_user', JSON.stringify(STATE.userProfile));
             } else {
+                localStorage.removeItem('sm_hijri_user');
                 localStorage.removeItem('sm_ramadhan_user');
             }
         } catch (e) {
@@ -215,6 +388,8 @@
             client_updated_at: new Date().toISOString(),
             payload: {
                 city: STATE.city,
+                hijriYear: STATE.hijriYear,
+                hijriMonth: STATE.hijriMonth,
                 quranProgress: STATE.quranProgress,
                 mutabaahData: STATE.mutabaahData
             }
@@ -244,13 +419,13 @@
         }
     }
 
-    // Smart Merge Algorithm (Union of worship records, nothing is lost)
+    // Smart Merge Algorithm (Lossless Union)
     function smartMergeData(cloudPayload) {
         if (!cloudPayload) return { hasMergeChanges: false, hadLocalData: false, hadCloudData: false };
 
         let hasMergeChanges = false;
 
-        // 1. Merge Quran Progress (Union of completed juz numbers)
+        // 1. Merge Quran Progress
         const localJuz = Array.isArray(STATE.quranProgress.completed) ? STATE.quranProgress.completed : [];
         const cloudJuz = (cloudPayload.quranProgress && Array.isArray(cloudPayload.quranProgress.completed)) 
             ? cloudPayload.quranProgress.completed 
@@ -272,7 +447,7 @@
             completed: mergedCompleted
         };
 
-        // 2. Merge Mutabaah Data (True in either side stays True)
+        // 2. Merge Mutabaah Data
         const cloudMutabaah = cloudPayload.mutabaahData || {};
         const localMutabaah = STATE.mutabaahData || {};
         const mergedMutabaah = { ...localMutabaah };
@@ -283,12 +458,13 @@
             const cloudDay = cloudMutabaah[dayKey] || {};
             const mergedDay = { ...localDay };
 
-            MUTABAAH_ITEMS.forEach(item => {
-                if (localDay[item.id] === true || cloudDay[item.id] === true) {
-                    if (mergedDay[item.id] !== true) {
+            const allItems = new Set([...Object.keys(localDay), ...Object.keys(cloudDay)]);
+            allItems.forEach(itemId => {
+                if (localDay[itemId] === true || cloudDay[itemId] === true) {
+                    if (mergedDay[itemId] !== true) {
                         hasMergeChanges = true;
                     }
-                    mergedDay[item.id] = true;
+                    mergedDay[itemId] = true;
                 }
             });
 
@@ -297,7 +473,6 @@
 
         STATE.mutabaahData = mergedMutabaah;
 
-        // 3. Merge City
         if (cloudPayload.city && (!STATE.city || STATE.city === 'Jakarta')) {
             STATE.city = cloudPayload.city;
         }
@@ -305,11 +480,7 @@
         const hadLocalData = localJuz.length > 0 || Object.keys(localMutabaah).some(k => Object.values(localMutabaah[k]).some(v => v === true));
         const hadCloudData = cloudJuz.length > 0 || Object.keys(cloudMutabaah).some(k => Object.values(cloudMutabaah[k]).some(v => v === true));
 
-        return {
-            hasMergeChanges,
-            hadLocalData,
-            hadCloudData
-        };
+        return { hasMergeChanges, hadLocalData, hadCloudData };
     }
 
     async function fetchFromPostgres(userId) {
@@ -328,14 +499,12 @@
 
                     if (mergeResult.hadLocalData && mergeResult.hadCloudData) {
                         showToast('Alhamdulillah! Data perangkat dan cloud berhasil disatukan (Smart Merge). ☁️🔄');
-                        // Push merged result back to cloud immediately
                         await syncToPostgres(true);
                     } else if (mergeResult.hadCloudData) {
                         showToast('Alhamdulillah! Data amalan berhasil dipulihkan dari PostgreSQL server. ☁️✅');
                     }
                 }
             } else if (res.ok && json.ok && !json.found) {
-                // Cloud was empty, push local data to cloud
                 await syncToPostgres(true);
             }
         } catch (err) {
@@ -404,7 +573,6 @@
                 closeLoginModal();
                 showToast(`Alhamdulillah, berhasil masuk sebagai ${payload.name}! 🎉`);
 
-                // Check cloud data in PostgreSQL
                 await fetchFromPostgres(payload.sub);
                 await syncToPostgres(true);
             } catch (err) {
@@ -459,14 +627,15 @@
         }
     }
 
-    // Export JSON Backup
     function exportBackup() {
         const backupData = {
-            version: "1.0",
-            appName: "Sahabat Muslim - Ramadhan Hub",
+            version: "2.0",
+            appName: "Sahabat Muslim - Pusat Ibadah Hijriyah",
             exportedAt: new Date().toISOString(),
             user: STATE.userProfile,
             city: STATE.city,
+            hijriMonth: STATE.hijriMonth,
+            hijriYear: STATE.hijriYear,
             quranProgress: STATE.quranProgress,
             mutabaahData: STATE.mutabaahData
         };
@@ -474,14 +643,13 @@
         const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData, null, 2));
         const downloadAnchor = document.createElement('a');
         downloadAnchor.setAttribute("href", dataStr);
-        downloadAnchor.setAttribute("download", `SahabatMuslim_Ramadhan_Backup_${new Date().toISOString().slice(0, 10)}.json`);
+        downloadAnchor.setAttribute("download", `SahabatMuslim_Ibadah_Backup_${new Date().toISOString().slice(0, 10)}.json`);
         document.body.appendChild(downloadAnchor);
         downloadAnchor.click();
         downloadAnchor.remove();
         showToast('File cadangan (.json) berhasil diunduh! 📥');
     }
 
-    // Import JSON Backup
     function importBackup(event) {
         const file = event.target.files && event.target.files[0];
         if (!file) return;
@@ -494,6 +662,7 @@
                 if (imported.mutabaahData) STATE.mutabaahData = imported.mutabaahData;
                 if (imported.user) STATE.userProfile = imported.user;
                 if (imported.city) STATE.city = imported.city;
+                if (imported.hijriMonth) STATE.hijriMonth = imported.hijriMonth;
 
                 saveUserData();
                 renderQuranPlanner();
@@ -537,7 +706,7 @@
     }
 
     // -------------------------------------------------------------
-    // TAB 1: JADWAL IMSAKIYAH 30 HARI & COUNTDOWN
+    // TAB 1: JADWAL KALENDER HIJRIYAH & COUNTDOWN
     // -------------------------------------------------------------
     function populateCitySelect() {
         const select = document.getElementById('imsakiyah-city-select');
@@ -547,7 +716,48 @@
         ).join('');
     }
 
-    async function fetchImsakiyahData() {
+    function onHijriMonthChange(monthValue) {
+        STATE.hijriMonth = parseInt(monthValue, 10);
+        sessionStorage.setItem('sm_selected_hijri_month', String(STATE.hijriMonth));
+        updateHeroBannerForMonth();
+        fetchCalendarData();
+        renderMutabaahCalendar();
+        renderMutabaahChecklist();
+        showToast(`Menampilkan jadwal bulan ${HIJRI_MONTHS[STATE.hijriMonth - 1].name}`);
+    }
+
+    function updateHeroBannerForMonth() {
+        const monthInfo = HIJRI_MONTHS[STATE.hijriMonth - 1] || HIJRI_MONTHS[8];
+        const isRamadhan = (STATE.hijriMonth === 9);
+
+        const heroBadge = document.getElementById('hero-badge-hijri');
+        const heroTitle = document.getElementById('hero-title-hijri');
+        const heroDesc = document.getElementById('hero-desc-hijri');
+        const heroPrintTitle = document.getElementById('hero-print-title');
+        const heroFastingTip = document.getElementById('hero-fasting-tip');
+
+        if (heroBadge) {
+            heroBadge.innerHTML = isRamadhan 
+                ? `<span>🌙</span><span>Spesial Bulan Ramadhan ${STATE.hijriYear} H</span>`
+                : `<span>📅</span><span>Kalender Hijriyah ${STATE.hijriYear} H • Bulan ${monthInfo.name}</span>`;
+        }
+        if (heroTitle) {
+            heroTitle.textContent = isRamadhan ? `Pusat Ibadah & Imsakiyah Ramadhan` : `Kalender & Ibadah Bulan ${monthInfo.name}`;
+        }
+        if (heroDesc) {
+            heroDesc.textContent = isRamadhan 
+                ? `Jadwal Imsakiyah 30 Hari se-Indonesia, Live Countdown Berbuka, Target Khatam Qur'an, & Mutaba'ah Amal Ramadhan.`
+                : `Jadwal Waktu Sholat Sebulan Penuh, Panduan Puasa Sunnah (Senin-Kamis & Ayyamul Bidh), Target Tilawah, & Mutaba'ah Harian.`;
+        }
+        if (heroPrintTitle) {
+            heroPrintTitle.textContent = `JADWAL IBADAH & SHOLAT BULAN ${monthInfo.name.toUpperCase()} ${STATE.hijriYear} H`;
+        }
+        if (heroFastingTip) {
+            heroFastingTip.innerHTML = `<strong>Anjuran Amalan:</strong> ${monthInfo.specialFasting}`;
+        }
+    }
+
+    async function fetchCalendarData() {
         const loadingEl = document.getElementById('imsakiyah-loading');
         const contentEl = document.getElementById('imsakiyah-content');
         const cityHeaderEl = document.getElementById('imsakiyah-active-city-label');
@@ -558,9 +768,9 @@
 
         let url = '';
         if (STATE.coords) {
-            url = `https://api.aladhan.com/v1/hijriCalendar/${RAMADHAN_YEAR_HIJRI}/${RAMADHAN_MONTH_HIJRI}?latitude=${STATE.coords.lat}&longitude=${STATE.coords.lng}&method=${STATE.method}`;
+            url = `https://api.aladhan.com/v1/hijriCalendar/${STATE.hijriYear}/${STATE.hijriMonth}?latitude=${STATE.coords.lat}&longitude=${STATE.coords.lng}&method=${STATE.method}`;
         } else {
-            url = `https://api.aladhan.com/v1/hijriCalendarByCity/${RAMADHAN_YEAR_HIJRI}/${RAMADHAN_MONTH_HIJRI}?city=${encodeURIComponent(STATE.city)}&country=Indonesia&method=${STATE.method}`;
+            url = `https://api.aladhan.com/v1/hijriCalendarByCity/${STATE.hijriYear}/${STATE.hijriMonth}?city=${encodeURIComponent(STATE.city)}&country=Indonesia&method=${STATE.method}`;
         }
 
         try {
@@ -568,38 +778,38 @@
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
             const json = await res.json();
             if (json.code === 200 && Array.isArray(json.data)) {
-                STATE.imsakiyahData = json.data;
-                renderImsakiyahTable(json.data);
+                STATE.calendarData = json.data;
+                renderCalendarTable(json.data);
                 startCountdown(json.data);
             } else {
                 throw new Error('Format data tidak sesuai');
             }
         } catch (err) {
-            console.error('Gagal mengambil jadwal imsakiyah:', err);
-            // Render Fallback Template
-            renderImsakiyahFallback();
+            console.error('Gagal mengambil jadwal kalender:', err);
+            renderCalendarFallback();
         } finally {
             if (loadingEl) loadingEl.style.display = 'none';
             if (contentEl) contentEl.style.display = 'block';
         }
     }
 
-    function renderImsakiyahTable(days) {
+    function renderCalendarTable(days) {
         const tbody = document.getElementById('imsakiyah-table-body');
         if (!tbody) return;
 
         const todayStr = getTodayFormatted(); // DD-MM-YYYY
+        const monthInfo = HIJRI_MONTHS[STATE.hijriMonth - 1];
 
         let html = '';
         days.forEach((item, index) => {
             const dayNum = index + 1;
             const greg = item.date.gregorian;
-            const gregDateStr = greg.date; // e.g. "18-02-2026"
+            const gregDateStr = greg.date;
             const isToday = (gregDateStr === todayStr);
 
-            // Clean time: "04:39 (WIB)" -> "04:39"
-            const clean = (t) => t ? t.split(' ')[0] : '-';
+            const fastingInfo = getFastingInfo(dayNum, STATE.hijriMonth, greg.weekday.en);
 
+            const clean = (t) => t ? t.split(' ')[0] : '-';
             const imsakTime = clean(item.timings.Imsak || item.timings.Fajr);
             const subuhTime = clean(item.timings.Fajr);
             const terbitTime = clean(item.timings.Sunrise);
@@ -608,11 +818,21 @@
             const maghribTime = clean(item.timings.Maghrib);
             const isyaTime = clean(item.timings.Isha);
 
+            let fastingBadgeHtml = '';
+            if (fastingInfo.type === 'wajib') {
+                fastingBadgeHtml = `<span class="fasting-pill wajib">Wajib Ramadhan</span>`;
+            } else if (fastingInfo.type === 'sunnah') {
+                fastingBadgeHtml = `<span class="fasting-pill sunnah">🌟 ${fastingInfo.badge}</span>`;
+            } else if (fastingInfo.type === 'haram') {
+                fastingBadgeHtml = `<span class="fasting-pill haram">⛔ ${fastingInfo.badge}</span>`;
+            }
+
             html += `
                 <tr class="${isToday ? 'row-today' : ''}">
                     <td class="col-day">
-                        <strong>${dayNum} Ramadhan</strong>
+                        <strong>${dayNum} ${monthInfo.name}</strong>
                         ${isToday ? '<span class="today-badge">Hari Ini</span>' : ''}
+                        ${fastingBadgeHtml ? `<div style="margin-top: 3px;">${fastingBadgeHtml}</div>` : ''}
                     </td>
                     <td class="col-date">${greg.weekday.en ? translateDay(greg.weekday.en) + ', ' : ''}${greg.day} ${translateMonth(greg.month.number)} ${greg.year}</td>
                     <td class="time-imsak"><strong>${imsakTime}</strong></td>
@@ -629,7 +849,7 @@
         tbody.innerHTML = html;
     }
 
-    function renderImsakiyahFallback() {
+    function renderCalendarFallback() {
         const tbody = document.getElementById('imsakiyah-table-body');
         if (!tbody) return;
         tbody.innerHTML = `
@@ -638,7 +858,7 @@
                     <div style="font-size: 2rem; margin-bottom: 0.5rem;">⚠️</div>
                     <p><strong>Tidak dapat terhubung ke server Aladhan.</strong></p>
                     <p style="font-size: 0.85rem; margin-top: 0.25rem;">Periksa koneksi internet Anda atau coba ubah pilihan kota.</p>
-                    <button class="btn btn-secondary" onclick="window.RamadhanApp.fetchImsakiyah()" style="margin-top: 1rem; padding: 0.5rem 1.25rem; font-size: 0.85rem;">Coba Lagi 🔄</button>
+                    <button class="btn btn-secondary" onclick="window.RamadhanApp.fetchCalendar()" style="margin-top: 1rem; padding: 0.5rem 1.25rem; font-size: 0.85rem;">Coba Lagi 🔄</button>
                 </td>
             </tr>
         `;
@@ -656,10 +876,9 @@
 
         function tick() {
             const now = new Date();
-            const todayStr = getTodayFormatted(); // "18-02-2026"
+            const todayStr = getTodayFormatted();
             let todayData = days.find(d => d.date.gregorian.date === todayStr);
 
-            // If current date is outside Ramadhan, use Day 1 for preview calculation
             let isPreview = false;
             if (!todayData) {
                 todayData = days[0];
@@ -668,9 +887,16 @@
 
             if (!todayData) return;
 
+            const isRamadhan = (STATE.hijriMonth === 9);
+            const fastingInfo = getFastingInfo(todayData.date.hijri.day, STATE.hijriMonth, todayData.date.gregorian.weekday.en);
+
             const cleanTime = (t) => t ? t.split(' ')[0] : '00:00';
             const maghribStr = cleanTime(todayData.timings.Maghrib);
             const imsakStr = cleanTime(todayData.timings.Imsak || todayData.timings.Fajr);
+            const subuhStr = cleanTime(todayData.timings.Fajr);
+            const dzuhurStr = cleanTime(todayData.timings.Dhuhr);
+            const asharStr = cleanTime(todayData.timings.Asr);
+            const isyaStr = cleanTime(todayData.timings.Isha);
 
             const [mH, mM] = maghribStr.split(':').map(Number);
             const [iH, iM] = imsakStr.split(':').map(Number);
@@ -685,20 +911,17 @@
             let isMaghribTarget = false;
 
             if (nowMinutes < imsakMinutes) {
-                // Before imsak today -> countdown to Imsak
-                targetName = "Menuju Waktu Imsak (Sahur)";
+                targetName = isRamadhan ? "Menuju Waktu Imsak (Sahur)" : "Menuju Waktu Imsak / Sahur Sunnah";
                 targetHour = iH;
                 targetMinute = iM;
             } else if (nowMinutes < maghribMinutes) {
-                // Between imsak & maghrib -> countdown to Buka Puasa (Maghrib)
-                targetName = "Menuju Waktu Berbuka Puasa";
+                targetName = isRamadhan ? "Menuju Waktu Berbuka Puasa" : (fastingInfo.isRecommended ? `Menuju Berbuka (${fastingInfo.badge})` : "Menuju Sholat Maghrib (Buka Puasa)");
                 targetHour = mH;
                 targetMinute = mM;
                 isMaghribTarget = true;
             } else {
-                // After maghrib -> countdown to tomorrow's Imsak
                 targetName = "Menuju Waktu Imsak Esok Hari";
-                targetHour = iH + 24; // next day
+                targetHour = iH + 24;
                 targetMinute = iM;
             }
 
@@ -711,7 +934,8 @@
             const m = Math.floor((totalSec % 3600) / 60);
             const s = totalSec % 60;
 
-            if (cardLabel) cardLabel.textContent = isPreview ? `Simulasi Ramadhan — ${targetName}` : targetName;
+            const monthName = HIJRI_MONTHS[STATE.hijriMonth - 1].name;
+            if (cardLabel) cardLabel.textContent = isPreview ? `Simulasi Bulan ${monthName} — ${targetName}` : targetName;
             if (cardTargetTime) cardTargetTime.textContent = isMaghribTarget ? `Pukul ${maghribStr}` : `Pukul ${imsakStr}`;
             if (hoursEl) hoursEl.textContent = String(h).padStart(2, '0');
             if (minutesEl) minutesEl.textContent = String(m).padStart(2, '0');
@@ -719,8 +943,8 @@
 
             if (subtextEl) {
                 subtextEl.textContent = isMaghribTarget
-                    ? `Waktu Berbuka (${STATE.cityLabel || STATE.city}): ${maghribStr} WIB • Jangan lupa berdoa saat berbuka!`
-                    : `Waktu Imsak (${STATE.cityLabel || STATE.city}): ${imsakStr} WIB • Segerakan sahur sebelum fajar.`;
+                    ? `Waktu Maghrib (${STATE.cityLabel || STATE.city}): ${maghribStr} WIB • Jangan lupa berdoa saat berbuka puasa!`
+                    : `Waktu Imsak (${STATE.cityLabel || STATE.city}): ${imsakStr} WIB • Segerakan sahur sebelum berkumandangnya adzan subuh (${subuhStr}).`;
             }
         }
 
@@ -805,19 +1029,36 @@
     }
 
     // -------------------------------------------------------------
-    // TAB 3: MUTABA'AH YAUMIYAH (RAMADHAN HABIT TRACKER)
+    // TAB 3: MUTABA'AH YAUMIYAH (ADAPTIVE HABIT TRACKER)
     // -------------------------------------------------------------
+    function getMutabaahStorageKey(dayNumber) {
+        // If Ramadhan, maintain backward compatibility with 'day_X'
+        if (STATE.hijriMonth === 9) {
+            return `day_${dayNumber}`;
+        }
+        return `m${STATE.hijriMonth}_d${dayNumber}`;
+    }
+
     function renderMutabaahCalendar() {
         const calGrid = document.getElementById('mutabaah-days-grid');
         if (!calGrid) return;
 
+        const totalDays = (STATE.calendarData && STATE.calendarData.length) ? STATE.calendarData.length : 30;
+        const monthInfo = HIJRI_MONTHS[STATE.hijriMonth - 1];
+
         let html = '';
-        for (let i = 1; i <= 30; i++) {
-            const dayKey = `day_${i}`;
+        for (let i = 1; i <= totalDays; i++) {
+            const dayKey = getMutabaahStorageKey(i);
             const dayRecord = STATE.mutabaahData[dayKey] || {};
-            const keys = Object.keys(dayRecord);
-            const checkedCount = keys.filter(k => dayRecord[k] === true).length;
-            const totalItems = MUTABAAH_ITEMS.length;
+
+            let weekdayEn = '';
+            if (STATE.calendarData && STATE.calendarData[i - 1]) {
+                weekdayEn = STATE.calendarData[i - 1].date.gregorian.weekday.en;
+            }
+            const items = getMutabaahItemsForMonth(STATE.hijriMonth, i, weekdayEn);
+
+            const checkedCount = Object.keys(dayRecord).filter(k => dayRecord[k] === true).length;
+            const totalItems = items.length;
 
             let badgeClass = "badge-empty";
             if (checkedCount === totalItems) badgeClass = "badge-full";
@@ -825,9 +1066,14 @@
 
             const isSelected = (i === STATE.selectedMutabaahDay);
 
+            const fastingInfo = getFastingInfo(i, STATE.hijriMonth, weekdayEn);
+            let indicatorDot = "";
+            if (fastingInfo.type === 'wajib') indicatorDot = "<span class='dot-wajib'>🌙</span>";
+            else if (fastingInfo.type === 'sunnah') indicatorDot = "<span class='dot-sunnah'>⭐</span>";
+
             html += `
                 <button type="button" class="mutabaah-day-btn ${isSelected ? 'active' : ''} ${badgeClass}" onclick="window.RamadhanApp.selectMutabaahDay(${i})">
-                    <span class="day-label">H-${i}</span>
+                    <span class="day-label">${indicatorDot} H-${i}</span>
                     <span class="day-ratio">${checkedCount}/${totalItems}</span>
                 </button>
             `;
@@ -841,13 +1087,25 @@
         const checklistEl = document.getElementById('mutabaah-checklist-items');
         const scoreEl = document.getElementById('mutabaah-score-badge');
 
-        if (dayTitle) dayTitle.textContent = `Catatan Amalan: Hari ke-${STATE.selectedMutabaahDay} Ramadhan`;
+        const monthInfo = HIJRI_MONTHS[STATE.hijriMonth - 1];
 
-        const dayKey = `day_${STATE.selectedMutabaahDay}`;
+        let weekdayEn = '';
+        if (STATE.calendarData && STATE.calendarData[STATE.selectedMutabaahDay - 1]) {
+            weekdayEn = STATE.calendarData[STATE.selectedMutabaahDay - 1].date.gregorian.weekday.en;
+        }
+
+        const items = getMutabaahItemsForMonth(STATE.hijriMonth, STATE.selectedMutabaahDay, weekdayEn);
+        const fastingInfo = getFastingInfo(STATE.selectedMutabaahDay, STATE.hijriMonth, weekdayEn);
+
+        if (dayTitle) {
+            dayTitle.innerHTML = `Catatan Amalan: Tanggal ${STATE.selectedMutabaahDay} ${monthInfo.name} ${STATE.hijriYear} H ${fastingInfo.badge ? `<span class="badge-amalan-note">${fastingInfo.badge}</span>` : ''}`;
+        }
+
+        const dayKey = getMutabaahStorageKey(STATE.selectedMutabaahDay);
         const dayRecord = STATE.mutabaahData[dayKey] || {};
 
         const checkedCount = Object.keys(dayRecord).filter(k => dayRecord[k] === true).length;
-        const totalItems = MUTABAAH_ITEMS.length;
+        const totalItems = items.length;
         const percent = Math.round((checkedCount / totalItems) * 100);
 
         if (scoreEl) {
@@ -858,14 +1116,14 @@
         if (!checklistEl) return;
 
         let html = '';
-        MUTABAAH_ITEMS.forEach(item => {
+        items.forEach(item => {
             const isChecked = dayRecord[item.id] === true;
             html += `
                 <label class="mutabaah-item-card ${isChecked ? 'item-checked' : ''}">
                     <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="window.RamadhanApp.toggleMutabaahItem('${item.id}')">
                     <div class="mutabaah-item-icon">${item.icon}</div>
                     <div class="mutabaah-item-text">
-                        <strong>${item.label}</strong>
+                        <strong>${item.label} ${item.badge ? `<span class="pill-mini ${item.badgeType}">${item.badge}</span>` : ''}</strong>
                         <p>${item.desc}</p>
                     </div>
                     <div class="mutabaah-item-check-indicator">
@@ -885,7 +1143,7 @@
     }
 
     function toggleMutabaahItem(itemId) {
-        const dayKey = `day_${STATE.selectedMutabaahDay}`;
+        const dayKey = getMutabaahStorageKey(STATE.selectedMutabaahDay);
         if (!STATE.mutabaahData[dayKey]) {
             STATE.mutabaahData[dayKey] = {};
         }
@@ -913,8 +1171,8 @@
             type: 'city'
         }));
 
-        fetchImsakiyahData();
-        showToast(`Lokasi Imsakiyah diubah ke ${STATE.cityLabel}`);
+        fetchCalendarData();
+        showToast(`Lokasi diubah ke ${STATE.cityLabel}`);
     }
 
     function useGPS() {
@@ -939,7 +1197,7 @@
                     type: 'coords'
                 }));
 
-                fetchImsakiyahData();
+                fetchCalendarData();
                 showToast('Lokasi berhasil disesuaikan dengan GPS Anda! 📍');
             },
             (err) => {
@@ -1002,7 +1260,6 @@
         window.print();
     }
 
-    // Modal Doa Buka Puasa
     function openDoaBukaModal() {
         const modal = document.getElementById('doa-buka-modal');
         if (modal) modal.classList.add('active');
@@ -1020,8 +1277,10 @@
         init,
         switchTab,
         onCityChange,
+        onHijriMonthChange,
         useGPS,
-        fetchImsakiyah: fetchImsakiyahData,
+        fetchCalendar: fetchCalendarData,
+        fetchImsakiyah: fetchCalendarData,
         printImsakiyah,
         toggleJuz,
         changeQuranTarget,

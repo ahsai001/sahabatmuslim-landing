@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pusat Ibadah Ramadhan 1447 H — Sahabat Muslim</title>
-    <meta name="description" content="Jadwal Imsakiyah 30 Hari se-Indonesia, Live Countdown Berbuka & Imsak, Target Khatam Qur'an, Catatan Amalan (Mutaba'ah Yaumiyah), dan Doa Khusus Ramadhan.">
+    <title>Pusat Ibadah Hijriyah & Ramadhan — Sahabat Muslim</title>
+    <meta name="description" content="Kalender Hijriyah 12 Bulan, Jadwal Sholat & Imsakiyah, Panduan Puasa Sunnah (Senin-Kamis, Ayyamul Bidh) & Wajib Ramadhan, Target Khatam Qur'an, dan Mutaba'ah Yaumiyah.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -595,6 +595,83 @@
             font-size: 0.92rem;
             text-align: center;
             white-space: nowrap;
+        }
+
+        .fasting-pill {
+            display: inline-block;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 0.2rem 0.55rem;
+            border-radius: 9999px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .fasting-pill.wajib {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+        }
+
+        .fasting-pill.sunnah {
+            background: #fef3c7;
+            color: #b45309;
+            border: 1px solid #f59e0b;
+        }
+
+        .fasting-pill.haram {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #f87171;
+        }
+
+        .pill-mini {
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 0.15rem 0.45rem;
+            border-radius: 6px;
+            margin-left: 0.4rem;
+            vertical-align: middle;
+        }
+
+        .pill-mini.wajib {
+            background: #10b981;
+            color: white;
+        }
+
+        .pill-mini.sunnah {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .pill-mini.mubah {
+            background: var(--gray-200);
+            color: var(--gray-700);
+        }
+
+        .pill-mini.haram {
+            background: #ef4444;
+            color: white;
+        }
+
+        .badge-amalan-note {
+            display: inline-block;
+            font-size: 0.8rem;
+            font-weight: 700;
+            background: #fef3c7;
+            color: #b45309;
+            border: 1px solid #f59e0b;
+            padding: 0.15rem 0.6rem;
+            border-radius: 9999px;
+            margin-left: 0.5rem;
+            vertical-align: middle;
+        }
+
+        .dot-wajib, .dot-sunnah {
+            display: inline-block;
+            font-size: 0.75rem;
+            margin-right: 2px;
         }
 
         .imsakiyah-table th {
@@ -1271,7 +1348,7 @@
             </button>
             <ul class="nav-links">
                 <li><a href="/#jadwal-sholat">Jadwal Sholat</a></li>
-                <li><a href="/ramadhan" class="badge-special">Ramadhan 🌙</a></li>
+                <li><a href="/ramadhan" class="badge-special">Ibadah Hijriyah 🌙</a></li>
                 <li><a href="/kajian">Jadwal Kajian</a></li>
                 <li><a href="/dzikir">Dzikir Harian</a></li>
                 <li><a href="/doa">Doa Harian</a></li>
@@ -1312,12 +1389,15 @@
     <!-- Hero & Countdown Banner -->
     <header class="ramadhan-hero">
         <div class="ramadhan-hero-container">
-            <div class="hero-badge-ramadhan">
+            <div class="hero-badge-ramadhan" id="hero-badge-hijri">
                 <span>🌙</span>
-                <span>Spesial Ramadhan 1447 H / 2026 M</span>
+                <span>Pusat Ibadah Hijriyah & Ramadhan</span>
             </div>
-            <h1>Pusat Ibadah Ramadhan</h1>
-            <p>Jadwal Imsakiyah 30 Hari se-Indonesia, Live Countdown Berbuka, Target Khatam Qur'an, & Catatan Amal Harian.</p>
+            <h1 id="hero-title-hijri">Pusat Ibadah Hijriyah</h1>
+            <p id="hero-desc-hijri">Jadwal Sholat & Imsakiyah 12 Bulan Hijriyah, Live Countdown Sholat/Berbuka, Target Khatam Qur'an, & Catatan Amal Harian.</p>
+            <div id="hero-fasting-tip" style="margin-top: -0.75rem; margin-bottom: 1.5rem; font-size: 0.88rem; color: var(--gold-600); background: var(--gold-50); display: inline-block; padding: 0.35rem 1rem; border-radius: 9999px; border: 1px solid var(--gold-100);">
+                <strong>Anjuran Puasa Sunnah:</strong> Senin-Kamis & Ayyamul Bidh (13, 14, 15 Hijriyah)
+            </div>
 
             <!-- Live Countdown Card -->
             <div class="countdown-card">
@@ -1360,7 +1440,7 @@
     <section class="ramadhan-tabs-section">
         <div class="ramadhan-tabs-bar">
             <button type="button" class="ramadhan-tab-btn active" data-tab="imsakiyah">
-                <span>🗓️</span> Jadwal Imsakiyah
+                <span>🗓️</span> Jadwal & Kalender
             </button>
             <button type="button" class="ramadhan-tab-btn" data-tab="quran">
                 <span>📖</span> Target Khatam Qur'an
@@ -1374,20 +1454,23 @@
         </div>
     </section>
 
-    <!-- TAB 1: JADWAL IMSAKIYAH 30 HARI -->
+    <!-- TAB 1: JADWAL KALENDER HIJRIYAH & IMSAKIYAH -->
     <main class="ramadhan-tab-pane active" id="tab-imsakiyah">
         <div class="section-card">
             <div class="print-header">
-                <h2>JADWAL IMSAKIYAH RAMADHAN 1447 H / 2026 M</h2>
+                <h2 id="hero-print-title">JADWAL KALENDER & IBADAH HIJRIYAH</h2>
                 <p>Sahabat Muslim — https://sahabatmuslim.ahsailabs.my.id/ramadhan</p>
             </div>
 
             <div class="section-card-header">
                 <div class="section-card-title">
-                    <h2>🗓️ Tabel Imsakiyah 30 Hari — <span id="imsakiyah-active-city-label" style="color: var(--green-700);">Jakarta</span></h2>
-                    <p>Waktu Imsak, Subuh, Terbit, Dzuhur, Ashar, Maghrib (Buka), dan Isya sebulan penuh (Kemenag RI).</p>
+                    <h2>🗓️ Kalender Ibadah — <span id="imsakiyah-active-city-label" style="color: var(--green-700);">Jakarta</span></h2>
+                    <p>Waktu Imsak, Subuh, Terbit, Dzuhur, Ashar, Maghrib, dan Isya serta indikator puasa sunnah & wajib.</p>
                 </div>
                 <div class="imsakiyah-controls">
+                    <select id="hijri-month-select" class="control-select" onchange="window.RamadhanApp.onHijriMonthChange(this.value)" style="border-color: var(--gold-400); font-weight: 600;">
+                        <!-- Populated by JS: 12 Hijri Months -->
+                    </select>
                     <select id="imsakiyah-city-select" class="control-select" onchange="window.RamadhanApp.onCityChange(this.value)">
                         <!-- Populated by JS -->
                     </select>
@@ -1402,7 +1485,7 @@
 
             <div id="imsakiyah-loading" style="text-align: center; padding: 3rem; color: var(--gray-500);">
                 <div style="font-size: 2rem; margin-bottom: 0.5rem; animation: pulse 1s infinite;">⏳</div>
-                <p>Memuat jadwal imsakiyah 30 hari...</p>
+                <p>Memuat jadwal kalender ibadah...</p>
             </div>
 
             <div id="imsakiyah-content" style="display: none;">
@@ -1410,7 +1493,7 @@
                     <table class="imsakiyah-table">
                         <thead>
                             <tr>
-                                <th>Hari Ramadhan</th>
+                                <th>Tanggal Hijriyah</th>
                                 <th>Tanggal Masehi</th>
                                 <th>Imsak</th>
                                 <th>Subuh</th>
@@ -1485,8 +1568,8 @@
         <div class="section-card">
             <div class="section-card-header">
                 <div class="section-card-title">
-                    <h2>✍️ Mutaba'ah Yaumiyah (Catatan Amalan 30 Hari)</h2>
-                    <p>Pantau konsistensi ibadah harian Anda selama 30 hari Ramadhan. Data otomatis tersimpan di perangkat Anda.</p>
+                    <h2>✍️ Mutaba'ah Yaumiyah (Catatan Amalan Sepanjang Tahun)</h2>
+                    <p>Pantau konsistensi ibadah harian Anda (Sholat 5 waktu, Puasa Wajib / Sunnah, Tilawah, Sedekah, Qiyamul Lail). Otomatis menyesuaikan hari Senin-Kamis & Ayyamul Bidh.</p>
                 </div>
                 <div>
                     <span class="mutabaah-score-badge" id="mutabaah-score-badge">0 dari 12 Amalan Selesai (0%)</span>
@@ -1495,7 +1578,7 @@
 
             <!-- Kalender Hari 1-30 -->
             <div class="mutabaah-days-wrapper">
-                <label style="font-size: 0.85rem; font-weight: 700; color: var(--gray-600); text-transform: uppercase;">Pilih Hari Ramadhan:</label>
+                <label style="font-size: 0.85rem; font-weight: 700; color: var(--gray-600); text-transform: uppercase;">Pilih Tanggal Hijriyah:</label>
                 <div class="mutabaah-days-grid" id="mutabaah-days-grid">
                     <!-- Populated by JS -->
                 </div>
@@ -1503,7 +1586,7 @@
 
             <!-- Checklist Amalan Hari Terpilih -->
             <h3 id="mutabaah-current-day-title" style="font-size: 1.2rem; color: var(--green-900); margin-top: 1rem;">
-                Catatan Amalan: Hari ke-1 Ramadhan
+                Catatan Amalan: Hari Ini
             </h3>
 
             <div class="mutabaah-checklist" id="mutabaah-checklist-items">
@@ -1512,13 +1595,13 @@
         </div>
     </main>
 
-    <!-- TAB 4: PANDUAN & DOA RAMADHAN -->
+    <!-- TAB 4: PANDUAN & DOA PUASA (WAJIB & SUNNAH) -->
     <main class="ramadhan-tab-pane" id="tab-panduan">
         <div class="section-card">
             <div class="section-card-header">
                 <div class="section-card-title">
-                    <h2>🤲 Kumpulan Doa & Panduan Sunnah Ramadhan</h2>
-                    <p>Lafaz doa-doa shahih dan panduan ibadah yang dicontohkan Rasulullah ﷺ di bulan suci Ramadhan.</p>
+                    <h2>🤲 Kumpulan Doa, Niat Puasa Sunnah & Wajib</h2>
+                    <p>Lafaz doa-doa shahih dan panduan ibadah puasa yang dicontohkan Rasulullah ﷺ di bulan Ramadhan maupun hari-hari sunnah lainnya.</p>
                 </div>
             </div>
 
@@ -1534,7 +1617,29 @@
                     <span class="doa-riwayat">HR. Abu Dawud no. 2357, Ad-Daruquthni no. 2279 (Hasan)</span>
                 </div>
 
-                <!-- Niat Puasa -->
+                <!-- Niat Puasa Senin & Kamis -->
+                <div class="doa-ramadhan-card">
+                    <h3>✨ Niat Puasa Sunnah Senin & Kamis</h3>
+                    <div class="doa-arabic-box">
+                        <div class="doa-arabic-text">نَوَيْتُ صَوْمَ يَوْمِ الِاثْنَيْنِ / الْخَمِيسِ سُنَّةً لِلَّهِ تَعَالَى</div>
+                    </div>
+                    <p class="doa-latin">"Nawaitu shauma yaumil itsnaini / al-khamisi sunnatan lillaahi Ta'aala"</p>
+                    <p class="doa-arti"><strong>Artinya:</strong> "Saya berniat puasa sunnah hari Senin / hari Kamis karena Allah Ta'ala."</p>
+                    <span class="doa-riwayat">Boleh diniatkan pagi hari sebelum zawal (dzuhur) asalkan belum makan/minum (HR. Muslim no. 1154)</span>
+                </div>
+
+                <!-- Niat Puasa Ayyamul Bidh -->
+                <div class="doa-ramadhan-card">
+                    <h3>🌕 Niat Puasa Sunnah Ayyamul Bidh (13, 14, 15 Hijriyah)</h3>
+                    <div class="doa-arabic-box">
+                        <div class="doa-arabic-text">نَوَيْتُ صَوْمَ أَيَّامِ الْبِيضِ سُنَّةً لِلَّهِ تَعَالَى</div>
+                    </div>
+                    <p class="doa-latin">"Nawaitu shauma ayyaamil biidh sunnatan lillaahi Ta'aala"</p>
+                    <p class="doa-arti"><strong>Artinya:</strong> "Saya berniat puasa sunnah hari-hari putih (Ayyamul Bidh) karena Allah Ta'ala."</p>
+                    <span class="doa-riwayat">Pahalanya seperti berpuasa sepanjang tahun (HR. Bukhari no. 1975 & Muslim no. 1159)</span>
+                </div>
+
+                <!-- Niat Puasa Ramadhan -->
                 <div class="doa-ramadhan-card">
                     <h3>🤲 Niat Berpuasa Ramadhan</h3>
                     <div class="doa-arabic-box">
@@ -1542,7 +1647,7 @@
                     </div>
                     <p class="doa-latin">"Nawaitu shauma ghadin 'an adaa-i fardhi syahri Ramadhaana haadzihis sanati lillaahi Ta'aala"</p>
                     <p class="doa-arti"><strong>Artinya:</strong> "Saya niat berpuasa esok hari untuk menunaikan kewajiban bulan Ramadhan tahun ini karena Allah Ta'ala."</p>
-                    <span class="doa-riwayat">Cukup diniatkan dalam hati di malam hari sebelum fajar (HR. Abu Dawud no. 2454)</span>
+                    <span class="doa-riwayat">Wajib diniatkan dalam hati sebelum fajar untuk puasa fardhu (HR. Abu Dawud no. 2454)</span>
                 </div>
 
                 <!-- Doa Lailatul Qadar -->
@@ -1669,7 +1774,7 @@
             </div>
             <div class="footer-col">
                 <h4>Fitur Ibadah</h4>
-                <a href="/ramadhan">Imsakiyah & Ramadhan 🌙</a>
+                <a href="/ramadhan">Ibadah >Imsakiyah & Ramadhan 🌙< Kalender Hijriyah 🌙</a>
                 <a href="/#jadwal-sholat">Waktu Sholat 5 Waktu</a>
                 <a href="/quran">Al-Qur'an 30 Juz</a>
                 <a href="/dzikir">Dzikir Pagi Petang</a>
@@ -1691,6 +1796,6 @@
 
     <!-- Scripts -->
     <script src="js/nav.js?v=3"></script>
-    <script src="js/ramadhan.js?v=4"></script>
+    <script src="js/ramadhan.js?v=5"></script>
 </body>
 </html>

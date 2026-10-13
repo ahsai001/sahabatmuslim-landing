@@ -399,10 +399,19 @@
             line-height: 1;
         }
 
+        /* Higher specificity than `.ramadhan-hero p` (gray) so text stays readable on dark green */
+        .ramadhan-hero .countdown-card .countdown-subtext,
         .countdown-subtext {
-            font-size: 0.88rem;
-            color: rgba(255,255,255,0.85);
-            margin-bottom: 1.25rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            line-height: 1.55;
+            color: #ffffff;
+            background: rgba(0, 0, 0, 0.22);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 12px;
+            padding: 0.6rem 1rem;
+            max-width: 100%;
+            margin: 0.5rem auto 1.25rem;
         }
 
         .countdown-cta-row {

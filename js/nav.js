@@ -1,8 +1,18 @@
 // Mobile navigation handler for Sahabat Muslim
+let lastToggleTime = 0;
+
 function toggleMobileMenu(event) {
+    const now = Date.now();
+    if (now - lastToggleTime < 250) {
+        if (event) event.stopPropagation();
+        return;
+    }
+    lastToggleTime = now;
+
     if (event) {
         event.stopPropagation();
     }
+
     const navLinks = document.querySelector('.nav-links');
     const toggleBtn = document.getElementById('mobile-menu-toggle');
     if (!navLinks) return;
@@ -15,19 +25,12 @@ function toggleMobileMenu(event) {
     }
 }
 
-// Ensure function is available globally
+// Expose globally for inline onclick
 window.toggleMobileMenu = toggleMobileMenu;
 
 document.addEventListener('DOMContentLoaded', () => {
     const toggleBtn = document.getElementById('mobile-menu-toggle');
     const navLinks = document.querySelector('.nav-links');
-
-    if (toggleBtn) {
-        toggleBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            toggleMobileMenu(e);
-        });
-    }
 
     // Auto-close when clicking any navigation link
     document.querySelectorAll('.nav-links a').forEach(link => {

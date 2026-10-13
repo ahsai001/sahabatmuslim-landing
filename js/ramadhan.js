@@ -968,7 +968,9 @@
         exportBackup,
         importBackup,
         openDoaBukaModal,
-        closeDoaBukaModal
+        closeDoaBukaModal,
+        syncToPostgres,
+        fetchFromPostgres
     };
 
     // Auto-init on DOMContentLoaded

@@ -69,7 +69,14 @@ Platform web ibadah digital all-in-one yang ringan, cepat, responsif, dan kaya f
 - Filter hari (Hari ini, Besok, Minggu Ini, Semua).
 - Modal detail flyer kajian, info pemateri/ustadz, dan tautan Google Maps masjid.
 
-### 8. 🎧 Ruqyah Syar'iyyah ↗
+### 8. 🎈 Sahabat Muslim Kids — Tontonan Anak Sesuai Sunnah (`kids.html`)
+- **Kurasi 15 Channel YouTube Edukasi Islam Sesuai Sunnah**: Yufid Kids, Kak Erlan Bercerita, Rodja Ceria, Keluarga Hamzi, Kids Tauhid, Kak Yogi the Explorer, Hijaiyah Journey Jawwada, Al Firqatun Najiyah Kids, Sarah Playschool, Rofif Kids, Muslim Zone, Annawawi TV, Anak Cerdas Indonesia, Happy Hola Official, dan Tumbuh Kembang Anak Saleh.
+- **Embedded Player Bebas Distraksi**: Pemutaran video langsung di web app menggunakan embed privasi YouTube (`youtube-nocookie.com`) tanpa rekomendasi liar YouTube publik.
+- **Parental Screen Time Timer**: Pengatur batas waktu menonton (15, 30, 45, 60 menit) dengan dialog pengingat santun saat batas waktu selesai agar anak istirahat dan beribadah.
+- **Kategori Tematik & Filter**: Aqidah & Tauhid, Kisah Nabi & Ulama, Belajar Hijaiyah & Qur'an, Eksplorasi Sains & Alam, serta Aktivitas Karakter.
+- **Favorit Lokal**: Orang tua dapat menyimpan channel favorit anak ke browser.
+
+### 9. 🎧 Ruqyah Syar'iyyah ↗
 - Tautan shortcut langsung ke web streaming audio ruqyah penenang jiwa: [https://ruqyah.ahsailabs.my.id/](https://ruqyah.ahsailabs.my.id/).
 
 ---

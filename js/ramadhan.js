@@ -168,7 +168,9 @@
         }
     }
 
-    function saveUserData() {
+    let syncDebounceTimer = null;
+
+    function saveUserData(autoSync = true) {
         try {
             localStorage.setItem('sm_ramadhan_quran', JSON.stringify(STATE.quranProgress));
             localStorage.setItem('sm_ramadhan_mutabaah', JSON.stringify(STATE.mutabaahData));
@@ -180,11 +182,96 @@
         } catch (e) {
             console.error('Gagal menyimpan data ke localStorage', e);
         }
+
+        // Auto-sync to PostgreSQL if logged in
+        if (autoSync && STATE.userProfile && (STATE.userProfile.sub || STATE.userProfile.email)) {
+            if (syncDebounceTimer) clearTimeout(syncDebounceTimer);
+            syncDebounceTimer = setTimeout(() => {
+                syncToPostgres(true);
+            }, 1200);
+        }
     }
 
     // -------------------------------------------------------------
-    // HYBRID AUTH & BACKUP SYNC
+    // POSTGRESQL CLOUD SYNC & HYBRID AUTH
     // -------------------------------------------------------------
+    async function syncToPostgres(silent = false) {
+        if (!STATE.userProfile || (!STATE.userProfile.sub && !STATE.userProfile.email)) {
+            if (!silent) triggerGoogleLogin();
+            return;
+        }
+
+        const userId = STATE.userProfile.sub || STATE.userProfile.email;
+        const payload = {
+            user_id: userId,
+            email: STATE.userProfile.email || '',
+            name: STATE.userProfile.name || '',
+            avatar_url: STATE.userProfile.picture || '',
+            client_updated_at: new Date().toISOString(),
+            payload: {
+                city: STATE.city,
+                quranProgress: STATE.quranProgress,
+                mutabaahData: STATE.mutabaahData
+            }
+        };
+
+        try {
+            const res = await fetch('/api/sync', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                STATE.lastSyncedAt = data.updated_at;
+                updateHybridUI();
+                if (!silent) {
+                    showToast('Alhamdulillah! Data amalan berhasil dicadangkan ke PostgreSQL server. ☁️✅');
+                }
+            } else {
+                throw new Error(data.error || 'Gagal menyimpan ke server');
+            }
+        } catch (err) {
+            console.warn('Sync to PostgreSQL error:', err);
+            if (!silent) {
+                showToast('Gagal mencadangkan ke PostgreSQL: ' + err.message);
+            }
+        }
+    }
+
+    async function fetchFromPostgres(userId) {
+        if (!userId) return;
+        try {
+            const res = await fetch(`/api/sync?user_id=${encodeURIComponent(userId)}`);
+            const json = await res.json();
+            if (res.ok && json.ok && json.found && json.data) {
+                const cloudPayload = json.data.payload;
+                if (cloudPayload) {
+                    if (cloudPayload.quranProgress) {
+                        STATE.quranProgress = cloudPayload.quranProgress;
+                    }
+                    if (cloudPayload.mutabaahData) {
+                        // Merge or replace
+                        STATE.mutabaahData = {
+                            ...STATE.mutabaahData,
+                            ...cloudPayload.mutabaahData
+                        };
+                    }
+                    if (cloudPayload.city) {
+                        STATE.city = cloudPayload.city;
+                    }
+                }
+                saveUserData(false);
+                renderQuranPlanner();
+                renderMutabaahCalendar();
+                renderMutabaahChecklist();
+                showToast('Alhamdulillah! Data amalan dipulihkan dari PostgreSQL server. ☁️🔄');
+            }
+        } catch (err) {
+            console.warn('Fetch from PostgreSQL error:', err);
+        }
+    }
+
     function updateHybridUI() {
         const userBadge = document.getElementById('hybrid-user-badge');
         const loginBtn = document.getElementById('hybrid-login-btn');
@@ -198,11 +285,14 @@
                     <img src="${STATE.userProfile.picture || 'https://via.placeholder.com/32'}" alt="${STATE.userProfile.name}" class="user-avatar-img" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(STATE.userProfile.name)}&background=047857&color=fff'">
                     <div class="user-avatar-info">
                         <span class="user-name">${escapeHtml(STATE.userProfile.name)}</span>
-                        <span class="user-status-text">🟢 Tersinkronisasi Akun</span>
+                        <span class="user-status-text">🟢 Tersinkronisasi PostgreSQL Server</span>
                     </div>
                 </div>
             `;
-            if (loginBtn) loginBtn.style.display = 'none';
+            if (loginBtn) {
+                loginBtn.innerHTML = `<span>☁️ Sinkronkan PostgreSQL</span>`;
+                loginBtn.onclick = () => syncToPostgres(false);
+            }
             if (logoutBtn) logoutBtn.style.display = 'inline-flex';
         } else {
             userBadge.innerHTML = `
@@ -211,16 +301,18 @@
                     <span class="guest-text"><strong>Mode Tamu</strong> (Tersimpan di Perangkat Ini)</span>
                 </div>
             `;
-            if (loginBtn) loginBtn.style.display = 'inline-flex';
+            if (loginBtn) {
+                loginBtn.innerHTML = `<span>☁️ Cadangkan ke Server</span>`;
+                loginBtn.onclick = () => triggerGoogleLogin();
+                loginBtn.style.display = 'inline-flex';
+            }
             if (logoutBtn) logoutBtn.style.display = 'none';
         }
     }
 
     function initGoogleSignIn() {
-        // Expose callback for Google GSI
-        window.handleGoogleCredentialResponse = function (response) {
+        window.handleGoogleCredentialResponse = async function (response) {
             try {
-                // Decode base64url JWT payload
                 const base64Url = response.credential.split('.')[1];
                 const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
                 const jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
@@ -236,9 +328,14 @@
                     loginTime: new Date().toISOString()
                 };
 
-                saveUserData();
+                saveUserData(false);
                 updateHybridUI();
+                closeLoginModal();
                 showToast(`Alhamdulillah, berhasil masuk sebagai ${payload.name}! 🎉`);
+
+                // Check cloud data in PostgreSQL
+                await fetchFromPostgres(payload.sub);
+                await syncToPostgres(true);
             } catch (err) {
                 console.error('GSI decode error', err);
                 showToast('Gagal memproses data login Google');
@@ -256,23 +353,30 @@
         if (modal) modal.classList.remove('active');
     }
 
-    function handleManualProfile(e) {
+    async function handleManualProfile(e) {
         if (e) e.preventDefault();
         const nameInput = document.getElementById('manual-name-input');
         const emailInput = document.getElementById('manual-email-input');
         if (!nameInput || !nameInput.value.trim()) return;
 
+        const emailVal = emailInput ? emailInput.value.trim() : '';
+        const nameVal = nameInput.value.trim();
+
         STATE.userProfile = {
-            name: nameInput.value.trim(),
-            email: emailInput ? emailInput.value.trim() : '',
-            picture: `https://ui-avatars.com/api/?name=${encodeURIComponent(nameInput.value.trim())}&background=047857&color=fff`,
+            name: nameVal,
+            email: emailVal,
+            sub: emailVal || nameVal.toLowerCase().replace(/\s+/g, '_'),
+            picture: `https://ui-avatars.com/api/?name=${encodeURIComponent(nameVal)}&background=047857&color=fff`,
             loginTime: new Date().toISOString()
         };
 
-        saveUserData();
+        saveUserData(false);
         updateHybridUI();
         closeLoginModal();
         showToast(`Profil ${STATE.userProfile.name} berhasil disimpan! 🎉`);
+
+        await fetchFromPostgres(STATE.userProfile.sub);
+        await syncToPostgres(true);
     }
 
     function logoutUser() {

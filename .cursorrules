@@ -1,0 +1,10 @@
+# Sahabat Muslim — AI Agent Rules
+# Refer to AGENTS.md for complete guidelines, architecture, and deployment SOP.
+
+Please strictly follow the rules defined in `AGENTS.md`:
+1. Always work in local repo (/Users/shabudin/Documents/git/sahabatmuslim-landing), git push origin main, then pull on VPS (ssh vps-saya "sudo -u hermes git -C /opt/data/home/sahabatmuslim-landing pull origin main").
+2. Database table names must be generic (e.g. `user_sync_data`) — NEVER specific to 'ramadhan'.
+3. Always implement Smart Merge (Union) for user worship data sync so no record is overwritten or lost.
+4. Mobile menu consistency across all HTML files with pointer-events: none on button children, and bump cache-buster versions (e.g. `nav.js?v=X`, `ramadhan.js?v=X`).
+5. Genuine Arabic font rendering (`font-family: 'Amiri', serif`), authentic hadith narrations.
+6. Always keep README.md, docs/API_AND_DATABASE.md, and AGENTS.md updated when features/endpoints are changed.

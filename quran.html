@@ -107,6 +107,26 @@
             font-weight: 600;
         }
 
+        .mobile-menu-btn {
+            display: none;
+            background: transparent;
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            width: 40px;
+            height: 40px;
+            font-size: 1.35rem;
+            color: var(--gray-700);
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .mobile-menu-btn:hover {
+            background: var(--gray-100);
+            color: var(--green-800);
+        }
+
         /* Hero */
         .quran-hero {
             padding: 7.5rem 2rem 2.25rem;
@@ -837,7 +857,49 @@
 
         @media (max-width: 768px) {
             nav { padding: 1rem; }
-            .nav-links { display: none; }
+            .mobile-menu-btn { display: inline-flex; }
+            .nav-links {
+                position: fixed;
+                top: 70px;
+                left: 0;
+                width: 100%;
+                background: rgba(255, 255, 255, 0.98);
+                backdrop-filter: blur(12px);
+                -webkit-backdrop-filter: blur(12px);
+                border-bottom: 1px solid var(--gray-200);
+                box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+                flex-direction: column;
+                gap: 0;
+                padding: 0.5rem 1.25rem 1.25rem;
+                max-height: calc(100vh - 70px);
+                overflow-y: auto;
+                display: none;
+                z-index: 99;
+            }
+            .nav-links.active {
+                display: flex;
+                animation: navSlideDown 0.2s ease-out forwards;
+            }
+            .nav-links li {
+                border-bottom: 1px solid var(--gray-100);
+            }
+            .nav-links li:last-child {
+                border-bottom: none;
+            }
+            .nav-links a {
+                display: flex;
+                align-items: center;
+                padding: 0.8rem 0.5rem;
+                font-size: 0.95rem;
+                font-weight: 600;
+                color: var(--gray-800);
+            }
+            .nav-links a:hover,
+            .nav-links a.active {
+                color: var(--green-700);
+                background: var(--green-50);
+                border-radius: 8px;
+            }
             .quran-hero { padding: 6rem 1rem 1.5rem; }
             .quran-hero h1 { font-size: 1.85rem; }
             .quran-section { padding: 1rem 1rem 4rem; }
@@ -847,6 +909,11 @@
             .quran-ayah-card { padding: 1.25rem; }
             .quran-ayah-arabic { font-size: 1.45rem; line-height: 2.1; }
             .footer-inner { grid-template-columns: 1fr; gap: 2rem; }
+        }
+
+        @keyframes navSlideDown {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
@@ -859,6 +926,9 @@
                 <div class="logo-icon">🕌</div>
                 <span class="logo-text">Sahabat Muslim</span>
             </a>
+            <button class="mobile-menu-btn" id="mobile-menu-toggle" aria-label="Menu Navigasi" onclick="toggleMobileMenu()">
+                <span>☰</span>
+            </button>
             <ul class="nav-links">
                 <li><a href="/">Beranda</a></li>
                 <li><a href="/#jadwal-sholat">Jadwal Sholat</a></li>
@@ -1052,5 +1122,6 @@
     <!-- Scripts -->
     <script src="js/quran-data.js"></script>
     <script src="js/quran.js?v=1"></script>
+    <script src="js/nav.js"></script>
 </body>
 </html>

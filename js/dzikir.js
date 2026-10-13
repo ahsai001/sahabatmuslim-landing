@@ -109,8 +109,19 @@
                 infoTitle.textContent = '🌇 Dzikir Petang / Sore Hari';
                 infoSubtitle.textContent = "Waktu utama: Antara 'ashar hingga terbenam matahari. Menjaga keselamatan jiwa dari marabahaya malam.";
             } else {
-                infoTitle.textContent = '🕌 Dzikir Sesudah Sholat Fardhu';
-                infoSubtitle.textContent = 'Sunnah Rasulullah ﷺ selesai mendirikan shalat fardhu lima waktu.';
+                if (currentSholatSub === 'sholat_subuh') {
+                    infoTitle.textContent = '🕌 Dzikir Sesudah Sholat Shubuh';
+                    infoSubtitle.textContent = '11 bacaan dzikir khusus sesudah shalat Shubuh sesuai sunnah.';
+                } else if (currentSholatSub === 'sholat_maghrib') {
+                    infoTitle.textContent = '🕌 Dzikir Sesudah Sholat Maghrib';
+                    infoSubtitle.textContent = '10 bacaan dzikir khusus sesudah shalat Maghrib sesuai sunnah.';
+                } else if (currentSholatSub === 'sholat_dz_a_i') {
+                    infoTitle.textContent = '🕌 Dzikir Sesudah Sholat Zhuhur, Ashar & Isya';
+                    infoSubtitle.textContent = '9 bacaan dzikir sesudah shalat fardhu Zhuhur, Ashar, dan Isya.';
+                } else {
+                    infoTitle.textContent = '🕌 Dzikir Sesudah Sholat Fardhu';
+                    infoSubtitle.textContent = 'Sunnah Rasulullah ﷺ selesai mendirikan shalat fardhu lima waktu.';
+                }
             }
         }
 
@@ -285,12 +296,28 @@
         showToast('Seluruh hitungan dzikir berhasil direset');
     }
 
+    function updateUrlQuery() {
+        try {
+            if (window.history && window.history.replaceState) {
+                const url = new URL(window.location.href);
+                url.searchParams.set('cat', currentCategory);
+                if (currentCategory === 'sholat') {
+                    url.searchParams.set('sub', currentSholatSub);
+                } else {
+                    url.searchParams.delete('sub');
+                }
+                window.history.replaceState({}, '', url.toString());
+            }
+        } catch (e) {}
+    }
+
     function setCategory(cat) {
         currentCategory = cat;
         // Update active tab buttons
         document.querySelectorAll('.dzikir-tab-btn').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.category === cat);
         });
+        updateUrlQuery();
         renderDzikirList();
     }
 
@@ -299,6 +326,7 @@
         document.querySelectorAll('.dzikir-subpill-btn').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.sub === sub);
         });
+        updateUrlQuery();
         renderDzikirList();
     }
 
@@ -461,19 +489,21 @@
             try {
                 const urlParams = new URLSearchParams(window.location.search);
                 const catParam = urlParams.get('cat');
+                const subParam = urlParams.get('sub');
                 if (catParam && ['pagi', 'petang', 'sholat'].includes(catParam)) {
                     currentCategory = catParam;
-                    document.querySelectorAll('.dzikir-tab-btn').forEach(btn => {
-                        btn.classList.toggle('active', btn.dataset.category === catParam);
-                    });
+                } else if (subParam && ['semua', 'sholat_subuh', 'sholat_maghrib', 'sholat_dz_a_i'].includes(subParam)) {
+                    currentCategory = 'sholat';
                 }
-                const subParam = urlParams.get('sub');
                 if (subParam && ['semua', 'sholat_subuh', 'sholat_maghrib', 'sholat_dz_a_i'].includes(subParam)) {
                     currentSholatSub = subParam;
-                    document.querySelectorAll('.dzikir-subpill-btn').forEach(btn => {
-                        btn.classList.toggle('active', btn.dataset.sub === subParam);
-                    });
                 }
+                document.querySelectorAll('.dzikir-tab-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.category === currentCategory);
+                });
+                document.querySelectorAll('.dzikir-subpill-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.sub === currentSholatSub);
+                });
             } catch (e) {
                 console.warn('URL parameter parsing failed:', e);
             }

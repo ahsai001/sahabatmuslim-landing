@@ -8,8 +8,12 @@ Table: user_sync_data, newsletter_subscribers
 import http.server
 import json
 import os
+import re
 import sys
+import threading
+import time
 import urllib.parse
+import urllib.request
 from datetime import datetime
 import psycopg2
 import psycopg2.extras
@@ -17,6 +21,121 @@ import psycopg2.extras
 PORT = 8890
 DB_NAME = "sahabatmuslim_db"
 DB_USER = "hermes"
+
+# -------------------------------------------------------------
+# KIDS YOUTUBE CHANNELS & BACKGROUND REFRESHER
+# -------------------------------------------------------------
+KIDS_TARGETS = [
+    {'id': 'yufid-kids', 'handle': '@YufidKids', 'url': 'https://www.youtube.com/@YufidKids/videos'},
+    {'id': 'kak-erlan', 'handle': '@KakErlanBercerita', 'url': 'https://www.youtube.com/@KakErlanBercerita/videos'},
+    {'id': 'rodja-ceria', 'handle': '@RodjaCeria', 'url': 'https://www.youtube.com/@RodjaCeria/videos'},
+    {'id': 'keluarga-hamzi', 'handle': '@KeluargaHamzi', 'url': 'https://www.youtube.com/@KeluargaHamzi/videos'},
+    {'id': 'kids-tauhid', 'handle': '@KidsTauhidorid', 'url': 'https://www.youtube.com/@KidsTauhidorid/videos'},
+    {'id': 'kak-yogi', 'handle': '@KakErlanBercerita', 'url': 'https://www.youtube.com/@KakErlanBercerita/search?query=Kak+Yogi'},
+    {'id': 'jawwada-hijaiyah', 'handle': '@hijaiyahjourneyjawwada', 'url': 'https://www.youtube.com/results?search_query=Hijaiyah+Journey+Jawwada'},
+    {'id': 'al-firqatun-najiyah', 'handle': '@alfirqotunnajiyahkids', 'url': 'https://www.youtube.com/@alfirqotunnajiyahkids/videos'},
+    {'id': 'sarah-playschool', 'handle': '@Sarahplayschool', 'url': 'https://www.youtube.com/@Sarahplayschool/videos'},
+    {'id': 'rofif-kids', 'handle': '@rumayshotv', 'url': 'https://www.youtube.com/@rumayshotv/search?query=rofif'},
+    {'id': 'muslim-zone', 'handle': '@muslimzone', 'url': 'https://www.youtube.com/@muslimzone/videos'},
+    {'id': 'annawawi-tv', 'handle': '@ANNAWAWITV', 'url': 'https://www.youtube.com/@ANNAWAWITV/videos'},
+    {'id': 'anak-cerdas-indonesia', 'handle': '@AnakCerdasIndonesiaOfficial', 'url': 'https://www.youtube.com/@AnakCerdasIndonesiaOfficial/videos'},
+    {'id': 'happy-hola', 'handle': '@happyhola', 'url': 'https://www.youtube.com/@happyhola/videos'},
+    {'id': 'tumbuh-kembang-anak', 'handle': '@tumbuhkembanganak', 'url': 'https://www.youtube.com/results?search_query=mendidik+anak+sholeh+dan+cerdas+sunnah'}
+]
+
+KIDS_CACHE_FILE = "/opt/data/cache/kids_videos_cache.json"
+if not os.path.exists("/opt/data/cache"):
+    KIDS_CACHE_FILE = "/tmp/kids_videos_cache.json"
+
+KIDS_CACHE = {
+    "videos": {},
+    "updated_at": None
+}
+
+def load_kids_cache_from_disk():
+    global KIDS_CACHE
+    if os.path.exists(KIDS_CACHE_FILE):
+        try:
+            with open(KIDS_CACHE_FILE, "r") as f:
+                data = json.load(f)
+                KIDS_CACHE["videos"] = data.get("videos", {})
+                KIDS_CACHE["updated_at"] = data.get("updated_at")
+        except Exception as e:
+            sys.stderr.write(f"Failed to load kids cache: {e}\n")
+
+def save_kids_cache_to_disk():
+    try:
+        os.makedirs(os.path.dirname(KIDS_CACHE_FILE), exist_ok=True)
+        with open(KIDS_CACHE_FILE, "w") as f:
+            json.dump(KIDS_CACHE, f, indent=2)
+    except Exception as e:
+        sys.stderr.write(f"Failed to save kids cache: {e}\n")
+
+def fetch_channel_videos(url, limit=4):
+    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
+    try:
+        req = urllib.request.Request(url, headers=headers)
+        html = urllib.request.urlopen(req, timeout=8).read().decode("utf-8")
+        raw_vids = re.findall(r'/watch\?v=([a-zA-Z0-9_-]{11})', html)
+        unique_vids = list(dict.fromkeys(raw_vids))[:limit]
+        items = []
+        for vid in unique_vids:
+            try:
+                o_url = f"https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v={vid}&format=json"
+                o_req = urllib.request.Request(o_url, headers=headers)
+                o_data = json.loads(urllib.request.urlopen(o_req, timeout=4).read().decode("utf-8"))
+                items.append({
+                    "videoId": vid,
+                    "title": o_data.get("title") or "Video Edukasi Sunnah",
+                    "thumbnail": f"https://i.ytimg.com/vi/{vid}/hqdefault.jpg"
+                })
+            except Exception:
+                items.append({
+                    "videoId": vid,
+                    "title": "Video Edukasi Anak Muslim",
+                    "thumbnail": f"https://i.ytimg.com/vi/{vid}/hqdefault.jpg"
+                })
+        return items
+    except Exception as e:
+        sys.stderr.write(f"Scrape error for {url}: {e}\n")
+        return []
+
+def refresh_kids_videos_job():
+    global KIDS_CACHE
+    sys.stderr.write("Refreshing kids YouTube videos cache...\n")
+    new_data = {}
+    for target in KIDS_TARGETS:
+        cid = target["id"]
+        vids = fetch_channel_videos(target["url"], limit=4)
+        if vids:
+            new_data[cid] = vids
+        elif cid in KIDS_CACHE["videos"]:
+            new_data[cid] = KIDS_CACHE["videos"][cid]
+        time.sleep(0.5)
+
+    if new_data:
+        KIDS_CACHE["videos"] = new_data
+        KIDS_CACHE["updated_at"] = datetime.now().isoformat()
+        save_kids_cache_to_disk()
+        sys.stderr.write(f"Kids cache refreshed: {len(new_data)} channels updated\n")
+
+def background_kids_refresher():
+    load_kids_cache_from_disk()
+    # If cache empty or older than 12 hours, refresh in background
+    if not KIDS_CACHE["videos"]:
+        refresh_kids_videos_job()
+    while True:
+        time.sleep(12 * 3600)  # Refresh every 12 hours
+        try:
+            refresh_kids_videos_job()
+        except Exception as e:
+            sys.stderr.write(f"Kids refresher periodic error: {e}\n")
+
+def get_kids_videos(channel_id=None):
+    load_kids_cache_from_disk()
+    if channel_id:
+        return KIDS_CACHE["videos"].get(channel_id, [])
+    return KIDS_CACHE["videos"]
 
 def get_db():
     return psycopg2.connect(dbname=DB_NAME, user=DB_USER)
@@ -112,6 +231,17 @@ class SahabatMuslimHandler(http.server.BaseHTTPRequestHandler):
                             })
             except Exception as e:
                 self.send_json(500, {"ok": False, "error": str(e)})
+            return
+
+        if path == "/api/kids/videos":
+            channel_id = query.get("channel_id", [""])[0].strip()
+            data = get_kids_videos(channel_id=channel_id if channel_id else None)
+            self.send_json(200, {
+                "ok": True,
+                "total_channels": len(data),
+                "data": data,
+                "last_refreshed": KIDS_CACHE.get("updated_at")
+            })
             return
 
         self.send_json(404, {"ok": False, "error": "Not Found"})
@@ -210,6 +340,8 @@ class SahabatMuslimHandler(http.server.BaseHTTPRequestHandler):
         sys.stderr.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] {self.address_string()} - {format % args}\n")
 
 if __name__ == "__main__":
+    t = threading.Thread(target=background_kids_refresher, daemon=True)
+    t.start()
     server = http.server.ThreadingHTTPServer(("127.0.0.1", PORT), SahabatMuslimHandler)
     print(f"🕌 Sahabat Muslim API running at http://127.0.0.1:{PORT}")
     server.serve_forever()

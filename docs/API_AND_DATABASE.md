@@ -210,6 +210,30 @@ Menyimpan pendaftaran email dari form landing page.
 
 ---
 
+### E. Video Terbaru Sahabat Muslim Kids
+Mengambil daftar video YouTube terbaru dari 15 channel anak sunnah terkurasi. Menggunakan background worker yang melakukan cache otomatis setiap 12 jam.
+
+- **URL**: `GET /api/kids/videos` atau `GET /api/kids/videos?channel_id=yufid-kids`
+- **Response 200 OK**:
+```json
+{
+  "ok": true,
+  "total_channels": 15,
+  "data": {
+    "yufid-kids": [
+      {
+        "videoId": "GNe-8K78pmU",
+        "title": "Cerita Ubay: Membereskan Mainan Ternyata Tidak Mudah!",
+        "thumbnail": "https://i.ytimg.com/vi/GNe-8K78pmU/hqdefault.jpg"
+      }
+    ]
+  },
+  "last_refreshed": "2026-10-13T12:54:18.000Z"
+}
+```
+
+---
+
 ## 4. Konfigurasi Nginx Reverse Proxy
 
 Konfigurasi Nginx untuk domain `sahabatmuslim.ahsailabs.my.id` di `/etc/nginx/sites-available/ahsailabs`:

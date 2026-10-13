@@ -592,6 +592,52 @@
             border: none;
         }
 
+        .playlist-thumb-btn {
+            flex: 0 0 160px;
+            background: #111827;
+            border: 1.5px solid #374151;
+            border-radius: 10px;
+            padding: 0.5rem;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s;
+            color: #d1d5db;
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+        }
+
+        .playlist-thumb-btn:hover {
+            border-color: #10b981;
+            background: #1f2937;
+            transform: translateY(-2px);
+        }
+
+        .playlist-thumb-btn.active {
+            border-color: #34d399;
+            background: #064e3b;
+            color: white;
+            box-shadow: 0 0 10px rgba(52, 211, 153, 0.3);
+        }
+
+        .playlist-thumb-img {
+            width: 100%;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 6px;
+            background: #000;
+        }
+
+        .playlist-thumb-title {
+            font-size: 0.72rem;
+            line-height: 1.25;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            font-weight: 600;
+        }
+
         /* Timeout Modal */
         .timeout-card {
             background: white;
@@ -881,7 +927,19 @@
             <div class="video-container">
                 <iframe id="player-modal-iframe" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
             </div>
-            <div style="padding: 0.85rem 1.25rem; background: #1f2937; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+
+            <!-- Video Playlist Selector -->
+            <div id="player-modal-playlist" style="padding: 1rem 1.25rem; background: #1a2234; border-top: 1px solid #374151;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.65rem;">
+                    <span style="font-size: 0.82rem; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.5px;">Pilihan Video Lainnya Dari Channel Ini:</span>
+                    <span id="player-sync-badge" style="font-size: 0.72rem; color: #34d399; font-weight: 600;">🟢 Otomatis Terkini</span>
+                </div>
+                <div id="player-playlist-items" style="display: flex; gap: 0.75rem; overflow-x: auto; padding-bottom: 0.5rem; -webkit-overflow-scrolling: touch;">
+                    <!-- Populated dynamically by JS -->
+                </div>
+            </div>
+
+            <div style="padding: 0.85rem 1.25rem; background: #111827; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; border-top: 1px solid #1f2937;">
                 <span style="font-size: 0.8rem; color: #9ca3af;">Video tidak dapat diputar di layar ini?</span>
                 <a id="player-modal-direct-link" href="#" target="_blank" rel="noopener noreferrer" style="color: #34d399; font-size: 0.82rem; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 0.3rem;">
                     Buka Langsung di YouTube ↗
@@ -938,6 +996,6 @@
     <!-- Scripts -->
     <script src="js/nav.js?v=3"></script>
     <script src="js/kids-data.js?v=2"></script>
-    <script src="js/kids.js?v=2"></script>
+    <script src="js/kids.js?v=3"></script>
 </body>
 </html>

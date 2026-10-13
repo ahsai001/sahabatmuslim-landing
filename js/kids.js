@@ -188,6 +188,7 @@
         if (!item) return;
 
         STATE.activeVideo = item;
+        STATE.activeVideoId = item.featuredVideoId;
         const modal = document.getElementById('kids-player-modal');
         const titleEl = document.getElementById('player-modal-title');
         const channelEl = document.getElementById('player-modal-channel');
@@ -205,12 +206,78 @@
             iframeEl.src = `https://www.youtube-nocookie.com/embed/${item.featuredVideoId}?autoplay=1&rel=0&modestbranding=1&playsinline=1`;
         }
 
+        // Fetch & render playlist for this channel
+        fetchChannelPlaylist(item);
+
         if (modal) modal.classList.add('active');
 
         // Start screen time timer if set
         if (STATE.timerMinutes > 0 && !STATE.timerInterval) {
             startScreenTimeTimer();
         }
+    }
+
+    async function fetchChannelPlaylist(item) {
+        const playlistContainer = document.getElementById('player-playlist-items');
+        if (!playlistContainer) return;
+
+        // Show loading state
+        playlistContainer.innerHTML = `
+            <div style="font-size: 0.8rem; color: #9ca3af; padding: 0.5rem;">
+                ⏳ Memuat daftar video terbaru dari ${escapeHtml(item.title)}...
+            </div>
+        `;
+
+        try {
+            const res = await fetch(`/api/kids/videos?channel_id=${encodeURIComponent(item.id)}`);
+            const json = await res.json();
+            const videos = (json.ok && Array.isArray(json.data) && json.data.length > 0)
+                ? json.data
+                : (item.videos || [{ videoId: item.featuredVideoId, title: item.featuredTitle, thumbnail: `https://i.ytimg.com/vi/${item.featuredVideoId}/hqdefault.jpg` }]);
+
+            renderPlaylistItems(videos, item);
+        } catch (e) {
+            console.warn('Gagal fetch live videos, fallback ke default:', e);
+            const fallbackVideos = item.videos || [{ videoId: item.featuredVideoId, title: item.featuredTitle, thumbnail: `https://i.ytimg.com/vi/${item.featuredVideoId}/hqdefault.jpg` }];
+            renderPlaylistItems(fallbackVideos, item);
+        }
+    }
+
+    function renderPlaylistItems(videos, channelItem) {
+        const playlistContainer = document.getElementById('player-playlist-items');
+        if (!playlistContainer) return;
+
+        let html = '';
+        videos.forEach(v => {
+            const isPlaying = (v.videoId === STATE.activeVideoId);
+            html += `
+                <button type="button" class="playlist-thumb-btn ${isPlaying ? 'active' : ''}" onclick="window.KidsApp.playVideo('${v.videoId}', '${escapeHtml(v.title).replace(/'/g, "\\'")}')">
+                    <img src="${v.thumbnail || `https://i.ytimg.com/vi/${v.videoId}/hqdefault.jpg`}" alt="${escapeHtml(v.title)}" class="playlist-thumb-img" onerror="this.src='https://via.placeholder.com/160x90/000/fff?text=Video+Sunnah'">
+                    <span class="playlist-thumb-title">${isPlaying ? '▶️ ' : ''}${escapeHtml(v.title)}</span>
+                </button>
+            `;
+        });
+
+        playlistContainer.innerHTML = html;
+    }
+
+    function playVideo(videoId, title) {
+        STATE.activeVideoId = videoId;
+        const titleEl = document.getElementById('player-modal-title');
+        const iframeEl = document.getElementById('player-modal-iframe');
+        const directLinkEl = document.getElementById('player-modal-direct-link');
+
+        if (titleEl) titleEl.textContent = title;
+        if (directLinkEl) directLinkEl.href = `https://www.youtube.com/watch?v=${videoId}`;
+        if (iframeEl) {
+            iframeEl.src = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&playsinline=1`;
+        }
+
+        // Highlight active thumbnail
+        document.querySelectorAll('.playlist-thumb-btn').forEach(btn => {
+            const isCurr = btn.getAttribute('onclick').includes(videoId);
+            btn.classList.toggle('active', isCurr);
+        });
     }
 
     function closePlayer() {
@@ -327,6 +394,7 @@
         toggleFavorite,
         openPlayer,
         closePlayer,
+        playVideo,
         setScreenTimeLimit,
         closeTimeoutModal
     };

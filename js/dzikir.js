@@ -457,6 +457,27 @@
             const btnTrans = document.getElementById('btn-toggle-trans');
             if (btnTrans) btnTrans.classList.toggle('active', showTerjemah);
 
+            // Cek parameter URL (misal: ?cat=pagi, ?cat=petang, ?cat=sholat&sub=sholat_subuh)
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const catParam = urlParams.get('cat');
+                if (catParam && ['pagi', 'petang', 'sholat'].includes(catParam)) {
+                    currentCategory = catParam;
+                    document.querySelectorAll('.dzikir-tab-btn').forEach(btn => {
+                        btn.classList.toggle('active', btn.dataset.category === catParam);
+                    });
+                }
+                const subParam = urlParams.get('sub');
+                if (subParam && ['semua', 'sholat_subuh', 'sholat_maghrib', 'sholat_dz_a_i'].includes(subParam)) {
+                    currentSholatSub = subParam;
+                    document.querySelectorAll('.dzikir-subpill-btn').forEach(btn => {
+                        btn.classList.toggle('active', btn.dataset.sub === subParam);
+                    });
+                }
+            } catch (e) {
+                console.warn('URL parameter parsing failed:', e);
+            }
+
             renderDzikirList();
         },
         setCategory,

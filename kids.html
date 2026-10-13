@@ -879,7 +879,13 @@
                 <button type="button" class="modal-close-btn" onclick="window.KidsApp.closePlayer()">✕</button>
             </div>
             <div class="video-container">
-                <iframe id="player-modal-iframe" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                <iframe id="player-modal-iframe" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            </div>
+            <div style="padding: 0.85rem 1.25rem; background: #1f2937; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+                <span style="font-size: 0.8rem; color: #9ca3af;">Video tidak dapat diputar di layar ini?</span>
+                <a id="player-modal-direct-link" href="#" target="_blank" rel="noopener noreferrer" style="color: #34d399; font-size: 0.82rem; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 0.3rem;">
+                    Buka Langsung di YouTube ↗
+                </a>
             </div>
         </div>
     </div>
@@ -931,7 +937,7 @@
 
     <!-- Scripts -->
     <script src="js/nav.js?v=3"></script>
-    <script src="js/kids-data.js?v=1"></script>
-    <script src="js/kids.js?v=1"></script>
+    <script src="js/kids-data.js?v=2"></script>
+    <script src="js/kids.js?v=2"></script>
 </body>
 </html>

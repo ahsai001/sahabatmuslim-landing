@@ -192,15 +192,17 @@
         const titleEl = document.getElementById('player-modal-title');
         const channelEl = document.getElementById('player-modal-channel');
         const iframeEl = document.getElementById('player-modal-iframe');
+        const directLinkEl = document.getElementById('player-modal-direct-link');
 
         if (titleEl) titleEl.textContent = item.featuredTitle;
         if (channelEl) channelEl.textContent = `${item.title} (${item.handle})`;
+        if (directLinkEl) {
+            directLinkEl.href = `https://www.youtube.com/watch?v=${item.featuredVideoId}`;
+        }
 
-        // Use privacy-enhanced YouTube embed
+        // Use privacy-enhanced YouTube embed with recommended params
         if (iframeEl) {
-            // Note: If a specific video ID is provided, embed it directly.
-            // Otherwise use YouTube search embed or fallback video
-            iframeEl.src = `https://www.youtube-nocookie.com/embed/${item.featuredVideoId}?autoplay=1&rel=0&modestbranding=1`;
+            iframeEl.src = `https://www.youtube-nocookie.com/embed/${item.featuredVideoId}?autoplay=1&rel=0&modestbranding=1&playsinline=1`;
         }
 
         if (modal) modal.classList.add('active');

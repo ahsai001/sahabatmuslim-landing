@@ -1,6 +1,6 @@
 /**
  * Sahabat Muslim — Data Kurasi Channel Tontonan Anak Sesuai Sunnah
- * Berisi metadata channel, handle YouTube resmi, kategori materi, deskripsi, dan video unggulan embed-ready.
+ * Berisi metadata channel, handle YouTube resmi, kategori materi, deskripsi, dan video unggulan embed-ready yang terverifikasi aktif.
  */
 
 const KIDS_CHANNELS = [
@@ -13,10 +13,10 @@ const KIDS_CHANNELS = [
         youtubeUrl: "https://www.youtube.com/@YufidKids",
         avatar: "👶",
         badgeColor: "#10b981",
-        description: "Animasi edukasi Islam resmi dari Yufid. Menampilkan belajar huruf Hijaiyah, doa harian anak, adab makan, sholat, dan kosa kata bahasa Arab ceria.",
-        featuredVideoId: "2hQ6R2i_M38",
-        featuredTitle: "Belajar Huruf Hijaiyah Ceria & Pengenalan Makhraj",
-        tags: ["Hijaiyah", "Doa Anak", "Adab", "Animasi"]
+        description: "Animasi edukasi Islam resmi dari Yufid. Menampilkan Cerita Ubay, belajar huruf Hijaiyah, doa harian anak, adab makan, sholat, dan kosa kata bahasa Arab ceria.",
+        featuredVideoId: "GNe-8K78pmU",
+        featuredTitle: "Cerita Ubay: Membereskan Mainan Ternyata Tidak Mudah! | Belajar Disiplin",
+        tags: ["Hijaiyah", "Cerita Ubay", "Doa Anak", "Adab", "Animasi"]
     },
     {
         id: "kak-erlan",
@@ -27,10 +27,10 @@ const KIDS_CHANNELS = [
         youtubeUrl: "https://www.youtube.com/@KakErlanBercerita",
         avatar: "🎙️",
         badgeColor: "#f59e0b",
-        description: "Pendongeng anak muslim nusantara. Membawakan kisah para Nabi, sahabat Rasulullah ﷺ, dan adab akhlakul karimah dengan gaya bercerita ekspresif dan santun.",
-        featuredVideoId: "9gM1Vq3D0cE",
-        featuredTitle: "Kisah Sahabat & Adab Anak Shalih Sehari-hari",
-        tags: ["Kisah Nabi", "Dongeng Shahih", "Akhlak", "Kak Erlan"]
+        description: "Pendongeng anak muslim nusantara. Membawakan kisah para Nabi, sahabat Rasulullah ﷺ, dan adab akhlakul karimah dengan tutur kata santun dan ekspresif.",
+        featuredVideoId: "0qwboNPKSNM",
+        featuredTitle: "Adab Toilet: Jangan Lakukan Ini di Kamar Mandi! | Cerita Keluarga AMCA",
+        tags: ["Kisah Sahabat", "Dongeng Shahih", "Adab Harian", "Kak Erlan"]
     },
     {
         id: "rodja-ceria",
@@ -42,8 +42,8 @@ const KIDS_CHANNELS = [
         avatar: "📻",
         badgeColor: "#059669",
         description: "Program anak resmi Radio & TV Rodja. Berisi hafalan doa harian, cerdas cermat anak muslim, belajar tajwid, kisah sirah nabawiyah, dan nasehat ustadz untuk anak.",
-        featuredVideoId: "5yZ9p6A2k8Y",
-        featuredTitle: "Belajar Doa Harian & Nasihat Anak Ceria",
+        featuredVideoId: "Jw7XiuJO024",
+        featuredTitle: "Rodja Ceria Roadshow Ramadhan Cahaya Sunnah",
         tags: ["Radio Rodja", "Hafalan Doa", "Tajwid", "Sirah"]
     },
     {
@@ -56,9 +56,9 @@ const KIDS_CHANNELS = [
         avatar: "👨‍👩‍👧‍👦",
         badgeColor: "#3b82f6",
         description: "Serial animasi 3D keluarga muslim Indonesia (Cerita Hamzi). Meneladani adab harian, tolong-menolong, kejujuran, dan kebersamaan keluarga sakinah.",
-        featuredVideoId: "L8rZ3_K1z6A",
-        featuredTitle: "Cerita Hamzi: Belajar Jujur & Berbakti",
-        tags: ["Animasi 3D", "Keluarga", "Adab Santun", "Karakter"]
+        featuredVideoId: "rXwP2mF2vXw",
+        featuredTitle: "Cerita Hamzi: Belajar Menjaga Lisan & Bicara Santun",
+        tags: ["Animasi 3D", "Keluarga Hamzi", "Adab Santun", "Karakter"]
     },
     {
         id: "kids-tauhid",
@@ -69,24 +69,24 @@ const KIDS_CHANNELS = [
         youtubeUrl: "https://www.youtube.com/@KidsTauhidorid",
         avatar: "☝️",
         badgeColor: "#065f46",
-        description: "Media pembelajaran aqidah islamiyah yang murni untuk anak-anak: mengenal Allah Rabbul 'Alamin, Rukun Iman, Rukun Islam, dan menjauhi syirik sejak usia dini.",
-        featuredVideoId: "K9i_1z6X7mQ",
-        featuredTitle: "Mengenal Allah Sang Pencipta Alam Semesta",
+        description: "Media pembelajaran aqidah islamiyah yang murni untuk anak-anak: mengenal Allah Rabbul 'Alamin, Rukun Iman, Rukun Islam, dan menjauhi kesyirikan sejak usia dini.",
+        featuredVideoId: "Ibb4xpTbsMk",
+        featuredTitle: "Kids Tauhid: Fondasi Aqidah Sejak Usia Dini",
         tags: ["Tauhid", "Rukun Iman", "Pondasi Aqidah", "Anak Sholeh"]
     },
     {
         id: "kak-yogi",
         title: "Kak Yogi the Explorer",
         category: "eksplorasi-sains",
-        categoryLabel: "Tadabbur Alam & Sains",
+        categoryLabel: "Tadabbur Alam & Petualangan",
         handle: "@KakErlanBercerita",
         youtubeUrl: "https://www.youtube.com/@KakErlanBercerita",
         avatar: "🧭",
         badgeColor: "#d97706",
-        description: "Petualangan seru Kak Yogi menjelajahi ciptaan Allah: hewan, tumbuhan, gunung, laut, dan sains islami yang menumbuhkan rasa syukur dan iman anak.",
-        featuredVideoId: "P7n_4Y3x2wE",
-        featuredTitle: "Tadabbur Hewan Unik Ciptaan Allah Ta'ala",
-        tags: ["Petualangan", "Tadabbur Alam", "Sains Islami", "Hewan"]
+        description: "Petualangan seru Kak Yogi menjelajahi ciptaan Allah: olahraga renang, petualangan alam, dan sains islami yang menumbuhkan rasa syukur dan kecerdasan anak.",
+        featuredVideoId: "RGBeqvHcPuY",
+        featuredTitle: "Kak Yogi The Explorer: Belajar Berenang Sesuai Sunnah",
+        tags: ["Petualangan", "Tadabbur Alam", "Sains Islami", "Olahraga Sunnah"]
     },
     {
         id: "jawwada-hijaiyah",
@@ -98,8 +98,8 @@ const KIDS_CHANNELS = [
         avatar: "📖",
         badgeColor: "#047857",
         description: "Metode visual modern belajar huruf Al-Qur'an secara tartil, harakat fathah, kasrah, dhammah, tanwin, dan makharijul huruf untuk balita dan anak-anak.",
-        featuredVideoId: "M3qL8X9p_1A",
-        featuredTitle: "Perjalanan Menyenangkan Belajar Huruf Al-Qur'an",
+        featuredVideoId: "qMA48oh8MTI",
+        featuredTitle: "Jawwada: Pasir Sedot (Belajar Huruf ظ & ع)",
         tags: ["Belajar Membaca", "Huruf Arab", "Tajwid Cilik", "Jawwada"]
     },
     {
@@ -111,10 +111,10 @@ const KIDS_CHANNELS = [
         youtubeUrl: "https://www.youtube.com/@alfirqotunnajiyahkids",
         avatar: "🌿",
         badgeColor: "#059669",
-        description: "Bimbingan akidah, fiqih dasar anak (wudhu & tata cara sholat sesuai sifat sholat Nabi ﷺ), serta hafalan matan dan hadits shahih tematik.",
-        featuredVideoId: "F1z_7Y2w8kL",
-        featuredTitle: "Tata Cara Sholat Sesuai Sunnah Nabi ﷺ",
-        tags: ["Fiqih Sholat", "Wudhu", "Sunnah Shahih", "Hadits"]
+        description: "Bimbingan akidah, fiqih dasar anak (wudhu & tata cara sholat sesuai sifat sholat Nabi ﷺ), serta murottal animasi surat-surat pendek Al-Qur'an.",
+        featuredVideoId: "cGHwvmWcd-8",
+        featuredTitle: "Surah At-Takwir - Bilal (Murottal Animasi Anak)",
+        tags: ["Murottal Anak", "Juz Amma", "Sunnah Shahih", "Al-Qur'an"]
     },
     {
         id: "sarah-playschool",
@@ -125,10 +125,10 @@ const KIDS_CHANNELS = [
         youtubeUrl: "https://www.youtube.com/@Sarahplayschool",
         avatar: "🎨",
         badgeColor: "#ec4899",
-        description: "Aktivitas montessori islami, kreasi bermain di rumah, adab kepada orang tua, stimulasi sensori motorik, dan belajar mandiri yang menyenangkan untuk toddler.",
-        featuredVideoId: "S8m_2X1w9kP",
-        featuredTitle: "Aktivitas Bermain & Belajar Adab Bersama Bunda",
-        tags: ["Toddler", "Montessori", "Kreasi Seni", "Bermain Sehat"]
+        description: "Aktivitas montessori islami, kreasi bermain di rumah, adab kepada orang tua, stimulasi sensori motorik, dan belajar rukun iman yang menyenangkan untuk toddler.",
+        featuredVideoId: "JDRx4Td4t8g",
+        featuredTitle: "Rukun Iman Ketiga: Beriman Kepada Kitab-Kitab Allah",
+        tags: ["Toddler", "Rukun Iman", "Montessori", "Bermain Sehat"]
     },
     {
         id: "rofif-kids",
@@ -139,24 +139,24 @@ const KIDS_CHANNELS = [
         youtubeUrl: "https://www.youtube.com/@rumayshotv",
         avatar: "👦",
         badgeColor: "#0284c7",
-        description: "Program anak asuhan Ustadz Muhammad Abduh Tuasikal (Rumaysho). Mengajarkan amalan puasa, hafalan juz amma, adab berteman, dan akhlak mulia.",
-        featuredVideoId: "R4m_6Y8k1zW",
-        featuredTitle: "Belajar Puasa & Adab Bersama Teman",
-        tags: ["Rumaysho", "Adab Berteman", "Hafalan Juz Amma", "Fawaid"]
+        description: "Program anak asuhan Ustadz Muhammad Abduh Tuasikal (Rumaysho). Mengenal Nabi Muhammad ﷺ, amalan ibadah harian, adab berteman, dan akhlak mulia.",
+        featuredVideoId: "tqg5_-Ry0WE",
+        featuredTitle: "Rofif Kids: Mengenal Nabiku Muhammad ﷺ - Ust. Muhammad Abduh Tuasikal",
+        tags: ["Rumaysho", "Mengenal Nabi", "Adab Berteman", "Kajian Anak"]
     },
     {
         id: "muslim-zone",
         title: "Muslim Zone",
-        category: "aktivitas-adab",
-        categoryLabel: "Kebiasaan Sehari-hari",
+        category: "hijaiyah-quran",
+        categoryLabel: "Kebiasaan & Huruf Hijaiyah",
         handle: "@muslimzone",
         youtubeUrl: "https://www.youtube.com/@muslimzone",
         avatar: "🕌",
         badgeColor: "#6366f1",
-        description: "Video edukasi kebiasaan harian anak muslim: membaca bismillah sebelum beraktivitas, menjaga kebersihan, makan dengan tangan kanan, dan berbuat baik.",
-        featuredVideoId: "Z5x_9M2k7qL",
-        featuredTitle: "Kebiasaan Baik Anak Shalih Sehari-hari",
-        tags: ["Kebiasaan Baik", "Bismillah", "Adab Makan", "Anak Muslim"]
+        description: "Video edukasi kebiasaan harian anak muslim: belajar huruf hijaiyah ceria, membaca bismillah sebelum beraktivitas, menjaga kebersihan, dan adab santun.",
+        featuredVideoId: "sPUDFXWS9VU",
+        featuredTitle: "Belajar Huruf Hijaiyah Ceria untuk Anak Muslim",
+        tags: ["Huruf Hijaiyah", "Kebiasaan Baik", "Bismillah", "Anak Muslim"]
     },
     {
         id: "annawawi-tv",
@@ -167,37 +167,37 @@ const KIDS_CHANNELS = [
         youtubeUrl: "https://www.youtube.com/@ANNAWAWITV",
         avatar: "📚",
         badgeColor: "#8b5cf6",
-        description: "Kanal pendidikan pesantren Islam yang menyajikan pelajaran kosa kata bahasa Arab bergambar, cerita teladan para ulama hadits, dan motivasi mencintai Al-Qur'an.",
-        featuredVideoId: "N7k_3X1m9qZ",
-        featuredTitle: "Mengenal Kosa Kata Bahasa Arab Bergambar",
-        tags: ["Bahasa Arab", "Pesantren", "Kisah Ulama", "Adab Belajar"]
+        description: "Serial animasi edukatif santri cilik Imam & Nawa: lomba kebaikan, kosa kata bahasa Arab bergambar, cerita teladan, dan mencintai Al-Qur'an.",
+        featuredVideoId: "oWoJKGMcvks",
+        featuredTitle: "Imam & Nawa: Lomba Kebaikan di Bulan Penuh Berkah",
+        tags: ["Imam & Nawa", "Bahasa Arab", "Animasi Santri", "Adab Belajar"]
     },
     {
         id: "anak-cerdas-indonesia",
         title: "Anak Cerdas Indonesia",
         category: "eksplorasi-sains",
-        categoryLabel: "Wawasan & Keterampilan",
+        categoryLabel: "Murottal & Wawasan Cerdas",
         handle: "@AnakCerdasIndonesiaOfficial",
         youtubeUrl: "https://www.youtube.com/@AnakCerdasIndonesiaOfficial",
         avatar: "💡",
         badgeColor: "#f97316",
-        description: "Pengembangan logika berpikir, eksperimen sains sederhana, wawasan ilmu pengetahuan umum bernafaskan nilai-nilai ketauhidan dan kecerdasan anak bangsa.",
-        featuredVideoId: "A9p_4Z2k1mX",
-        featuredTitle: "Eksperimen Sains Sederhana & Wawasan Cerdas",
-        tags: ["Sains Anak", "Kreativitas", "Eksperimen", "Cerdas"]
+        description: "Murottal anak metode Al-Muyassar, eksperimen sains sederhana, dan wawasan ilmu pengetahuan umum bernafaskan nilai-nilai ketauhidan.",
+        featuredVideoId: "_68QzGWsr1k",
+        featuredTitle: "Murottal Anak: Metode Al-Muyassar | Anak Cerdas Indonesia",
+        tags: ["Murottal Anak", "Tajwid", "Kreativitas", "Cerdas"]
     },
     {
         id: "happy-hola",
         title: "Happy Hola Official",
         category: "aktivitas-adab",
-        categoryLabel: "Lagu Edukasi & Karakter",
+        categoryLabel: "Animasi Ceria & Karakter",
         handle: "@happyhola",
         youtubeUrl: "https://www.youtube.com/@happyhola",
         avatar: "🎉",
         badgeColor: "#14b8a6",
         description: "Animasi edukatif yang ramah anak mengenalkan hewan, buah-buahan, tolong-menolong, dan ucapan-ucapan thayyibah (alhamdulillah, subhanallah, jazakallahu khairan).",
-        featuredVideoId: "H3w_8P1k5qM",
-        featuredTitle: "Kalimat Thayyibah & Mengenal Ciptaan Allah",
+        featuredVideoId: "VT6YICs0azM",
+        featuredTitle: "Happy Hola: Belajar Berbagi Kado & Kebaikan",
         tags: ["Animasi Ceria", "Kalimat Thayyibah", "Karakter", "Tolong Menolong"]
     },
     {
@@ -206,12 +206,12 @@ const KIDS_CHANNELS = [
         category: "aqidah-tauhid",
         categoryLabel: "Parenting & Karakter Anak",
         handle: "@tumbuhkembanganak",
-        youtubeUrl: "https://www.youtube.com/results?search_query=tumbuh+kembang+anak+saleh+dan+cerdas",
+        youtubeUrl: "https://www.youtube.com/results?search_query=mendidik+anak+sholeh+dan+cerdas+sunnah",
         avatar: "🌱",
         badgeColor: "#15803d",
         description: "Bimbingan tumbuh kembang mental, emosional, dan spiritual anak muslim agar tumbuh kuat aqidahnya, cerdas akalnya, dan santun perilakunya.",
-        featuredVideoId: "T2m_7X9k4qL",
-        featuredTitle: "Membentuk Karakter Anak Mandiri & Taat Ibadah",
+        featuredVideoId: "AxeBjs7qgzU",
+        featuredTitle: "Mendidik Anak adalah Ibadah Mulia - Ust. Abu Salma Muhammad",
         tags: ["Parenting", "Karakter Anak", "Tumbuh Kembang", "Aqidah"]
     }
 ];

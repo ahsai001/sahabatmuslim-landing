@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Murottal Al-Qur'an 30 Juz & Playlist Tilawah — Sahabat Muslim</title>
+    <meta name="description" content="Dengarkan lantunan audio murottal Al-Qur'an 30 Juz merdu dari ratusan qari ternama dunia termasuk Syaikh Ali Jaber, Misyari Rasyid Al-Afasy, As-Sudais. Lengkap dengan fitur Custom Playlist dan Unduh Offline.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --green-900: #064e3b;
+            --green-800: #065f46;
+            --green-700: #047857;
+            --green-600: #059669;
+            --green-500: #10b981;
+            --green-100: #d1fae5;
+            --green-50: #ecfdf5;
+            --gold-500: #d4a843;
+            --gold-400: #e2b960;
+            --gold-300: #f0d78a;
+            --white: #ffffff;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--gray-800);
+            background: #f8fafc;
+            line-height: 1.6;
+            padding-bottom: 120px; /* Space for sticky player */
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255,255,255,0.96);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--gray-200);
+            z-index: 100;
+            padding: 1rem 2rem;
+        }
+
+        .nav-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: var(--green-800);
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--green-700), var(--green-600));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+        }
+
+        .logo-text {
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.35rem;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--gray-600);
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--green-700);
+            font-weight: 600;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: transparent;
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            width: 40px;
+            height: 40px;
+            font-size: 1.35rem;
+            color: var(--gray-700);
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @media (max-width: 900px) {
+            .mobile-menu-btn { display: flex; }
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: white;
+                flex-direction: column;
+                padding: 1.25rem 2rem;
+                border-bottom: 1px solid var(--gray-200);
+                gap: 1rem;
+                box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            }
+            .nav-links.active { display: flex; }
+        }
+
+        /* Hero */
+        .murottal-hero {
+            padding: 7.5rem 2rem 2.5rem;
+            background: linear-gradient(180deg, #ecfdf5 0%, #f8fafc 100%);
+            text-align: center;
+        }
+
+        .murottal-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #d1fae5;
+            color: #065f46;
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 0.4rem 1rem;
+            border-radius: 9999px;
+            margin-bottom: 1rem;
+        }
+
+        .murottal-hero h1 {
+            font-size: 2.25rem;
+            font-weight: 800;
+            color: var(--green-900);
+            margin-bottom: 0.75rem;
+            letter-spacing: -0.5px;
+        }
+
+        .murottal-hero h1 span {
+            color: var(--green-600);
+        }
+
+        .murottal-hero p {
+            max-width: 720px;
+            margin: 0 auto;
+            color: var(--gray-600);
+            font-size: 1rem;
+        }
+
+        /* Main Container */
+        .murottal-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        /* Reciter Selector Card */
+        .reciter-card {
+            background: white;
+            border-radius: 20px;
+            border: 1px solid var(--gray-200);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1.25rem;
+        }
+
+        .reciter-info-wrap {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .reciter-avatar {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--green-700), var(--green-600));
+            color: white;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            font-weight: bold;
+            flex-shrink: 0;
+            box-shadow: 0 6px 12px rgba(4, 120, 87, 0.2);
+        }
+
+        .reciter-meta h2 {
+            font-size: 1.15rem;
+            color: var(--green-900);
+            font-weight: 700;
+            margin-bottom: 0.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .reciter-meta p {
+            font-size: 0.85rem;
+            color: var(--gray-600);
+        }
+
+        .reciter-action-btns {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-change-reciter {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            padding: 0.65rem 1.25rem;
+            border-radius: 12px;
+            border: 1.5px solid var(--green-600);
+            background: var(--green-50);
+            color: var(--green-800);
+            font-weight: 600;
+            font-size: 0.88rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-change-reciter:hover {
+            background: var(--green-100);
+        }
+
+        /* Tabs Nav */
+        .murottal-tabs {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--gray-200);
+            padding-bottom: 0.5rem;
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            padding: 0.75rem 1.25rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--gray-600);
+            cursor: pointer;
+            border-radius: 10px;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            color: var(--green-800);
+            background: var(--gray-100);
+        }
+
+        .tab-btn.active {
+            color: var(--green-800);
+            background: #d1fae5;
+            position: relative;
+        }
+
+        .tab-count-badge {
+            background: var(--green-700);
+            color: white;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 0.15rem 0.5rem;
+            border-radius: 9999px;
+        }
+
+        /* Search & Filter Bar */
+        .filter-card {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid var(--gray-200);
+            padding: 1.15rem 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .search-input-box {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            background: var(--gray-50);
+            border: 1.5px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 0.55rem 1rem;
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .search-input-box input {
+            border: none;
+            background: transparent;
+            outline: none;
+            font-size: 0.9rem;
+            width: 100%;
+            font-family: inherit;
+        }
+
+        .filter-pills {
+            display: flex;
+            gap: 0.4rem;
+            flex-wrap: wrap;
+        }
+
+        .pill-btn {
+            padding: 0.45rem 0.85rem;
+            border-radius: 9999px;
+            border: 1px solid var(--gray-200);
+            background: white;
+            color: var(--gray-600);
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .pill-btn:hover, .pill-btn.active {
+            background: var(--green-600);
+            color: white;
+            border-color: var(--green-600);
+        }
+
+        /* Surah List & Grid */
+        .surah-list-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 0.85rem;
+        }
+
+        .surah-row {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid var(--gray-200);
+            padding: 1rem 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+
+        .surah-row:hover {
+            border-color: var(--green-500);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+            transform: translateY(-1px);
+        }
+
+        .surah-row.playing {
+            border-color: var(--green-600);
+            background: #f0fdf4;
+            box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2);
+        }
+
+        .surah-info-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .surah-num-badge {
+            width: 40px;
+            height: 40px;
+            background: var(--gray-100);
+            color: var(--green-800);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.95rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .surah-row.playing .surah-num-badge {
+            background: var(--green-600);
+            color: white;
+        }
+
+        .surah-text-meta {
+            min-width: 0;
+        }
+
+        .surah-title-latin {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .badge-offline-saved {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            background: #e0f2fe;
+            color: #0369a1;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 0.15rem 0.45rem;
+            border-radius: 6px;
+        }
+
+        .badge-reciter-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            background: #fef3c7;
+            color: #92400e;
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 0.15rem 0.5rem;
+            border-radius: 6px;
+        }
+
+        .surah-subtitle {
+            font-size: 0.82rem;
+            color: var(--gray-500);
+        }
+
+        .surah-arabic-title {
+            font-family: 'Amiri', serif;
+            font-size: 1.45rem;
+            color: var(--green-800);
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+
+        .surah-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-shrink: 0;
+        }
+
+        .btn-action-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.35rem;
+            padding: 0.55rem 0.9rem;
+            border-radius: 10px;
+            border: 1px solid var(--gray-200);
+            background: white;
+            color: var(--gray-700);
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .btn-action-icon:hover {
+            background: var(--gray-100);
+            border-color: var(--gray-300);
+            color: var(--gray-900);
+        }
+
+        .btn-play-primary {
+            background: var(--green-700);
+            color: white;
+            border-color: var(--green-700);
+            padding: 0.55rem 1.15rem;
+        }
+
+        .btn-play-primary:hover {
+            background: var(--green-800);
+            border-color: var(--green-800);
+            color: white;
+        }
+
+        .btn-play-primary.playing {
+            background: #dc2626;
+            border-color: #dc2626;
+        }
+
+        .btn-action-icon.downloading {
+            background: #fef3c7;
+            color: #b45309;
+            border-color: #fde68a;
+            pointer-events: none;
+        }
+
+        /* Sticky Bottom Audio Player */
+        .sticky-player-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(12px);
+            border-top: 1.5px solid var(--gray-200);
+            padding: 0.85rem 1.5rem;
+            box-shadow: 0 -8px 25px rgba(0,0,0,0.08);
+            z-index: 99;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .sticky-player-bar.hidden {
+            transform: translateY(120%);
+        }
+
+        .player-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.45rem;
+        }
+
+        .player-row-main {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .now-playing-info {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            min-width: 220px;
+            max-width: 320px;
+        }
+
+        .now-playing-icon {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, var(--green-700), var(--green-600));
+            color: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .now-playing-meta {
+            min-width: 0;
+        }
+
+        .now-playing-title {
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .now-playing-reciter {
+            font-size: 0.78rem;
+            color: var(--gray-500);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .player-center-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+        }
+
+        .ctrl-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 1.15rem;
+            color: var(--gray-700);
+            padding: 0.4rem;
+            border-radius: 8px;
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .ctrl-btn:hover {
+            color: var(--green-700);
+            background: var(--gray-100);
+        }
+
+        .ctrl-btn-play {
+            width: 46px;
+            height: 46px;
+            background: var(--green-700);
+            color: white;
+            border-radius: 50%;
+            font-size: 1.25rem;
+            box-shadow: 0 4px 12px rgba(4, 120, 87, 0.3);
+        }
+
+        .ctrl-btn-play:hover {
+            background: var(--green-800);
+            color: white;
+            transform: scale(1.04);
+        }
+
+        .ctrl-btn.active {
+            color: var(--green-700);
+            background: #d1fae5;
+        }
+
+        .player-right-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .speed-select {
+            padding: 0.35rem 0.65rem;
+            border-radius: 8px;
+            border: 1px solid var(--gray-300);
+            font-size: 0.78rem;
+            font-weight: 600;
+            background: white;
+            color: var(--gray-700);
+            cursor: pointer;
+        }
+
+        .player-timeline-row {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .time-label {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+            font-variant-numeric: tabular-nums;
+            min-width: 42px;
+        }
+
+        .timeline-slider {
+            flex: 1;
+            height: 5px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: var(--gray-200);
+            border-radius: 9999px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .timeline-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: var(--green-700);
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: transform 0.1s;
+        }
+
+        .timeline-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        /* Modals */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-box {
+            background: white;
+            border-radius: 20px;
+            max-width: 580px;
+            width: 100%;
+            padding: 2rem;
+            box-shadow: 0 20px 45px rgba(0,0,0,0.2);
+            position: relative;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+
+        .modal-close-btn {
+            position: absolute;
+            top: 1.25rem;
+            right: 1.25rem;
+            background: var(--gray-100);
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray-600);
+        }
+
+        .modal-close-btn:hover {
+            background: var(--gray-200);
+            color: var(--gray-900);
+        }
+
+        .reciter-option-card {
+            border: 1.5px solid var(--gray-200);
+            border-radius: 14px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .reciter-option-card:hover {
+            border-color: var(--green-600);
+            background: var(--green-50);
+        }
+
+        .reciter-option-card.selected {
+            border-color: var(--green-600);
+            background: #ecfdf5;
+            box-shadow: 0 0 0 1.5px var(--green-600);
+        }
+
+        /* Playlist Empty State */
+        .empty-playlist-box {
+            text-align: center;
+            padding: 4rem 1.5rem;
+            background: white;
+            border-radius: 20px;
+            border: 1px dashed var(--gray-300);
+            margin-top: 1rem;
+        }
+
+        .empty-playlist-box h3 {
+            font-size: 1.2rem;
+            color: var(--gray-800);
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-playlist-box p {
+            font-size: 0.9rem;
+            color: var(--gray-500);
+            max-width: 460px;
+            margin: 0 auto 1.5rem;
+        }
+
+        /* Toast */
+        .murottal-toast {
+            position: fixed;
+            bottom: 110px;
+            right: 2rem;
+            background: var(--gray-900);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            z-index: 9999;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
+        }
+
+        .murottal-toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            .player-row-main {
+                flex-wrap: wrap;
+            }
+            .now-playing-info {
+                max-width: 100%;
+                width: 100%;
+            }
+            .player-right-controls {
+                margin-left: auto;
+            }
+            .surah-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.85rem;
+            }
+            .surah-actions {
+                width: 100%;
+                justify-content: flex-start;
+                flex-wrap: wrap;
+            }
+            .surah-arabic-title {
+                margin-left: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Header -->
+    <nav>
+        <div class="nav-inner">
+            <a href="/" class="logo">
+                <div class="logo-icon">🕌</div>
+                <span class="logo-text">Sahabat Muslim</span>
+            </a>
+            <button class="mobile-menu-btn" id="mobile-menu-toggle" aria-label="Menu Navigasi" onclick="toggleMobileMenu(event)">
+                <span>☰</span>
+            </button>
+            <ul class="nav-links">
+                <li><a href="/">Beranda</a></li>
+                <li><a href="/#jadwal-sholat">Jadwal Sholat</a></li>
+                <li><a href="/ramadhan">Ibadah Hijriyah 🌙</a></li>
+                <li><a href="/murottal" class="active">Murottal 🎧</a></li>
+                <li><a href="/kids" style="color: var(--green-600, #059669); font-weight: 700;">Kids 🎈</a></li>
+                <li><a href="/kajian">Jadwal Kajian</a></li>
+                <li><a href="/dzikir">Dzikir Harian</a></li>
+                <li><a href="/doa">Doa Harian</a></li>
+                <li><a href="/quran">Al-Qur'an</a></li>
+                <li><a href="/kiblat">Arah Kiblat</a></li>
+                <li><a href="https://ruqyah.ahsailabs.my.id/" target="_blank" rel="noopener noreferrer">Ruqyah ↗</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="murottal-hero">
+        <div class="murottal-badge">🎧 Audio Murottal 30 Juz & Playlist Kustom</div>
+        <h1>Audio Murottal <span>Al-Qur'an</span></h1>
+        <p>Lantunan merdu 114 Surah dari ratusan Qari terkemuka dunia. Buat playlist tilawah sesuka Anda, unduh untuk didengarkan offline tanpa kuota, dan putar dengan nyaman di latar belakang.</p>
+    </section>
+
+    <!-- Main Content Container -->
+    <main class="murottal-container">
+
+        <!-- Reciter Active Header Card -->
+        <div class="reciter-card">
+            <div class="reciter-info-wrap">
+                <div class="reciter-avatar" id="active-reciter-avatar">🎙️</div>
+                <div class="reciter-meta">
+                    <h2 id="active-reciter-name">Syaikh Ali Jaber <span style="font-size: 0.8rem; background: #d1fae5; color: #065f46; padding: 0.2rem 0.55rem; border-radius: 9999px;">Pilihan Utama ⭐</span></h2>
+                    <p id="active-reciter-desc">Mantan Imam Besar Masjidil Haram Makkah • Riwayat Hafs 'an Ashim</p>
+                </div>
+            </div>
+            <div class="reciter-action-btns">
+                <button type="button" class="btn-change-reciter" onclick="window.smMurottal.openReciterModal()">
+                    <span>🔄 Ganti Qari / Reciter</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="murottal-tabs">
+            <button type="button" class="tab-btn active" id="tab-btn-surah" onclick="window.smMurottal.switchTab('surah')">
+                <span>📖 114 Surah Lengkap</span>
+            </button>
+            <button type="button" class="tab-btn" id="tab-btn-playlist" onclick="window.smMurottal.switchTab('playlist')">
+                <span>🎧 Playlist Saya</span>
+                <span class="tab-count-badge" id="badge-playlist-count">0</span>
+            </button>
+            <button type="button" class="tab-btn" id="tab-btn-offline" onclick="window.smMurottal.switchTab('offline')">
+                <span>💾 Tersimpan Offline</span>
+                <span class="tab-count-badge" id="badge-offline-count">0</span>
+            </button>
+        </div>
+
+        <!-- TAB 1: 114 SURAH CONTENT -->
+        <div id="tab-content-surah">
+            <!-- Filter & Search Bar -->
+            <div class="filter-card">
+                <div class="search-input-box">
+                    <span>🔍</span>
+                    <input type="text" id="surah-search-input" placeholder="Cari nama surah (cth: Yasin, Al-Baqarah, Al-Mulk), nomor, atau arti..." oninput="window.smMurottal.onSearchSurah(this.value)">
+                </div>
+                <div class="filter-pills">
+                    <button type="button" class="pill-btn active" data-filter="all" onclick="window.smMurottal.setFilter('all')">Semua (114)</button>
+                    <button type="button" class="pill-btn" data-filter="popular" onclick="window.smMurottal.setFilter('popular')">⭐ Populer</button>
+                    <button type="button" class="pill-btn" data-filter="makkiyyah" onclick="window.smMurottal.setFilter('makkiyyah')">Makkiyyah</button>
+                    <button type="button" class="pill-btn" data-filter="madaniyyah" onclick="window.smMurottal.setFilter('madaniyyah')">Madaniyyah</button>
+                </div>
+            </div>
+
+            <!-- Surah List Container -->
+            <div class="surah-list-wrap" id="surah-list-container">
+                <!-- Rendered dynamically -->
+            </div>
+        </div>
+
+        <!-- TAB 2: PLAYLIST KUSTOM CONTENT -->
+        <div id="tab-content-playlist" style="display: none;">
+            <div class="filter-card" style="margin-bottom: 1.25rem;">
+                <div>
+                    <h3 style="font-size: 1.1rem; color: var(--green-900); font-weight: 700;">Daftar Putar Kustom Anda</h3>
+                    <p style="font-size: 0.85rem; color: var(--gray-600);">Gabungkan surah favorit dengan pilihan qari berbeda dalam satu putaran otomatis.</p>
+                </div>
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                    <button type="button" class="btn-action-icon btn-play-primary" onclick="window.smMurottal.playEntirePlaylist()">
+                        <span>▶ Putar Semua Playlist</span>
+                    </button>
+                    <button type="button" class="btn-action-icon" onclick="window.smMurottal.downloadAllPlaylist()">
+                        <span>⬇️ Unduh Semua Offline</span>
+                    </button>
+                    <button type="button" class="btn-action-icon" style="color: #dc2626;" onclick="window.smMurottal.clearPlaylist()">
+                        <span>🗑️ Kosongkan</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="surah-list-wrap" id="playlist-items-container">
+                <!-- Rendered dynamically -->
+            </div>
+        </div>
+
+        <!-- TAB 3: OFFLINE CONTENT -->
+        <div id="tab-content-offline" style="display: none;">
+            <div class="filter-card" style="margin-bottom: 1.25rem;">
+                <div>
+                    <h3 style="font-size: 1.1rem; color: var(--green-900); font-weight: 700;">File Audio Murottal di Perangkat Ini</h3>
+                    <p style="font-size: 0.85rem; color: var(--gray-600);" id="offline-storage-desc">Total terpakai: Menghitung...</p>
+                </div>
+                <div>
+                    <button type="button" class="btn-action-icon" style="color: #dc2626;" onclick="window.smMurottal.clearAllOfflineStorage()">
+                        <span>🗑️ Bersihkan Semua Cache Audio</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="surah-list-wrap" id="offline-items-container">
+                <!-- Rendered dynamically -->
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Sticky Floating Audio Player -->
+    <div class="sticky-player-bar hidden" id="sticky-player-bar">
+        <div class="player-inner">
+            <div class="player-row-main">
+                <!-- Track Details -->
+                <div class="now-playing-info">
+                    <div class="now-playing-icon" id="player-track-icon">🎧</div>
+                    <div class="now-playing-meta">
+                        <div class="now-playing-title" id="player-track-title">Memuat audio...</div>
+                        <div class="now-playing-reciter" id="player-track-reciter">-</div>
+                    </div>
+                </div>
+
+                <!-- Center Play Controls -->
+                <div class="player-center-controls">
+                    <button type="button" class="ctrl-btn" title="Surah Sebelumnya" onclick="window.smMurottal.playPrevious()">
+                        ⏮️
+                    </button>
+                    <button type="button" class="ctrl-btn ctrl-btn-play" id="btn-player-play-toggle" title="Putar / Jeda" onclick="window.smMurottal.togglePlayPause()">
+                        ▶
+                    </button>
+                    <button type="button" class="ctrl-btn" title="Surah Berikutnya" onclick="window.smMurottal.playNext()">
+                        ⏭️
+                    </button>
+                    <button type="button" class="ctrl-btn" id="btn-player-loop" title="Mode Putar / Ulang" onclick="window.smMurottal.toggleLoopMode()">
+                        🔁
+                    </button>
+                </div>
+
+                <!-- Right Speed & Options -->
+                <div class="player-right-controls">
+                    <select class="speed-select" id="player-speed-select" title="Kecepatan Pemutaran" onchange="window.smMurottal.setPlaybackSpeed(this.value)">
+                        <option value="0.75">0.75x</option>
+                        <option value="1.0" selected>1.0x (Normal)</option>
+                        <option value="1.25">1.25x</option>
+                        <option value="1.5">1.5x</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Timeline & Seekbar -->
+            <div class="player-timeline-row">
+                <span class="time-label" id="player-current-time">00:00</span>
+                <input type="range" class="timeline-slider" id="player-timeline-slider" min="0" max="100" value="0" oninput="window.smMurottal.onSeek(this.value)">
+                <span class="time-label" id="player-total-duration">00:00</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Ganti Qari -->
+    <div class="modal-overlay" id="reciter-modal" onclick="if(event.target === this) window.smMurottal.closeReciterModal()">
+        <div class="modal-box">
+            <button type="button" class="modal-close-btn" onclick="window.smMurottal.closeReciterModal()">✕</button>
+            <h3 style="font-size: 1.25rem; color: var(--green-900); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                <span>🎙️</span> Pilih Qari / Reciter Murottal
+            </h3>
+            <p style="font-size: 0.88rem; color: var(--gray-600); margin-bottom: 1.25rem;">
+                Pilih qari favorit Anda untuk memutar 114 surah. Sumber audio resmi & jernih dari MP3Quran.net.
+            </p>
+
+            <div style="margin-bottom: 1rem;">
+                <input type="text" id="reciter-search-box" placeholder="Cari nama qari (cth: Ali Jaber, Misyari, Sudais)..." style="width: 100%; padding: 0.65rem 1rem; border: 1.5px solid var(--gray-300); border-radius: 10px; font-size: 0.9rem;" oninput="window.smMurottal.filterReciters(this.value)">
+            </div>
+
+            <div id="reciter-options-list" style="max-height: 400px; overflow-y: auto;">
+                <!-- Populated dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Tambah ke Playlist -->
+    <div class="modal-overlay" id="add-playlist-modal" onclick="if(event.target === this) window.smMurottal.closeAddPlaylistModal()">
+        <div class="modal-box">
+            <button type="button" class="modal-close-btn" onclick="window.smMurottal.closeAddPlaylistModal()">✕</button>
+            <h3 style="font-size: 1.25rem; color: var(--green-900); margin-bottom: 0.35rem; display: flex; align-items: center; gap: 0.5rem;">
+                <span>➕</span> Tambahkan ke Playlist
+            </h3>
+            <p style="font-size: 0.88rem; color: var(--gray-600); margin-bottom: 1.25rem;" id="add-playlist-surah-title">
+                Pilih Qari khusus untuk surah ini:
+            </p>
+
+            <div style="margin-bottom: 1.25rem;">
+                <label style="display: block; font-size: 0.82rem; font-weight: 600; color: var(--gray-700); margin-bottom: 0.4rem;">Pilih Qari Pembawa Surah:</label>
+                <select id="playlist-qari-select" style="width: 100%; padding: 0.75rem 1rem; border: 1.5px solid var(--gray-300); border-radius: 10px; font-size: 0.92rem; background: white; font-family: inherit; font-weight: 500;">
+                    <!-- Options populated dynamically -->
+                </select>
+            </div>
+
+            <button type="button" class="btn-play-primary" style="width: 100%; padding: 0.85rem; border-radius: 12px; font-size: 0.95rem; justify-content: center;" onclick="window.smMurottal.confirmAddToPlaylist()">
+                Tambahkan ke Daftar Putar 🎧
+            </button>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="murottal-toast" id="murottal-toast"></div>
+
+    <!-- Footer -->
+    <footer style="background: var(--gray-900); color: var(--gray-400); padding: 4rem 2rem 2rem; margin-top: 4rem;">
+        <div style="max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 2rem;">
+            <div>
+                <div style="display: flex; align-items: center; gap: 0.75rem; color: white; margin-bottom: 1rem;">
+                    <div style="width: 36px; height: 36px; background: var(--green-600); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.15rem;">🕌</div>
+                    <strong style="font-size: 1.15rem;">Sahabat Muslim</strong>
+                </div>
+                <p style="font-size: 0.88rem; line-height: 1.6;">Platform Islami komprehensif untuk mendampingi ibadah harian kaum muslimin di mana pun berada.</p>
+            </div>
+            <div>
+                <h4 style="color: white; margin-bottom: 1rem; font-size: 0.95rem;">Layanan & Ibadah</h4>
+                <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.88rem;">
+                    <a href="/#jadwal-sholat" style="color: var(--gray-400); text-decoration: none;">Jadwal Sholat</a>
+                    <a href="/ramadhan" style="color: var(--gray-400); text-decoration: none;">Ibadah Hijriyah & Ramadhan 🌙</a>
+                    <a href="/murottal" style="color: var(--green-400, #34d399); font-weight: 600; text-decoration: none;">Audio Murottal 30 Juz 🎧</a>
+                    <a href="/quran" style="color: var(--gray-400); text-decoration: none;">Al-Qur'an Online</a>
+                    <a href="/dzikir" style="color: var(--gray-400); text-decoration: none;">Dzikir Pagi & Petang</a>
+                    <a href="/doa" style="color: var(--gray-400); text-decoration: none;">Doa Harian Mustajab</a>
+                </div>
+            </div>
+            <div>
+                <h4 style="color: white; margin-bottom: 1rem; font-size: 0.95rem;">Sumber Audio</h4>
+                <p style="font-size: 0.85rem; line-height: 1.6;">Audio murottal bersumber resmi dari <a href="https://mp3quran.net" target="_blank" rel="noopener" style="color: var(--green-400, #34d399); text-decoration: underline;">MP3Quran.net</a>, penyedia audio Al-Qur'an bersertifikat dengan lisensi terbuka untuk kemaslahatan ummat.</p>
+            </div>
+        </div>
+        <div style="max-width: 1200px; margin: 2.5rem auto 0; padding-top: 1.5rem; border-top: 1px solid var(--gray-800); text-align: center; font-size: 0.82rem; color: var(--gray-500);">
+            &copy; 2026 Sahabat Muslim — Dibuat dengan ❤️ oleh AhsaiLabs
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/quran-data.js"></script>
+    <script src="js/murottal.js?v=1"></script>
+    <script src="js/nav.js?v=3"></script>
+</body>
+</html>

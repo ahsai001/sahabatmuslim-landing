@@ -1156,6 +1156,18 @@
             color: var(--gray-900);
         }
 
+        #gsi-button {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        #gsi-button > div, #gsi-button iframe {
+            margin: 0 auto !important;
+            max-width: 100% !important;
+        }
+
         /* Toast */
         .ramadhan-toast {
             position: fixed;
@@ -1700,7 +1712,7 @@
             </p>
 
             <!-- Google GSI Sign In Button Container -->
-            <div style="margin-bottom: 1.5rem; text-align: center;">
+            <div style="margin-bottom: 1.5rem; display: flex; justify-content: center; width: 100%;">
                 <div id="gsi-button"></div>
             </div>
 
@@ -1763,6 +1775,6 @@
     <!-- Scripts -->
     <script src="js/app-config.js?v=2"></script>
     <script src="js/nav.js?v=3"></script>
-    <script src="js/ramadhan.js?v=8"></script>
+    <script src="js/ramadhan.js?v=9"></script>
 </body>
 </html>

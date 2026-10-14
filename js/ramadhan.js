@@ -412,15 +412,15 @@
                 STATE.lastSyncedAt = data.updated_at;
                 updateHybridUI();
                 if (!silent) {
-                    showToast('Alhamdulillah! Data amalan berhasil dicadangkan ke PostgreSQL server. ☁️✅');
+                    showToast('Alhamdulillah! Data amalan berhasil dicadangkan ke Cloud Server. ☁️✅');
                 }
             } else {
                 throw new Error(data.error || 'Gagal menyimpan ke server');
             }
         } catch (err) {
-            console.warn('Sync to PostgreSQL error:', err);
+            console.warn('Sync to Cloud Server error:', err);
             if (!silent) {
-                showToast('Gagal mencadangkan ke PostgreSQL: ' + err.message);
+                showToast('Gagal mencadangkan ke Cloud Server: ' + err.message);
             }
         }
     }
@@ -511,14 +511,14 @@
                         showToast('Alhamdulillah! Data perangkat dan cloud berhasil disatukan (Smart Merge). ☁️🔄');
                         await syncToPostgres(true);
                     } else if (mergeResult.hadCloudData) {
-                        showToast('Alhamdulillah! Data amalan berhasil dipulihkan dari PostgreSQL server. ☁️✅');
+                        showToast('Alhamdulillah! Data amalan berhasil dipulihkan dari Cloud Server. ☁️✅');
                     }
                 }
             } else if (res.ok && json.ok && !json.found) {
                 await syncToPostgres(true);
             }
         } catch (err) {
-            console.warn('Fetch from PostgreSQL error:', err);
+            console.warn('Fetch from Cloud error:', err);
         }
     }
 
@@ -535,12 +535,12 @@
                     <img src="${STATE.userProfile.picture || 'https://via.placeholder.com/32'}" alt="${STATE.userProfile.name}" class="user-avatar-img" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(STATE.userProfile.name)}&background=047857&color=fff'">
                     <div class="user-avatar-info">
                         <span class="user-name">${escapeHtml(STATE.userProfile.name)}</span>
-                        <span class="user-status-text">🟢 Tersinkronisasi PostgreSQL Server</span>
+                        <span class="user-status-text">🟢 Tersinkronisasi Cloud Server</span>
                     </div>
                 </div>
             `;
             if (loginBtn) {
-                loginBtn.innerHTML = `<span>☁️ Sinkronkan PostgreSQL</span>`;
+                loginBtn.innerHTML = `<span>☁️ Sinkronkan Cloud</span>`;
                 loginBtn.onclick = () => syncToPostgres(false);
             }
             if (logoutBtn) logoutBtn.style.display = 'inline-flex';
@@ -606,7 +606,11 @@
             if (gsiBtn) gsiBtn.style.display = 'none';
             if (divider) divider.style.display = 'none';
         } else {
-            if (gsiBtn) gsiBtn.style.display = 'block';
+            if (gsiBtn) {
+                gsiBtn.style.display = 'flex';
+                gsiBtn.style.justifyContent = 'center';
+                gsiBtn.style.width = '100%';
+            }
             if (divider) divider.style.display = 'block';
 
             function renderGsi() {
@@ -624,7 +628,8 @@
                                 theme: 'outline',
                                 text: 'signin_with',
                                 size: 'large',
-                                logo_alignment: 'left'
+                                logo_alignment: 'left',
+                                width: 380
                             });
                         }
                     } catch (e) {

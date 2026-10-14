@@ -391,7 +391,7 @@ class SahabatMuslimHandler(http.server.BaseHTTPRequestHandler):
                         ))
                         updated_at = cur.fetchone()[0]
                     conn.commit()
-                self.send_json(200, {"ok": True, "success": True, "message": "Data amalan berhasil dicadangkan ke PostgreSQL server.", "user_id": user_id, "updated_at": updated_at.isoformat()})
+                self.send_json(200, {"ok": True, "success": True, "message": "Data amalan berhasil dicadangkan ke Cloud Server.", "user_id": user_id, "updated_at": updated_at.isoformat()})
             except Exception as e:
                 self.send_json(500, {"ok": False, "error": str(e)})
             return

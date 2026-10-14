@@ -99,6 +99,9 @@
         db: null,
 
         async init() {
+            if (typeof window === 'undefined' || !window.indexedDB) {
+                return null;
+            }
             if (this.db) return this.db;
             return new Promise((resolve, reject) => {
                 const request = indexedDB.open(this.dbName, this.dbVersion);
@@ -122,6 +125,7 @@
         async get(qariId, surahNum) {
             try {
                 const db = await this.init();
+                if (!db) return null;
                 const key = `${qariId}_${pad3(surahNum)}`;
                 return new Promise((resolve) => {
                     const tx = db.transaction(this.storeName, 'readonly');
@@ -138,6 +142,7 @@
         async save(qariId, qariName, surahNum, surahName, blob) {
             try {
                 const db = await this.init();
+                if (!db) throw new Error('Penyimpanan lokal IndexedDB tidak didukung pada browser ini');
                 const key = `${qariId}_${pad3(surahNum)}`;
                 const item = {
                     key,
@@ -165,6 +170,7 @@
         async delete(qariId, surahNum) {
             try {
                 const db = await this.init();
+                if (!db) return false;
                 const key = `${qariId}_${pad3(surahNum)}`;
                 return new Promise((resolve) => {
                     const tx = db.transaction(this.storeName, 'readwrite');
@@ -181,6 +187,7 @@
         async getAll() {
             try {
                 const db = await this.init();
+                if (!db) return [];
                 return new Promise((resolve) => {
                     const tx = db.transaction(this.storeName, 'readonly');
                     const store = tx.objectStore(this.storeName);
@@ -196,6 +203,7 @@
         async clear() {
             try {
                 const db = await this.init();
+                if (!db) return false;
                 return new Promise((resolve) => {
                     const tx = db.transaction(this.storeName, 'readwrite');
                     const store = tx.objectStore(this.storeName);

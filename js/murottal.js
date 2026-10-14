@@ -93,6 +93,14 @@
             arabicName: 'إدريس أبكر',
             desc: 'Imam Masjid Sheikh Zayed Abu Dhabi • Irama doa & tilawah syahdu',
             server: 'https://cdn.mp3quran.net/audio/idrees-abkar/r1/'
+        },
+        {
+            id: '24',
+            name: 'Syaikh Khalifah Al-Tunaiji',
+            altName: 'Khalifah Ath-Thaniyjiy Khalifa Altunaiji khalifa tunaiji at tunaiji al tunaiji',
+            arabicName: 'خليفة الطنيجي',
+            desc: 'Uni Emirat Arab • Tartil fasih, tenang, artikulasi sangat jelas & jernih',
+            server: 'https://cdn.mp3quran.net/audio/khalifa-tunaiji/r1/'
         }
     ];
 
@@ -908,8 +916,17 @@
         }).join('');
     }
 
+    function normalizeSearch(str) {
+        return (str || '')
+            .toLowerCase()
+            .replace(/[-_']/g, ' ')
+            .replace(/\b(al|at|ath|as|asy|ar|an)\b/g, '')
+            .replace(/\s+/g, ' ')
+            .trim();
+    }
+
     function filterReciters(query) {
-        const q = (query || '').toLowerCase().trim();
+        const rawQ = (query || '').toLowerCase().trim();
         let sourceList = POPULAR_RECITERS;
 
         if (STATE.reciterScope === 'all') {
@@ -917,15 +934,24 @@
         }
 
         // When user types a search query, search across all 240+ reciters if available
-        if (q && STATE.allReciters.length > 0) {
+        if (rawQ && STATE.allReciters.length > 0) {
             sourceList = STATE.allReciters;
         }
 
-        const filtered = sourceList.filter(r => 
-            (r.name && r.name.toLowerCase().includes(q)) || 
-            (r.desc && r.desc.toLowerCase().includes(q)) || 
-            (r.arabicName && r.arabicName.includes(q))
-        );
+        const qWords = normalizeSearch(rawQ).split(/\s+/).filter(w => w.length > 1);
+
+        const filtered = sourceList.filter(r => {
+            if (!rawQ) return true;
+            const fullRaw = `${r.name} ${r.altName || ''} ${r.desc || ''} ${r.arabicName || ''}`.toLowerCase();
+            if (fullRaw.includes(rawQ)) return true;
+
+            const normTarget = normalizeSearch(`${r.name} ${r.altName || ''}`);
+            if (qWords.length > 0 && qWords.every(w => normTarget.includes(w))) {
+                return true;
+            }
+            return false;
+        });
+
         renderReciterOptions(filtered);
     }
 

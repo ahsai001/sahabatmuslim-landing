@@ -673,6 +673,9 @@
             console.warn('Failed to save playlist', e);
         }
         updatePlaylistBadge();
+        if (window.smSync && typeof window.smSync.scheduleSync === 'function') {
+            window.smSync.scheduleSync();
+        }
     }
 
     function updatePlaylistBadge() {
@@ -951,6 +954,10 @@
             closeReciterModal();
             showToast(`Qari aktif: ${chosen.name} 🎙️`);
             renderSurahList();
+
+            if (window.smSync && typeof window.smSync.scheduleSync === 'function') {
+                window.smSync.scheduleSync();
+            }
         }
     }
 
@@ -1258,6 +1265,26 @@
 
         // Preload all 240+ reciters in background
         loadAllReciters();
+
+        // Listen for cloud sync updates
+        window.addEventListener('sm:sync-applied', () => {
+            loadPlaylist();
+            renderPlaylist();
+            const savedReciterJson = localStorage.getItem('sm_murottal_reciter_custom');
+            if (savedReciterJson) {
+                try {
+                    const parsed = JSON.parse(savedReciterJson);
+                    if (parsed && parsed.id && parsed.id !== STATE.currentReciter.id) {
+                        STATE.currentReciter = parsed;
+                        const nameEl = document.getElementById('active-reciter-name');
+                        const descEl = document.getElementById('active-reciter-desc');
+                        if (nameEl) nameEl.innerHTML = `${parsed.name} <span style="font-size: 0.75rem; background: #e0f2fe; color: #0369a1; padding: 0.15rem 0.5rem; border-radius: 9999px;">Cloud ☁️</span>`;
+                        if (descEl) descEl.textContent = parsed.desc;
+                        renderSurahList();
+                    }
+                } catch (e) {}
+            }
+        });
     }
 
     // Expose API

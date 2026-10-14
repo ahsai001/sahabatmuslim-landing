@@ -377,7 +377,7 @@ class SahabatMuslimHandler(http.server.BaseHTTPRequestHandler):
                                 email = COALESCE(NULLIF(EXCLUDED.email, ''), user_sync_data.email),
                                 name = COALESCE(NULLIF(EXCLUDED.name, ''), user_sync_data.name),
                                 avatar_url = COALESCE(NULLIF(EXCLUDED.avatar_url, ''), user_sync_data.avatar_url),
-                                payload = EXCLUDED.payload,
+                                payload = COALESCE(user_sync_data.payload, '{}'::jsonb) || EXCLUDED.payload,
                                 client_updated_at = EXCLUDED.client_updated_at,
                                 updated_at = CURRENT_TIMESTAMP
                             RETURNING updated_at;

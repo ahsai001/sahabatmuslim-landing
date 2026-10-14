@@ -33,6 +33,9 @@
             localStorage.setItem('sm_dzikir_font_size', arabicFontSize.toString());
             localStorage.setItem('sm_dzikir_show_latin', showLatin.toString());
             localStorage.setItem('sm_dzikir_show_terjemah', showTerjemah.toString());
+            if (window.smSync && typeof window.smSync.scheduleSync === 'function') {
+                window.smSync.scheduleSync();
+            }
         } catch (e) {
             console.warn('Could not save dzikir preferences', e);
         }
@@ -507,6 +510,11 @@
             } catch (e) {
                 console.warn('URL parameter parsing failed:', e);
             }
+
+            window.addEventListener('sm:sync-applied', () => {
+                loadStorage();
+                renderDzikirList();
+            });
 
             renderDzikirList();
         },

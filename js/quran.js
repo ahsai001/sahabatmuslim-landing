@@ -57,6 +57,9 @@
             if (STATE.lastRead) {
                 localStorage.setItem('sm_quran_last_read', JSON.stringify(STATE.lastRead));
             }
+            if (window.smSync && typeof window.smSync.scheduleSync === 'function') {
+                window.smSync.scheduleSync();
+            }
         } catch (e) {
             console.warn('Failed to save Quran preferences', e);
         }
@@ -711,6 +714,11 @@
                 openSurah(surahNum, ayahNum);
             }
         }
+
+        window.addEventListener('sm:sync-applied', () => {
+            loadPreferences();
+            renderLastReadBanner();
+        });
     }
 
     // Expose API

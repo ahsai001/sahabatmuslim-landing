@@ -381,6 +381,9 @@
         }
 
         const userId = STATE.userProfile.sub || STATE.userProfile.email;
+        const extendedPayload = (window.smSync && typeof window.smSync.collectLocalPayload === 'function')
+            ? window.smSync.collectLocalPayload()
+            : {};
         const payload = {
             user_id: userId,
             email: STATE.userProfile.email || '',
@@ -388,6 +391,7 @@
             avatar_url: STATE.userProfile.picture || '',
             client_updated_at: new Date().toISOString(),
             payload: {
+                ...extendedPayload,
                 city: STATE.city,
                 hijriYear: STATE.hijriYear,
                 hijriMonth: STATE.hijriMonth,
@@ -428,6 +432,10 @@
     // Smart Merge Algorithm (Lossless Union)
     function smartMergeData(cloudPayload) {
         if (!cloudPayload) return { hasMergeChanges: false, hadLocalData: false, hadCloudData: false };
+
+        if (window.smSync && typeof window.smSync.smartMerge === 'function') {
+            window.smSync.smartMerge(cloudPayload);
+        }
 
         let hasMergeChanges = false;
 

@@ -26,6 +26,13 @@
         renderStats();
         renderChannelGrid();
         renderTimerUI();
+
+        window.addEventListener('sm:sync-applied', () => {
+            loadFavorites();
+            loadStoredTimer();
+            renderChannelGrid();
+            renderTimerUI();
+        });
     }
 
     function loadFavorites() {
@@ -42,6 +49,9 @@
     function saveFavorites() {
         try {
             localStorage.setItem('sm_kids_favorites', JSON.stringify(STATE.favorites));
+            if (window.smSync && typeof window.smSync.scheduleSync === 'function') {
+                window.smSync.scheduleSync();
+            }
         } catch (e) {
             console.error('Gagal menyimpan favorit', e);
         }
@@ -294,6 +304,9 @@
     function setScreenTimeLimit(minutes) {
         STATE.timerMinutes = parseInt(minutes, 10) || 0;
         localStorage.setItem('sm_kids_screentime', String(STATE.timerMinutes));
+        if (window.smSync && typeof window.smSync.scheduleSync === 'function') {
+            window.smSync.scheduleSync();
+        }
         
         if (STATE.timerInterval) {
             clearInterval(STATE.timerInterval);

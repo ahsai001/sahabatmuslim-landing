@@ -30,6 +30,9 @@
             localStorage.setItem('sm_doa_font_size', arabicFontSize.toString());
             localStorage.setItem('sm_doa_show_latin', showLatin.toString());
             localStorage.setItem('sm_doa_show_terjemah', showTerjemah.toString());
+            if (window.smSync && typeof window.smSync.scheduleSync === 'function') {
+                window.smSync.scheduleSync();
+            }
         } catch (e) {
             console.warn('Could not save doa preferences', e);
         }
@@ -327,6 +330,11 @@
                 populateGroupSelect(window.DOA_DATA);
                 renderDoaList();
             }
+
+            window.addEventListener('sm:sync-applied', () => {
+                loadStorage();
+                renderDoaList();
+            });
         },
         toggleFavorite,
         copyItem,

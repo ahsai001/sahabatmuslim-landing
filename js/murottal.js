@@ -228,6 +228,9 @@
     const STATE = {
         activeTab: 'surah', // 'surah' | 'playlist' | 'offline'
         currentReciter: POPULAR_RECITERS[0], // Default: Syaikh Ali Jaber
+        reciterScope: 'popular', // 'popular' | 'all'
+        allReciters: [],
+        recitersLoaded: false,
         surahList: [],
         offlineKeys: new Set(),
         searchQuery: '',
@@ -378,6 +381,15 @@
         reciter = reciter || STATE.currentReciter;
         const surah = STATE.surahList.find(s => s.nomor === surahNumber);
         if (!surah) return;
+
+        // Check if reciter has this surah available (for partial recitations)
+        if (reciter.surahList && typeof reciter.surahList === 'string') {
+            const availableSurahs = reciter.surahList.split(',');
+            if (!availableSurahs.includes(String(surahNumber))) {
+                showToast(`Audio Surah ${surah.namaLatin} tidak tersedia untuk ${reciter.name} di MP3Quran.`);
+                return;
+            }
+        }
 
         const a = initAudio();
         const stickyBar = document.getElementById('sticky-player-bar');
@@ -574,6 +586,15 @@
         const surah = STATE.surahList.find(s => s.nomor === surahNumber);
         if (!surah) return;
 
+        // Check if reciter has this surah available
+        if (reciter.surahList && typeof reciter.surahList === 'string') {
+            const availableSurahs = reciter.surahList.split(',');
+            if (!availableSurahs.includes(String(surahNumber))) {
+                showToast(`Audio Surah ${surah.namaLatin} tidak tersedia untuk ${reciter.name} di MP3Quran.`);
+                return;
+            }
+        }
+
         const downloadKey = `${reciter.id}_${pad3(surahNumber)}`;
         if (STATE.downloadingKeys.has(downloadKey)) return;
 
@@ -671,11 +692,30 @@
 
         const select = document.getElementById('playlist-qari-select');
         if (select) {
-            select.innerHTML = POPULAR_RECITERS.map(r => `
+            const popularOptions = POPULAR_RECITERS.map(r => `
                 <option value="${r.id}" ${r.id === STATE.currentReciter.id ? 'selected' : ''}>
                     ${r.name} (${r.desc.split('•')[0].trim()})
                 </option>
             `).join('');
+
+            const popIds = new Set(POPULAR_RECITERS.map(p => p.id));
+            const otherReciters = (STATE.allReciters || []).filter(r => !popIds.has(r.id));
+            const otherOptions = otherReciters.map(r => `
+                <option value="${r.id}" ${r.id === STATE.currentReciter.id ? 'selected' : ''}>
+                    ${r.name} (${r.desc.split('•')[0].trim()})
+                </option>
+            `).join('');
+
+            select.innerHTML = `
+                <optgroup label="⭐ Qari Pilihan Populer (${POPULAR_RECITERS.length})">
+                    ${popularOptions}
+                </optgroup>
+                ${otherReciters.length > 0 ? `
+                <optgroup label="🌍 Semua Qari MP3Quran (${otherReciters.length} Qari Dunia)">
+                    ${otherOptions}
+                </optgroup>
+                ` : ''}
+            `;
         }
 
         const modal = document.getElementById('add-playlist-modal');
@@ -692,7 +732,11 @@
         if (!STATE.pendingPlaylistSurah) return;
         const select = document.getElementById('playlist-qari-select');
         const qariId = select ? select.value : STATE.currentReciter.id;
-        const qari = POPULAR_RECITERS.find(r => r.id === qariId) || STATE.currentReciter;
+        let qari = POPULAR_RECITERS.find(r => r.id === qariId);
+        if (!qari && STATE.allReciters.length > 0) {
+            qari = STATE.allReciters.find(r => r.id === qariId);
+        }
+        qari = qari || STATE.currentReciter;
 
         const surah = STATE.pendingPlaylistSurah;
         const newItem = {
@@ -753,11 +797,75 @@
         }
     }
 
+    // Reciter Data Manager
+    async function loadAllReciters() {
+        if (STATE.recitersLoaded && STATE.allReciters.length > 0) return STATE.allReciters;
+        try {
+            const res = await fetch('js/mp3quran-reciters.json');
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const data = await res.json();
+            if (Array.isArray(data) && data.length > 0) {
+                STATE.allReciters = data;
+                STATE.recitersLoaded = true;
+                return STATE.allReciters;
+            }
+        } catch (err) {
+            console.warn('Failed to load local reciters JSON, fallback to API:', err);
+            try {
+                const apiRes = await fetch('https://mp3quran.net/api/v3/reciters?language=id');
+                const apiData = await apiRes.json();
+                if (apiData && Array.isArray(apiData.reciters)) {
+                    STATE.allReciters = apiData.reciters.map(r => {
+                        const m = (r.moshaf && r.moshaf[0]) || {};
+                        return {
+                            id: String(r.id),
+                            name: r.name,
+                            arabicName: r.letter || '',
+                            desc: (m.name || 'Murattal') + ' • ' + (m.surah_total || 114) + ' Surah',
+                            server: m.server || '',
+                            surahTotal: m.surah_total || 114,
+                            surahList: m.surah_list || ''
+                        };
+                    });
+                    STATE.recitersLoaded = true;
+                }
+            } catch (apiErr) {
+                console.error('All reciters fallback error:', apiErr);
+                STATE.allReciters = [...POPULAR_RECITERS];
+            }
+        }
+        return STATE.allReciters;
+    }
+
+    function setReciterScope(scope) {
+        STATE.reciterScope = scope;
+        const btnPop = document.getElementById('btn-scope-popular');
+        const btnAll = document.getElementById('btn-scope-all');
+        if (btnPop) btnPop.classList.toggle('active', scope === 'popular');
+        if (btnAll) btnAll.classList.toggle('active', scope === 'all');
+
+        const searchInput = document.getElementById('reciter-search-box');
+        const query = searchInput ? searchInput.value : '';
+        filterReciters(query);
+    }
+
     // Reciter Selector Modal
-    function openReciterModal() {
+    async function openReciterModal() {
         const modal = document.getElementById('reciter-modal');
         if (modal) modal.classList.add('active');
-        renderReciterOptions(POPULAR_RECITERS);
+
+        // Render current scope
+        const searchInput = document.getElementById('reciter-search-box');
+        const query = searchInput ? searchInput.value : '';
+        filterReciters(query);
+
+        // Preload all reciters in background if not yet loaded
+        if (!STATE.recitersLoaded) {
+            await loadAllReciters();
+            if (STATE.reciterScope === 'all' || (searchInput && searchInput.value.trim())) {
+                filterReciters(searchInput ? searchInput.value : '');
+            }
+        }
     }
 
     function closeReciterModal() {
@@ -769,43 +877,75 @@
         const container = document.getElementById('reciter-options-list');
         if (!container) return;
 
-        container.innerHTML = list.map(r => `
-            <div class="reciter-option-card ${r.id === STATE.currentReciter.id ? 'selected' : ''}" onclick="window.smMurottal.selectReciter('${r.id}')">
-                <div>
-                    <strong style="display: block; font-size: 0.95rem; color: var(--green-900);">
-                        ${r.name} ${r.id === '76' ? '⭐' : ''}
-                    </strong>
-                    <span style="font-size: 0.8rem; color: var(--gray-500);">${r.desc}</span>
+        if (list.length === 0) {
+            container.innerHTML = `
+                <div style="text-align: center; padding: 2.5rem 1rem; color: var(--gray-500); font-size: 0.9rem;">
+                    🔍 Tidak ditemukan qari yang cocok. Silakan coba kata kunci lain.
                 </div>
-                <div style="font-family: 'Amiri', serif; font-size: 1.25rem; color: var(--green-700);">
-                    ${r.arabicName}
+            `;
+            return;
+        }
+
+        container.innerHTML = list.map(r => {
+            const isSelected = r.id === STATE.currentReciter.id;
+            const isPopular = POPULAR_RECITERS.some(p => p.id === r.id);
+            return `
+            <div class="reciter-option-card ${isSelected ? 'selected' : ''}" onclick="window.smMurottal.selectReciter('${r.id}')" style="cursor: pointer;">
+                <div style="flex: 1; min-width: 0;">
+                    <strong style="display: block; font-size: 0.95rem; color: var(--green-900); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        ${r.name} ${r.id === '76' ? '⭐' : (isPopular ? '<span style="font-size: 0.72rem; color: #047857; background: #d1fae5; padding: 1px 6px; border-radius: 9999px; margin-left: 4px;">Populer</span>' : '')}
+                    </strong>
+                    <span style="font-size: 0.78rem; color: var(--gray-500); display: block; margin-top: 2px;">${r.desc || ''}</span>
+                </div>
+                <div style="font-family: 'Amiri', serif; font-size: 1.15rem; color: var(--green-700); text-align: right; flex-shrink: 0; padding-left: 0.75rem;">
+                    ${r.arabicName || ''}
                 </div>
             </div>
-        `).join('');
+        `;
+        }).join('');
     }
 
     function filterReciters(query) {
         const q = (query || '').toLowerCase().trim();
-        const filtered = POPULAR_RECITERS.filter(r => 
-            r.name.toLowerCase().includes(q) || 
-            r.desc.toLowerCase().includes(q) || 
-            r.arabicName.includes(q)
+        let sourceList = POPULAR_RECITERS;
+
+        if (STATE.reciterScope === 'all') {
+            sourceList = STATE.allReciters.length > 0 ? STATE.allReciters : POPULAR_RECITERS;
+        }
+
+        // When user types a search query, search across all 240+ reciters if available
+        if (q && STATE.allReciters.length > 0) {
+            sourceList = STATE.allReciters;
+        }
+
+        const filtered = sourceList.filter(r => 
+            (r.name && r.name.toLowerCase().includes(q)) || 
+            (r.desc && r.desc.toLowerCase().includes(q)) || 
+            (r.arabicName && r.arabicName.includes(q))
         );
         renderReciterOptions(filtered);
     }
 
     function selectReciter(reciterId) {
-        const chosen = POPULAR_RECITERS.find(r => r.id === reciterId);
+        let chosen = POPULAR_RECITERS.find(r => r.id === reciterId);
+        if (!chosen && STATE.allReciters.length > 0) {
+            chosen = STATE.allReciters.find(r => r.id === reciterId);
+        }
+
         if (chosen) {
             STATE.currentReciter = chosen;
             try {
                 localStorage.setItem('sm_murottal_reciter_id', chosen.id);
+                localStorage.setItem('sm_murottal_reciter_custom', JSON.stringify(chosen));
             } catch (e) {}
 
             // Update UI card
             const nameEl = document.getElementById('active-reciter-name');
             const descEl = document.getElementById('active-reciter-desc');
-            if (nameEl) nameEl.innerHTML = `${chosen.name} ${chosen.id === '76' ? '<span style="font-size: 0.8rem; background: #d1fae5; color: #065f46; padding: 0.2rem 0.55rem; border-radius: 9999px;">Pilihan Utama ⭐</span>' : ''}`;
+            const isDefault = chosen.id === '76';
+            if (nameEl) {
+                nameEl.innerHTML = `${chosen.name} ${isDefault ? '<span style="font-size: 0.8rem; background: #d1fae5; color: #065f46; padding: 0.2rem 0.55rem; border-radius: 9999px;">Pilihan Utama ⭐</span>' : '<span style="font-size: 0.75rem; background: #e0f2fe; color: #0369a1; padding: 0.15rem 0.5rem; border-radius: 9999px;">MP3Quran 🌍</span>'}`;
+            }
             if (descEl) descEl.textContent = chosen.desc;
 
             closeReciterModal();
@@ -1088,10 +1228,16 @@
             STATE.surahList = window.QURAN_SURAT_LIST;
         }
 
-        // Saved reciter
+        // Restore saved reciter
         try {
+            const savedReciterJson = localStorage.getItem('sm_murottal_reciter_custom');
             const savedReciterId = localStorage.getItem('sm_murottal_reciter_id');
-            if (savedReciterId) {
+            if (savedReciterJson) {
+                const parsed = JSON.parse(savedReciterJson);
+                if (parsed && parsed.id && parsed.server) {
+                    STATE.currentReciter = parsed;
+                }
+            } else if (savedReciterId) {
                 const found = POPULAR_RECITERS.find(r => r.id === savedReciterId);
                 if (found) STATE.currentReciter = found;
             }
@@ -1100,12 +1246,18 @@
         // UI active reciter setup
         const nameEl = document.getElementById('active-reciter-name');
         const descEl = document.getElementById('active-reciter-desc');
-        if (nameEl) nameEl.innerHTML = `${STATE.currentReciter.name} ${STATE.currentReciter.id === '76' ? '<span style="font-size: 0.8rem; background: #d1fae5; color: #065f46; padding: 0.2rem 0.55rem; border-radius: 9999px;">Pilihan Utama ⭐</span>' : ''}`;
+        const isDefault = STATE.currentReciter.id === '76';
+        if (nameEl) {
+            nameEl.innerHTML = `${STATE.currentReciter.name} ${isDefault ? '<span style="font-size: 0.8rem; background: #d1fae5; color: #065f46; padding: 0.2rem 0.55rem; border-radius: 9999px;">Pilihan Utama ⭐</span>' : '<span style="font-size: 0.75rem; background: #e0f2fe; color: #0369a1; padding: 0.15rem 0.5rem; border-radius: 9999px;">MP3Quran 🌍</span>'}`;
+        }
         if (descEl) descEl.textContent = STATE.currentReciter.desc;
 
         loadPlaylist();
         await refreshOfflineState();
         renderSurahList();
+
+        // Preload all 240+ reciters in background
+        loadAllReciters();
     }
 
     // Expose API
@@ -1125,6 +1277,8 @@
         closeReciterModal,
         selectReciter,
         filterReciters,
+        setReciterScope,
+        loadAllReciters,
         openAddPlaylistModal,
         closeAddPlaylistModal,
         confirmAddToPlaylist,

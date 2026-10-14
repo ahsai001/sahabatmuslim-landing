@@ -338,7 +338,7 @@
 
         .kids-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
             gap: 1.5rem;
         }
 
@@ -353,6 +353,9 @@
             justify-content: space-between;
             transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
             position: relative;
+            min-width: 0;
+            max-width: 100%;
+            box-sizing: border-box;
         }
 
         .kids-card:hover {
@@ -461,6 +464,7 @@
             align-items: center;
             padding-top: 1rem;
             border-top: 1px solid var(--gray-100);
+            flex-wrap: wrap;
         }
 
         .kids-btn-watch {
@@ -801,7 +805,10 @@
                 font-size: 2rem;
             }
             .kids-grid {
-                grid-template-columns: 1fr;
+                grid-template-columns: minmax(0, 1fr);
+            }
+            .kids-card {
+                padding: 1.25rem;
             }
             .footer-inner {
                 grid-template-columns: 1fr;

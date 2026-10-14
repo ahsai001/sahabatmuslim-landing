@@ -44,7 +44,7 @@
             const now = new Date();
 
             // Makkah: UTC+3
-            const makkahFormatter = new Intl.DateTimeFormat('id-ID', {
+            const makkahTimeFormatter = new Intl.DateTimeFormat('en-GB', {
                 timeZone: 'Asia/Riyadh',
                 hour: '2-digit',
                 minute: '2-digit',
@@ -61,11 +61,11 @@
 
             const makkahTimeEl = document.getElementById('clock-makkah-time');
             const makkahDateEl = document.getElementById('clock-makkah-date');
-            if (makkahTimeEl) makkahTimeEl.textContent = makkahFormatter.format(now);
+            if (makkahTimeEl) makkahTimeEl.textContent = makkahTimeFormatter.format(now).replace(/\./g, ':');
             if (makkahDateEl) makkahDateEl.textContent = makkahDateFormatter.format(now);
 
             // WIB: UTC+7
-            const wibFormatter = new Intl.DateTimeFormat('id-ID', {
+            const wibTimeFormatter = new Intl.DateTimeFormat('en-GB', {
                 timeZone: 'Asia/Jakarta',
                 hour: '2-digit',
                 minute: '2-digit',
@@ -82,7 +82,7 @@
 
             const wibTimeEl = document.getElementById('clock-wib-time');
             const wibDateEl = document.getElementById('clock-wib-date');
-            if (wibTimeEl) wibTimeEl.textContent = wibFormatter.format(now);
+            if (wibTimeEl) wibTimeEl.textContent = wibTimeFormatter.format(now).replace(/\./g, ':');
             if (wibDateEl) wibDateEl.textContent = wibDateFormatter.format(now);
         }
 

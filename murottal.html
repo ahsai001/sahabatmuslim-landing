@@ -1085,16 +1085,24 @@
             <h3 style="font-size: 1.25rem; color: var(--green-900); margin-bottom: 0.35rem; display: flex; align-items: center; gap: 0.5rem;">
                 <span>➕</span> Tambahkan ke Playlist
             </h3>
-            <p style="font-size: 0.88rem; color: var(--gray-600); margin-bottom: 1.25rem;" id="add-playlist-surah-title">
+            <p style="font-size: 0.88rem; color: var(--gray-600); margin-bottom: 0.75rem;" id="add-playlist-surah-title">
                 Pilih Qari khusus untuk surah ini:
             </p>
 
-            <div style="margin-bottom: 1.25rem;">
-                <label style="display: block; font-size: 0.82rem; font-weight: 600; color: var(--gray-700); margin-bottom: 0.4rem;">Pilih Qari Pembawa Surah:</label>
-                <select id="playlist-qari-select" style="width: 100%; padding: 0.75rem 1rem; border: 1.5px solid var(--gray-300); border-radius: 10px; font-size: 0.92rem; background: white; font-family: inherit; font-weight: 500;">
-                    <!-- Options populated dynamically -->
-                </select>
+            <div style="margin-bottom: 0.65rem;">
+                <input type="text" id="playlist-qari-search" placeholder="🔍 Cari qari (cth: Tunaiji, Ali Jaber, Sudais)..." style="width: 100%; padding: 0.65rem 1rem; border: 1.5px solid var(--gray-300); border-radius: 10px; font-size: 0.9rem;" oninput="window.smMurottal.filterPlaylistReciters(this.value)">
             </div>
+
+            <div style="display: flex; gap: 0.4rem; margin-bottom: 0.75rem; flex-wrap: wrap;">
+                <button type="button" class="pill-btn active" id="btn-playlist-scope-popular" onclick="window.smMurottal.setPlaylistScope('popular')">⭐ Populer (14)</button>
+                <button type="button" class="pill-btn" id="btn-playlist-scope-all" onclick="window.smMurottal.setPlaylistScope('all')">🌍 Semua 240+ Qari</button>
+            </div>
+
+            <div id="playlist-qari-list-container" style="max-height: 220px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.45rem; margin-bottom: 1.25rem; padding-right: 4px;">
+                <!-- Populated dynamically -->
+            </div>
+
+            <select id="playlist-qari-select" style="display: none;"></select>
 
             <button type="button" class="btn-play-primary" style="width: 100%; padding: 0.85rem; border-radius: 12px; font-size: 0.95rem; justify-content: center;" onclick="window.smMurottal.confirmAddToPlaylist()">
                 Tambahkan ke Daftar Putar 🎧
@@ -1139,7 +1147,7 @@
     <!-- Scripts -->
     <script src="js/sync.js?v=1"></script>
     <script src="js/quran-data.js"></script>
-    <script src="js/murottal.js?v=5"></script>
+    <script src="js/murottal.js?v=6"></script>
     <script src="js/nav.js?v=3"></script>
 </body>
 </html>

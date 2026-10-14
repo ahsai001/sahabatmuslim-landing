@@ -250,6 +250,8 @@
         loopMode: 'all', // 'all' | 'one' | 'none'
         speed: 1.0,
         pendingPlaylistSurah: null,
+        pendingPlaylistQariId: null,
+        playlistReciterScope: 'popular',
         downloadingKeys: new Set()
     };
 
@@ -695,54 +697,130 @@
         const surah = STATE.surahList.find(s => s.nomor === surahNumber);
         if (!surah) return;
         STATE.pendingPlaylistSurah = surah;
+        STATE.pendingPlaylistQariId = STATE.currentReciter.id;
+        STATE.playlistReciterScope = 'popular';
 
         const titleEl = document.getElementById('add-playlist-surah-title');
         if (titleEl) {
             titleEl.innerHTML = `Tambahkan <strong>Surah ${surah.nomor}. ${surah.namaLatin}</strong> ke Playlist:`;
         }
 
-        const select = document.getElementById('playlist-qari-select');
-        if (select) {
-            const popularOptions = POPULAR_RECITERS.map(r => `
-                <option value="${r.id}" ${r.id === STATE.currentReciter.id ? 'selected' : ''}>
-                    ${r.name} (${r.desc.split('•')[0].trim()})
-                </option>
-            `).join('');
+        const searchInput = document.getElementById('playlist-qari-search');
+        if (searchInput) searchInput.value = '';
 
-            const popIds = new Set(POPULAR_RECITERS.map(p => p.id));
-            const otherReciters = (STATE.allReciters || []).filter(r => !popIds.has(r.id));
-            const otherOptions = otherReciters.map(r => `
-                <option value="${r.id}" ${r.id === STATE.currentReciter.id ? 'selected' : ''}>
-                    ${r.name} (${r.desc.split('•')[0].trim()})
-                </option>
-            `).join('');
+        const btnPop = document.getElementById('btn-playlist-scope-popular');
+        const btnAll = document.getElementById('btn-playlist-scope-all');
+        if (btnPop) btnPop.classList.add('active');
+        if (btnAll) btnAll.classList.remove('active');
 
-            select.innerHTML = `
-                <optgroup label="⭐ Qari Pilihan Populer (${POPULAR_RECITERS.length})">
-                    ${popularOptions}
-                </optgroup>
-                ${otherReciters.length > 0 ? `
-                <optgroup label="🌍 Semua Qari MP3Quran (${otherReciters.length} Qari Dunia)">
-                    ${otherOptions}
-                </optgroup>
-                ` : ''}
-            `;
+        // Render reciters in modal
+        filterPlaylistReciters('');
+
+        // Ensure all reciters are loaded in background
+        if (!STATE.recitersLoaded) {
+            loadAllReciters();
         }
 
         const modal = document.getElementById('add-playlist-modal');
         if (modal) modal.classList.add('active');
     }
 
+    function setPlaylistScope(scope) {
+        STATE.playlistReciterScope = scope;
+        const btnPop = document.getElementById('btn-playlist-scope-popular');
+        const btnAll = document.getElementById('btn-playlist-scope-all');
+        if (btnPop) btnPop.classList.toggle('active', scope === 'popular');
+        if (btnAll) btnAll.classList.toggle('active', scope === 'all');
+
+        const searchInput = document.getElementById('playlist-qari-search');
+        const query = searchInput ? searchInput.value : '';
+        filterPlaylistReciters(query);
+    }
+
+    function filterPlaylistReciters(query) {
+        const rawQ = (query || '').toLowerCase().trim();
+        let sourceList = POPULAR_RECITERS;
+
+        if (STATE.playlistReciterScope === 'all') {
+            sourceList = STATE.allReciters.length > 0 ? STATE.allReciters : POPULAR_RECITERS;
+        }
+
+        // When user types a search query, search across all 240+ reciters if available
+        if (rawQ && STATE.allReciters.length > 0) {
+            sourceList = STATE.allReciters;
+        }
+
+        const qWords = normalizeSearch(rawQ).split(/\s+/).filter(w => w.length > 1);
+
+        const filtered = sourceList.filter(r => {
+            if (!rawQ) return true;
+            const fullRaw = `${r.name} ${r.altName || ''} ${r.desc || ''} ${r.arabicName || ''}`.toLowerCase();
+            if (fullRaw.includes(rawQ)) return true;
+
+            const normTarget = normalizeSearch(`${r.name} ${r.altName || ''}`);
+            if (qWords.length > 0 && qWords.every(w => normTarget.includes(w))) {
+                return true;
+            }
+            return false;
+        });
+
+        renderPlaylistReciterOptions(filtered);
+    }
+
+    function renderPlaylistReciterOptions(list) {
+        const container = document.getElementById('playlist-qari-list-container');
+        if (!container) return;
+
+        if (list.length === 0) {
+            container.innerHTML = `
+                <div style="text-align: center; padding: 1.5rem 1rem; color: var(--gray-500); font-size: 0.88rem;">
+                    🔍 Tidak ditemukan qari yang cocok. Silakan coba kata kunci lain.
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = list.map(r => {
+            const isSelected = r.id === STATE.pendingPlaylistQariId;
+            const isPopular = POPULAR_RECITERS.some(p => p.id === r.id);
+            return `
+            <div class="reciter-option-card ${isSelected ? 'selected' : ''}" onclick="window.smMurottal.selectPlaylistQari('${r.id}')" style="cursor: pointer; padding: 0.75rem 1rem;">
+                <div style="flex: 1; min-width: 0;">
+                    <strong style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.92rem; color: var(--green-900);">
+                        <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${r.name}</span>
+                        ${isSelected ? '<span style="color: #059669; font-weight: bold; font-size: 0.85rem;">✓</span>' : ''}
+                        ${isPopular ? '<span style="font-size: 0.7rem; color: #047857; background: #d1fae5; padding: 1px 5px; border-radius: 9999px;">Populer</span>' : ''}
+                    </strong>
+                    <span style="font-size: 0.78rem; color: var(--gray-500); display: block; margin-top: 2px;">${r.desc || ''}</span>
+                </div>
+                <div style="font-family: 'Amiri', serif; font-size: 1.15rem; color: var(--green-700); text-align: right; flex-shrink: 0; padding-left: 0.5rem;">
+                    ${r.arabicName || ''}
+                </div>
+            </div>
+            `;
+        }).join('');
+    }
+
+    function selectPlaylistQari(reciterId) {
+        STATE.pendingPlaylistQariId = reciterId;
+        const select = document.getElementById('playlist-qari-select');
+        if (select) select.value = reciterId;
+
+        // Re-render to show active selection
+        const searchInput = document.getElementById('playlist-qari-search');
+        filterPlaylistReciters(searchInput ? searchInput.value : '');
+    }
+
     function closeAddPlaylistModal() {
         const modal = document.getElementById('add-playlist-modal');
         if (modal) modal.classList.remove('active');
         STATE.pendingPlaylistSurah = null;
+        STATE.pendingPlaylistQariId = null;
     }
 
     function confirmAddToPlaylist() {
         if (!STATE.pendingPlaylistSurah) return;
-        const select = document.getElementById('playlist-qari-select');
-        const qariId = select ? select.value : STATE.currentReciter.id;
+        const qariId = STATE.pendingPlaylistQariId || STATE.currentReciter.id;
         let qari = POPULAR_RECITERS.find(r => r.id === qariId);
         if (!qari && STATE.allReciters.length > 0) {
             qari = STATE.allReciters.find(r => r.id === qariId);
@@ -1335,6 +1413,9 @@
         openAddPlaylistModal,
         closeAddPlaylistModal,
         confirmAddToPlaylist,
+        setPlaylistScope,
+        filterPlaylistReciters,
+        selectPlaylistQari,
         removeFromPlaylist,
         playEntirePlaylist,
         downloadAllPlaylist,

@@ -103,6 +103,7 @@
         calendarData: [], // 29 or 30 days
         countdownTimer: null,
         userProfile: null,
+        sessionToken: localStorage.getItem('sm_session_token') || null,
         quranProgress: {
             target: 1,
             completed: []
@@ -395,10 +396,15 @@
             }
         };
 
+        const headers = { 'Content-Type': 'application/json' };
+        if (STATE.sessionToken) {
+            headers['Authorization'] = `Bearer ${STATE.sessionToken}`;
+        }
+
         try {
             const res = await fetch('/api/sync', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: headers,
                 body: JSON.stringify(payload)
             });
             const data = await res.json();
@@ -485,8 +491,12 @@
 
     async function fetchFromPostgres(userId) {
         if (!userId) return;
+        const headers = {};
+        if (STATE.sessionToken) {
+            headers['Authorization'] = `Bearer ${STATE.sessionToken}`;
+        }
         try {
-            const res = await fetch(`/api/sync?user_id=${encodeURIComponent(userId)}`);
+            const res = await fetch(`/api/sync?user_id=${encodeURIComponent(userId)}`, { headers });
             const json = await res.json();
             if (res.ok && json.ok && json.found && json.data) {
                 const cloudPayload = json.data.payload;
@@ -553,33 +563,79 @@
     function initGoogleSignIn() {
         window.handleGoogleCredentialResponse = async function (response) {
             try {
-                const base64Url = response.credential.split('.')[1];
-                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-                const jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
-                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-                }).join(''));
+                const res = await fetch('/api/auth/google', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ credential: response.credential })
+                });
+                const authData = await res.json();
+                if (!res.ok || !authData.ok) {
+                    showToast('Gagal verifikasi login Google: ' + (authData.error || 'Server error'));
+                    return;
+                }
 
-                const payload = JSON.parse(jsonPayload);
+                STATE.sessionToken = authData.session;
+                localStorage.setItem('sm_session_token', authData.session);
+
                 STATE.userProfile = {
-                    name: payload.name,
-                    email: payload.email,
-                    picture: payload.picture,
-                    sub: payload.sub,
+                    name: authData.name,
+                    email: authData.email,
+                    picture: authData.picture,
+                    sub: authData.user_id,
                     loginTime: new Date().toISOString()
                 };
 
                 saveUserData(false);
                 updateHybridUI();
                 closeLoginModal();
-                showToast(`Alhamdulillah, berhasil masuk sebagai ${payload.name}! 🎉`);
+                showToast(`Alhamdulillah, berhasil masuk sebagai ${authData.name}! 🎉`);
 
-                await fetchFromPostgres(payload.sub);
+                await fetchFromPostgres(authData.user_id);
                 await syncToPostgres(true);
             } catch (err) {
-                console.error('GSI decode error', err);
+                console.error('Google Sign-In error', err);
                 showToast('Gagal memproses data login Google');
             }
         };
+
+        const clientId = window.SM_CONFIG && window.SM_CONFIG.googleClientId;
+        const gsiBtn = document.getElementById('gsi-button');
+        const divider = document.getElementById('login-divider');
+
+        if (!clientId || clientId.includes('YOUR_GOOGLE_CLIENT_ID')) {
+            if (gsiBtn) gsiBtn.style.display = 'none';
+            if (divider) divider.style.display = 'none';
+        } else {
+            if (gsiBtn) gsiBtn.style.display = 'block';
+            if (divider) divider.style.display = 'block';
+
+            function renderGsi() {
+                if (window.google && window.google.accounts && window.google.accounts.id) {
+                    try {
+                        window.google.accounts.id.initialize({
+                            client_id: clientId,
+                            callback: window.handleGoogleCredentialResponse,
+                            auto_select: false
+                        });
+                        if (gsiBtn) {
+                            window.google.accounts.id.renderButton(gsiBtn, {
+                                type: 'standard',
+                                shape: 'rectangular',
+                                theme: 'outline',
+                                text: 'signin_with',
+                                size: 'large',
+                                logo_alignment: 'left'
+                            });
+                        }
+                    } catch (e) {
+                        console.warn('GSI render error:', e);
+                    }
+                } else {
+                    setTimeout(renderGsi, 200);
+                }
+            }
+            renderGsi();
+        }
     }
 
     function triggerGoogleLogin() {
@@ -621,6 +677,13 @@
     function logoutUser() {
         if (confirm('Keluar dari akun? Data catatan ibadah tetap tersimpan di browser perangkat ini.')) {
             STATE.userProfile = null;
+            STATE.sessionToken = null;
+            localStorage.removeItem('sm_session_token');
+            if (window.google && window.google.accounts && window.google.accounts.id) {
+                try {
+                    window.google.accounts.id.disableAutoSelect();
+                } catch (e) {}
+            }
             saveUserData();
             updateHybridUI();
             showToast('Anda kembali ke Mode Tamu');

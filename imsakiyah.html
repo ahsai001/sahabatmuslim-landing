@@ -1701,15 +1701,10 @@
 
             <!-- Google GSI Sign In Button Container -->
             <div style="margin-bottom: 1.5rem; text-align: center;">
-                <div id="g_id_onload"
-                     data-client_id="YOUR_GOOGLE_CLIENT_ID"
-                     data-callback="handleGoogleCredentialResponse"
-                     data-auto_prompt="false">
-                </div>
-                <div class="g_id_signin" data-type="standard" data-shape="rectangular" data-theme="outline" data-text="signin_with" data-size="large" data-logo_alignment="left"></div>
+                <div id="gsi-button"></div>
             </div>
 
-            <div style="position: relative; text-align: center; margin: 1.25rem 0;">
+            <div id="login-divider" style="position: relative; text-align: center; margin: 1.25rem 0;">
                 <hr style="border: none; border-top: 1px solid var(--gray-200);">
                 <span style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: white; padding: 0 0.75rem; font-size: 0.75rem; color: var(--gray-400);">atau simpan profil nama</span>
             </div>
@@ -1766,7 +1761,8 @@
     </footer>
 
     <!-- Scripts -->
+    <script src="js/app-config.js?v=1"></script>
     <script src="js/nav.js?v=3"></script>
-    <script src="js/ramadhan.js?v=5"></script>
+    <script src="js/ramadhan.js?v=8"></script>
 </body>
 </html>

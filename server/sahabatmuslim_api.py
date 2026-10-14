@@ -17,6 +17,67 @@ import urllib.request
 from datetime import datetime
 import psycopg2
 import psycopg2.extras
+import hmac
+import hashlib
+import base64
+import time as _time
+
+# Helper functions for Google Auth and session management
+
+def verify_google_token(id_token):
+    client_id = os.getenv('GOOGLE_CLIENT_ID')
+    if not client_id:
+        return None, {'ok': False, 'error': 'google login belum dikonfigurasi'}
+    try:
+        url = f'https://oauth2.googleapis.com/tokeninfo?id_token={id_token}'
+        resp = urllib.request.urlopen(url, timeout=5)
+        data = json.load(resp)
+    except Exception:
+        return None, {'ok': False, 'error': 'invalid Google token'}
+    # Validate fields
+    aud = data.get('aud')
+    iss = data.get('iss')
+    exp = int(data.get('exp', 0))
+    email_verified = data.get('email_verified')
+    if aud != client_id:
+        return None, {'ok': False, 'error': 'invalid audience'}
+    if iss not in ('accounts.google.com', 'https://accounts.google.com'):
+        return None, {'ok': False, 'error': 'invalid issuer'}
+    if _time.time() > exp:
+        return None, {'ok': False, 'error': 'token expired'}
+    if email_verified != 'true':
+        return None, {'ok': False, 'error': 'email not verified'}
+    return data, None
+
+def generate_session_token(uid):
+    secret = os.getenv('SM_SESSION_SECRET')
+    if not secret:
+        return None
+    payload = {'uid': uid, 'exp': int(_time.time()) + 30 * 24 * 3600}
+    payload_json = json.dumps(payload, separators=(',', ':')).encode()
+    payload_b64 = base64.urlsafe_b64encode(payload_json).rstrip(b'=')
+    sig = hmac.new(secret.encode(), payload_b64, hashlib.sha256).digest()
+    sig_b64 = base64.urlsafe_b64encode(sig).rstrip(b'=')
+    return payload_b64.decode() + '.' + sig_b64.decode()
+
+def verify_session_token(token):
+    secret = os.getenv('SM_SESSION_SECRET')
+    if not secret:
+        return None
+    try:
+        payload_b64, sig_b64 = token.split('.')
+        expected_sig = hmac.new(secret.encode(), payload_b64.encode(), hashlib.sha256).digest()
+        if not hmac.compare_digest(base64.urlsafe_b64encode(expected_sig).rstrip(b'='), sig_b64.encode()):
+            return None
+        payload_json = base64.urlsafe_b64decode(payload_b64 + '==')
+        payload = json.loads(payload_json)
+        if _time.time() > payload.get('exp', 0):
+            return None
+        return payload.get('uid')
+    except Exception:
+        return None
+
+import time as _time
 
 PORT = 8890
 DB_NAME = "sahabatmuslim_db"
@@ -193,12 +254,24 @@ class SahabatMuslimHandler(http.server.BaseHTTPRequestHandler):
             return
 
         if path == "/api/sync":
+            # Verify session token for protected access
+            auth_header = self.headers.get("Authorization", "")
+            token_uid = None
+            if auth_header.startswith("Bearer "):
+                token_uid = verify_session_token(auth_header.split(" ", 1)[1].strip())
+
             user_id = query.get("user_id", [""])[0].strip()
             email = query.get("email", [""])[0].strip()
 
             if not user_id and not email:
                 self.send_json(400, {"ok": False, "error": "user_id atau email diperlukan"})
                 return
+
+            # If request for google user, enforce token match
+            if user_id.startswith("google:"):
+                if token_uid != user_id:
+                    self.send_json(401, {"ok": False, "error": "invalid or missing session token"})
+                    return
 
             try:
                 with get_db() as conn:
@@ -218,17 +291,9 @@ class SahabatMuslimHandler(http.server.BaseHTTPRequestHandler):
                         row = cur.fetchone()
 
                         if row:
-                            self.send_json(200, {
-                                "ok": True,
-                                "found": True,
-                                "data": row
-                            })
+                            self.send_json(200, {"ok": True, "found": True, "data": row})
                         else:
-                            self.send_json(200, {
-                                "ok": True,
-                                "found": False,
-                                "message": "Belum ada data tersimpan di server"
-                            })
+                            self.send_json(200, {"ok": True, "found": False, "message": "Belum ada data tersimpan di server"})
             except Exception as e:
                 self.send_json(500, {"ok": False, "error": str(e)})
             return
@@ -255,21 +320,52 @@ class SahabatMuslimHandler(http.server.BaseHTTPRequestHandler):
             self.send_json(400, {"ok": False, "error": "Invalid JSON format"})
             return
 
+        if path == "/api/auth/google":
+            credential = body.get("credential")
+            if not credential:
+                self.send_json(400, {"ok": False, "error": "credential missing"})
+                return
+            data, err = verify_google_token(credential)
+            if err:
+                self.send_json(503, err)
+                return
+            uid = f"google:{data.get('sub')}"
+            session = generate_session_token(uid)
+            if not session:
+                self.send_json(503, {"ok": False, "error": "server misconfiguration"})
+                return
+            resp = {
+                "ok": True,
+                "session": session,
+                "user_id": uid,
+                "name": data.get("name"),
+                "email": data.get("email"),
+                "picture": data.get("picture")
+            }
+            self.send_json(200, resp)
+            return
+
         if path == "/api/sync":
+            auth_header = self.headers.get("Authorization", "")
+            token_uid = None
+            if auth_header.startswith("Bearer "):
+                token_uid = verify_session_token(auth_header.split(" ", 1)[1].strip())
+
             user_id = str(body.get("user_id") or "").strip()
             email = str(body.get("email") or "").strip()
+            if not user_id:
+                user_id = email
+            if not user_id:
+                self.send_json(400, {"ok": False, "error": "user_id atau email wajib diisi"})
+                return
+            if user_id.startswith("google:"):
+                if token_uid != user_id:
+                    self.send_json(401, {"ok": False, "error": "invalid or missing session token"})
+                    return
             name = str(body.get("name") or "").strip()
             avatar_url = str(body.get("avatar_url") or "").strip()
             payload = body.get("payload") or {}
             client_updated_at = body.get("client_updated_at")
-
-            if not user_id:
-                user_id = email
-
-            if not user_id:
-                self.send_json(400, {"ok": False, "error": "user_id atau email wajib diisi"})
-                return
-
             try:
                 with get_db() as conn:
                     with conn.cursor() as cur:
@@ -295,14 +391,7 @@ class SahabatMuslimHandler(http.server.BaseHTTPRequestHandler):
                         ))
                         updated_at = cur.fetchone()[0]
                     conn.commit()
-
-                self.send_json(200, {
-                    "ok": True,
-                    "success": True,
-                    "message": "Data amalan berhasil dicadangkan ke database PostgreSQL",
-                    "user_id": user_id,
-                    "updated_at": updated_at.isoformat()
-                })
+                self.send_json(200, {"ok": True, "success": True, "message": "Data amalan berhasil dicadangkan ke PostgreSQL server.", "user_id": user_id, "updated_at": updated_at.isoformat()})
             except Exception as e:
                 self.send_json(500, {"ok": False, "error": str(e)})
             return

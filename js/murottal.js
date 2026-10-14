@@ -39,6 +39,13 @@
             server: 'https://cdn.mp3quran.net/audio/maher-muaiqly/r1/'
         },
         {
+            id: '67',
+            name: 'Syaikh Abdul Muhsin Al-Qasim',
+            arabicName: 'عبد المحسن القاسم',
+            desc: 'Imam & Khatib Masjid Nabawi Madinah • Bacaan tartil tenang & fasih',
+            server: 'https://cdn.mp3quran.net/audio/abdulmohsen-qasim/r1/'
+        },
+        {
             id: '118',
             name: 'Syaikh Mahmud Khalil Al-Husary',
             arabicName: 'محمود خليل الحصري',

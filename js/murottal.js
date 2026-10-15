@@ -409,11 +409,7 @@
             navigator.mediaSession.metadata = new MediaMetadata({
                 title: `Surah ${surahName}`,
                 artist: reciterName,
-                album: 'Al-Qur\'an 30 Juz — Sahabat Muslim',
-                artwork: [
-                    { src: 'https://sahabatmuslim.ahsailabs.my.id/assets/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
-                    { src: 'https://sahabatmuslim.ahsailabs.my.id/assets/icons/icon-512.png', sizes: '512x512', type: 'image/png' }
-                ]
+                album: 'Al-Qur\'an 30 Juz — Sahabat Muslim'
             });
 
             navigator.mediaSession.setActionHandler('play', () => togglePlayPause());

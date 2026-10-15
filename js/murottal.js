@@ -284,12 +284,12 @@
         playlistReciterScope: 'popular',
         downloadingKeys: new Set(),
         verseDrawerOpen: false,
-        verseDisplayMode: 'list', // 'list' | 'single'
+        verseDisplayMode: localStorage.getItem('sm_murottal_verse_mode') || 'single', // Default 1 Ayat
         currentSingleAyah: 1,
-        verseFontSize: 1.6,
+        verseFontSize: 1.1, // Default paling kecil
         verseShowLatin: false,
-        verseShowTrans: true,
-        verseAutoScroll: true,
+        verseShowTrans: false, // Default tanpa terjemah
+        verseAutoScroll: true, // Default auto scroll
         currentAyatData: null,
         currentTimestamps: null,
         currentActiveAyah: null,
@@ -729,7 +729,7 @@
                             <span>🔊 Sedang Diputar</span>
                         </span>
                     </div>
-                    <div class="verse-arabic-text verse-single-arabic" style="font-size: ${STATE.verseFontSize * 1.15}rem; text-align: center; line-height: 2.2;">
+                    <div class="verse-arabic-text verse-single-arabic" style="font-size: ${STATE.verseFontSize}rem; text-align: center; line-height: 2.1;">
                         ${ayah.teksArab}
                     </div>
                     <div class="verse-latin-text" style="display: ${STATE.verseShowLatin ? 'block' : 'none'}; text-align: center; margin-top: 0.6rem; font-size: 0.92rem;">
@@ -921,7 +921,7 @@
     }
 
     function adjustVerseFontSize(delta) {
-        STATE.verseFontSize = Math.min(3.2, Math.max(1.1, STATE.verseFontSize + delta));
+        STATE.verseFontSize = Math.min(3.2, Math.max(1.0, +(STATE.verseFontSize + delta).toFixed(2)));
         renderVerseContent();
     }
 
@@ -1830,10 +1830,11 @@
         // Preload all 240+ reciters in background
         loadAllReciters();
 
-        const savedVerseMode = localStorage.getItem('sm_murottal_verse_mode');
-        if (savedVerseMode === 'single') {
-            setVerseDisplayMode('single');
-        }
+        setVerseDisplayMode(STATE.verseDisplayMode);
+        const transBtn = document.getElementById('btn-verse-toggle-trans');
+        if (transBtn) transBtn.classList.toggle('active', !!STATE.verseShowTrans);
+        const autoScrollBtn = document.getElementById('btn-verse-toggle-autoscroll');
+        if (autoScrollBtn) autoScrollBtn.classList.toggle('active', !!STATE.verseAutoScroll);
 
         // Listen for cloud sync updates
         window.addEventListener('sm:sync-applied', () => {

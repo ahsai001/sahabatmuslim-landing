@@ -1357,16 +1357,16 @@
                         <span class="verse-drawer-indicator" id="verse-drawer-sync-status">⚡ Sync Audio</span>
                     </div>
                     <div class="verse-drawer-tools">
-                        <!-- Mode Selector: List vs 1 Ayat -->
+                        <!-- Mode Selector: List vs 1 Ayat (Default: 1 Ayat) -->
                         <div class="verse-mode-toggle-group" title="Pilih Mode Tampilan">
-                            <button type="button" class="verse-mode-btn active" id="btn-verse-mode-list" onclick="window.smMurottal.setVerseDisplayMode('list')">📜 List</button>
-                            <button type="button" class="verse-mode-btn" id="btn-verse-mode-single" onclick="window.smMurottal.setVerseDisplayMode('single')">🎯 1 Ayat</button>
+                            <button type="button" class="verse-mode-btn" id="btn-verse-mode-list" onclick="window.smMurottal.setVerseDisplayMode('list')">📜 List</button>
+                            <button type="button" class="verse-mode-btn active" id="btn-verse-mode-single" onclick="window.smMurottal.setVerseDisplayMode('single')">🎯 1 Ayat</button>
                         </div>
                         <button type="button" class="verse-tool-btn" id="btn-verse-font-minus" title="Kecilkan Font" onclick="window.smMurottal.adjustVerseFontSize(-0.15)">A-</button>
                         <button type="button" class="verse-tool-btn" id="btn-verse-font-plus" title="Besarkan Font" onclick="window.smMurottal.adjustVerseFontSize(0.15)">A+</button>
                         <button type="button" class="verse-tool-btn" id="btn-verse-toggle-latin" title="Tampilkan/Sembunyikan Latin" onclick="window.smMurottal.toggleVerseLatin()">Latin</button>
-                        <button type="button" class="verse-tool-btn active" id="btn-verse-toggle-trans" title="Tampilkan/Sembunyikan Terjemah" onclick="window.smMurottal.toggleVerseTrans()">Terjemah</button>
-                        <button type="button" class="verse-tool-btn active" id="btn-verse-toggle-autoscroll" title="Auto Scroll ke Ayat Aktif" onclick="window.smMurottal.toggleVerseAutoScroll()">Auto Scroll</button>
+                        <button type="button" class="verse-tool-btn" id="btn-verse-toggle-trans" title="Tampilkan/Sembunyikan Terjemah" onclick="window.smMurottal.toggleVerseTrans()">Terjemah</button>
+                        <button type="button" class="verse-tool-btn active" id="btn-verse-toggle-autoscroll" style="display: none;" title="Auto Scroll ke Ayat Aktif" onclick="window.smMurottal.toggleVerseAutoScroll()">Auto Scroll</button>
                         <button type="button" class="verse-drawer-close-btn" title="Tutup Teks Ayat" onclick="window.smMurottal.toggleVerseDrawer(false)">✕</button>
                     </div>
                 </div>
@@ -1523,7 +1523,7 @@
     <!-- Scripts -->
     <script src="js/sync.js?v=1"></script>
     <script src="js/quran-data.js"></script>
-    <script src="js/murottal.js?v=10"></script>
+    <script src="js/murottal.js?v=11"></script>
     <script src="js/nav.js?v=3"></script>
 </body>
 </html>

@@ -649,6 +649,17 @@
             }
         }
 
+        const lyricsBtn = document.getElementById('btn-player-lyrics');
+        if (lyricsBtn) {
+            if (STATE.hasSyncTimestamps) {
+                lyricsBtn.innerHTML = '<span>⚡</span><span class="hide-mobile">Teks & Sync</span>';
+                lyricsBtn.title = 'Teks Ayat Sinkron Otomatis dengan Audio (Live Highlight)';
+            } else {
+                lyricsBtn.innerHTML = '<span>📖</span><span class="hide-mobile">Teks & Arti</span>';
+                lyricsBtn.title = 'Teks Ayat & Terjemahan (Mode Manual)';
+            }
+        }
+
         STATE.isLoadingVerses = false;
         renderVerseList();
 
@@ -1125,13 +1136,15 @@
         container.innerHTML = list.map(r => {
             const isSelected = r.id === STATE.pendingPlaylistQariId;
             const isPopular = POPULAR_RECITERS.some(p => p.id === r.id);
+            const hasSync = !!getQuranComReciterId(r);
             return `
             <div class="reciter-option-card ${isSelected ? 'selected' : ''}" onclick="window.smMurottal.selectPlaylistQari('${r.id}')" style="cursor: pointer; padding: 0.75rem 1rem;">
                 <div style="flex: 1; min-width: 0;">
-                    <strong style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.92rem; color: var(--green-900);">
+                    <strong style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.92rem; color: var(--green-900); flex-wrap: wrap;">
                         <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${r.name}</span>
                         ${isSelected ? '<span style="color: #059669; font-weight: bold; font-size: 0.85rem;">✓</span>' : ''}
-                        ${isPopular ? '<span style="font-size: 0.7rem; color: #047857; background: #d1fae5; padding: 1px 5px; border-radius: 9999px;">Populer</span>' : ''}
+                        ${hasSync ? '<span style="font-size: 0.7rem; color: #065f46; background: #a7f3d0; padding: 1px 6px; border-radius: 9999px; font-weight: 700;">⚡ Sync Ayat</span>' : ''}
+                        ${isPopular && !hasSync ? '<span style="font-size: 0.7rem; color: #047857; background: #d1fae5; padding: 1px 5px; border-radius: 9999px;">Populer</span>' : ''}
                     </strong>
                     <span style="font-size: 0.78rem; color: var(--gray-500); display: block; margin-top: 2px;">${r.desc || ''}</span>
                 </div>
@@ -1320,11 +1333,15 @@
         container.innerHTML = list.map(r => {
             const isSelected = r.id === STATE.currentReciter.id;
             const isPopular = POPULAR_RECITERS.some(p => p.id === r.id);
+            const hasSync = !!getQuranComReciterId(r);
             return `
             <div class="reciter-option-card ${isSelected ? 'selected' : ''}" onclick="window.smMurottal.selectReciter('${r.id}')" style="cursor: pointer;">
                 <div style="flex: 1; min-width: 0;">
-                    <strong style="display: block; font-size: 0.95rem; color: var(--green-900); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                        ${r.name} ${r.id === '76' ? '⭐' : (isPopular ? '<span style="font-size: 0.72rem; color: #047857; background: #d1fae5; padding: 1px 6px; border-radius: 9999px; margin-left: 4px;">Populer</span>' : '')}
+                    <strong style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.95rem; color: var(--green-900); flex-wrap: wrap;">
+                        <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${r.name}</span>
+                        ${r.id === '76' ? '⭐' : ''}
+                        ${hasSync ? '<span style="font-size: 0.7rem; color: #065f46; background: #a7f3d0; padding: 1px 6px; border-radius: 9999px; font-weight: 700;">⚡ Sync Ayat</span>' : ''}
+                        ${isPopular && !hasSync ? '<span style="font-size: 0.72rem; color: #047857; background: #d1fae5; padding: 1px 6px; border-radius: 9999px;">Populer</span>' : ''}
                     </strong>
                     <span style="font-size: 0.78rem; color: var(--gray-500); display: block; margin-top: 2px;">${r.desc || ''}</span>
                 </div>
@@ -1388,15 +1405,7 @@
                 localStorage.setItem('sm_murottal_reciter_custom', JSON.stringify(chosen));
             } catch (e) {}
 
-            // Update UI card
-            const nameEl = document.getElementById('active-reciter-name');
-            const descEl = document.getElementById('active-reciter-desc');
-            const isDefault = chosen.id === '76';
-            if (nameEl) {
-                nameEl.innerHTML = `${chosen.name} ${isDefault ? '<span style="font-size: 0.8rem; background: #d1fae5; color: #065f46; padding: 0.2rem 0.55rem; border-radius: 9999px;">Pilihan Utama ⭐</span>' : '<span style="font-size: 0.75rem; background: #e0f2fe; color: #0369a1; padding: 0.15rem 0.5rem; border-radius: 9999px;">MP3Quran 🌍</span>'}`;
-            }
-            if (descEl) descEl.textContent = chosen.desc;
-
+            updateActiveReciterBannerUI(chosen);
             closeReciterModal();
             showToast(`Qari aktif: ${chosen.name} 🎙️`);
             renderSurahList();
@@ -1405,6 +1414,18 @@
                 window.smSync.scheduleSync();
             }
         }
+    }
+
+    function updateActiveReciterBannerUI(reciter) {
+        const nameEl = document.getElementById('active-reciter-name');
+        const descEl = document.getElementById('active-reciter-desc');
+        if (!nameEl || !reciter) return;
+        const isDefault = reciter.id === '76';
+        const hasSync = !!getQuranComReciterId(reciter);
+        const syncBadge = hasSync ? '<span style="font-size: 0.72rem; background: #d1fae5; color: #047857; padding: 0.15rem 0.55rem; border-radius: 9999px; font-weight: 700; margin-left: 4px;">⚡ Sync Ayat</span>' : '';
+        const sourceBadge = isDefault ? '<span style="font-size: 0.8rem; background: #d1fae5; color: #065f46; padding: 0.2rem 0.55rem; border-radius: 9999px;">Pilihan Utama ⭐</span>' : '<span style="font-size: 0.75rem; background: #e0f2fe; color: #0369a1; padding: 0.15rem 0.5rem; border-radius: 9999px;">MP3Quran 🌍</span>';
+        nameEl.innerHTML = `${reciter.name} ${sourceBadge} ${syncBadge}`;
+        if (descEl) descEl.textContent = reciter.desc || '';
     }
 
     // Refresh offline state
@@ -1697,13 +1718,7 @@
         } catch (e) {}
 
         // UI active reciter setup
-        const nameEl = document.getElementById('active-reciter-name');
-        const descEl = document.getElementById('active-reciter-desc');
-        const isDefault = STATE.currentReciter.id === '76';
-        if (nameEl) {
-            nameEl.innerHTML = `${STATE.currentReciter.name} ${isDefault ? '<span style="font-size: 0.8rem; background: #d1fae5; color: #065f46; padding: 0.2rem 0.55rem; border-radius: 9999px;">Pilihan Utama ⭐</span>' : '<span style="font-size: 0.75rem; background: #e0f2fe; color: #0369a1; padding: 0.15rem 0.5rem; border-radius: 9999px;">MP3Quran 🌍</span>'}`;
-        }
-        if (descEl) descEl.textContent = STATE.currentReciter.desc;
+        updateActiveReciterBannerUI(STATE.currentReciter);
 
         loadPlaylist();
         await refreshOfflineState();
@@ -1722,10 +1737,7 @@
                     const parsed = JSON.parse(savedReciterJson);
                     if (parsed && parsed.id && parsed.id !== STATE.currentReciter.id) {
                         STATE.currentReciter = parsed;
-                        const nameEl = document.getElementById('active-reciter-name');
-                        const descEl = document.getElementById('active-reciter-desc');
-                        if (nameEl) nameEl.innerHTML = `${parsed.name} <span style="font-size: 0.75rem; background: #e0f2fe; color: #0369a1; padding: 0.15rem 0.5rem; border-radius: 9999px;">Cloud ☁️</span>`;
-                        if (descEl) descEl.textContent = parsed.desc;
+                        updateActiveReciterBannerUI(parsed);
                         renderSurahList();
                     }
                 } catch (e) {}

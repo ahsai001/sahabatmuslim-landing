@@ -309,6 +309,66 @@ class SahabatMuslimHandler(http.server.BaseHTTPRequestHandler):
             })
             return
 
+        if path == "/api/kids/quiz":
+            category = query.get("category", ["all"])[0].strip().lower()
+            level = query.get("level", ["all"])[0].strip().lower()
+            limit_str = query.get("limit", ["10"])[0].strip()
+            try:
+                limit = max(1, min(30, int(limit_str)))
+            except ValueError:
+                limit = 10
+
+            sql = "SELECT id, category, level, question, options, correct_index, explanation FROM kids_quiz_questions WHERE is_active = true"
+            params = []
+            if category and category != "all":
+                sql += " AND category = %s"
+                params.append(category)
+            if level and level != "all":
+                sql += " AND level = %s"
+                params.append(level)
+            sql += " ORDER BY RANDOM() LIMIT %s;"
+            params.append(limit)
+
+            try:
+                with get_db() as conn:
+                    with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+                        cur.execute(sql, tuple(params))
+                        rows = cur.fetchall()
+                self.send_json(200, {
+                    "ok": True,
+                    "total": len(rows),
+                    "category": category,
+                    "questions": rows
+                })
+            except Exception as e:
+                self.send_json(500, {"ok": False, "error": str(e)})
+            return
+
+        if path == "/api/kids/quiz/leaderboard":
+            limit_str = query.get("limit", ["10"])[0].strip()
+            try:
+                limit = max(1, min(50, int(limit_str)))
+            except ValueError:
+                limit = 10
+            try:
+                with get_db() as conn:
+                    with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+                        cur.execute("""
+                            SELECT id, player_name, score, total_questions, stars, category, created_at
+                            FROM kids_quiz_scores
+                            ORDER BY score DESC, created_at DESC
+                            LIMIT %s;
+                        """, (limit,))
+                        rows = cur.fetchall()
+                self.send_json(200, {
+                    "ok": True,
+                    "total": len(rows),
+                    "leaderboard": rows
+                })
+            except Exception as e:
+                self.send_json(500, {"ok": False, "error": str(e)})
+            return
+
         self.send_json(404, {"ok": False, "error": "Not Found"})
 
     def do_POST(self):
@@ -418,6 +478,47 @@ class SahabatMuslimHandler(http.server.BaseHTTPRequestHandler):
                     "ok": True,
                     "success": True,
                     "message": "Jazakallahu khairan! Email Anda berhasil didaftarkan."
+                })
+            except Exception as e:
+                self.send_json(500, {"ok": False, "error": str(e)})
+        if path == "/api/kids/quiz/score":
+            player_name = str(body.get("player_name") or "Santri Cilik").strip()[:100]
+            try:
+                score = int(body.get("score", 0))
+                total_questions = max(1, int(body.get("total_questions", 10)))
+                stars = max(1, min(3, int(body.get("stars", 1))))
+            except (ValueError, TypeError):
+                self.send_json(400, {"ok": False, "error": "Skor tidak valid"})
+                return
+
+            category = str(body.get("category") or "all").strip()[:50]
+            user_id = str(body.get("user_id") or "").strip()[:100]
+
+            try:
+                with get_db() as conn:
+                    with conn.cursor() as cur:
+                        cur.execute("""
+                            INSERT INTO kids_quiz_scores 
+                                (user_id, player_name, score, total_questions, stars, category, created_at)
+                            VALUES (%s, %s, %s, %s, %s, %s, CURRENT_TIMESTAMP)
+                            RETURNING id, created_at;
+                        """, (
+                            user_id or None,
+                            player_name,
+                            score,
+                            total_questions,
+                            stars,
+                            category
+                        ))
+                        row = cur.fetchone()
+                        score_id = row[0]
+                        created_at = row[1]
+                    conn.commit()
+                self.send_json(200, {
+                    "ok": True,
+                    "id": score_id,
+                    "message": "Skor kuis berhasil disimpan! Barakallahu fik.",
+                    "created_at": created_at.isoformat()
                 })
             except Exception as e:
                 self.send_json(500, {"ok": False, "error": str(e)})

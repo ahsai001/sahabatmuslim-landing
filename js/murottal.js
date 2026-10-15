@@ -106,6 +106,36 @@
 
     const POPULAR_SURAH_NUMBERS = [1, 18, 36, 55, 56, 67, 112, 113, 114];
 
+    // Quran.com Reciter IDs mapping for millisecond verse timestamps
+    const QURAN_COM_RECITERS = {
+        '123': 7,  // Syaikh Misyari Rasyid Al-Afasy (Mishari Rashid al-`Afasy)
+        '54': 3,   // Syaikh Abdurrahman As-Sudais (Abdur-Rahman as-Sudais)
+        '4': 4,    // Syaikh Abu Bakr Asy-Syathiri (Abu Bakr al-Shatri)
+        '89': 5,   // Syaikh Hani Ar-Rifai (Hani ar-Rifai)
+        '118': 6,  // Syaikh Mahmud Khalil Al-Husary (Mahmoud Khalil Al-Husary)
+        '112': 9,  // Syaikh Muhammad Siddiq Al-Minshawi (Mohamed Siddiq al-Minshawi)
+        '51': 2    // Syaikh Abdul Basit Abdul Samad (AbdulBaset AbdulSamad Murattal)
+    };
+
+    const AYAT_CACHE = {};
+    const TIMESTAMP_CACHE = {};
+
+    function getQuranComReciterId(reciter) {
+        if (!reciter) return null;
+        if (reciter.id && QURAN_COM_RECITERS[reciter.id]) {
+            return QURAN_COM_RECITERS[reciter.id];
+        }
+        const name = (reciter.name || '').toLowerCase();
+        if (name.includes('afasy') || name.includes('mishari') || name.includes('misyari')) return 7;
+        if (name.includes('sudais') || name.includes('sudaisi')) return 3;
+        if (name.includes('shatri') || name.includes('syathiri')) return 4;
+        if (name.includes('rifai') || name.includes('al-refai')) return 5;
+        if (name.includes('husary') || name.includes('al-husari')) return 6;
+        if (name.includes('minshawi') || name.includes('al-minshawi')) return 9;
+        if (name.includes('abdul basit') || name.includes('abdulbaset')) return 2;
+        return null;
+    }
+
     // IndexedDB Manager for Offline Storage
     const MurottalDB = {
         dbName: 'SahabatMuslim_AudioCache',
@@ -252,7 +282,17 @@
         pendingPlaylistSurah: null,
         pendingPlaylistQariId: null,
         playlistReciterScope: 'popular',
-        downloadingKeys: new Set()
+        downloadingKeys: new Set(),
+        verseDrawerOpen: false,
+        verseFontSize: 1.6,
+        verseShowLatin: false,
+        verseShowTrans: true,
+        verseAutoScroll: true,
+        currentAyatData: null,
+        currentTimestamps: null,
+        currentActiveAyah: null,
+        hasSyncTimestamps: false,
+        isLoadingVerses: false
     };
 
     function pad3(num) {
@@ -322,6 +362,9 @@
         if (slider && !slider._dragging) {
             slider.value = (a.currentTime / a.duration) * 100;
         }
+
+        // Real-time verse highlight sync
+        updateActiveVerseSync(a.currentTime);
     }
 
     function onAudioEnded() {
@@ -410,11 +453,20 @@
         let audioSrc = '';
         let isOffline = false;
 
+        // Concurrently load verses and timestamps
+        const ayatPromise = loadSurahAyatData(surahNumber, reciter);
+
         if (cached && cached.blob) {
             audioSrc = URL.createObjectURL(cached.blob);
             isOffline = true;
+            await ayatPromise;
         } else {
-            audioSrc = `${reciter.server}${pad3(surahNumber)}.mp3`;
+            const ayatResult = await ayatPromise;
+            if (ayatResult && ayatResult.quranComAudioUrl) {
+                audioSrc = ayatResult.quranComAudioUrl;
+            } else {
+                audioSrc = `${reciter.server}${pad3(surahNumber)}.mp3`;
+            }
         }
 
         STATE.currentlyPlaying = {
@@ -462,11 +514,24 @@
         let audioSrc = '';
         let isOffline = false;
 
+        const fakeReciter = {
+            id: item.qariId,
+            name: item.qariName,
+            server: item.qariServer
+        };
+        const ayatPromise = loadSurahAyatData(item.surahNumber, fakeReciter);
+
         if (cached && cached.blob) {
             audioSrc = URL.createObjectURL(cached.blob);
             isOffline = true;
+            await ayatPromise;
         } else {
-            audioSrc = `${item.qariServer}${pad3(item.surahNumber)}.mp3`;
+            const ayatResult = await ayatPromise;
+            if (ayatResult && ayatResult.quranComAudioUrl) {
+                audioSrc = ayatResult.quranComAudioUrl;
+            } else {
+                audioSrc = `${item.qariServer}${pad3(item.surahNumber)}.mp3`;
+            }
         }
 
         STATE.currentlyPlaying = {
@@ -497,6 +562,287 @@
 
         updateMediaSession(item.surahName, item.qariName);
         renderPlaylist();
+    }
+
+    // ==========================================
+    // Real-Time Verse Display & Sync Controller
+    // ==========================================
+
+    async function loadSurahAyatData(surahNumber, reciter) {
+        STATE.isLoadingVerses = true;
+        STATE.currentActiveAyah = null;
+        STATE.currentTimestamps = null;
+        STATE.hasSyncTimestamps = false;
+
+        const badgeEl = document.getElementById('verse-drawer-surah-badge');
+        const syncEl = document.getElementById('verse-drawer-sync-status');
+        const surah = STATE.surahList.find(s => s.nomor === surahNumber);
+        if (badgeEl && surah) {
+            badgeEl.textContent = `${surah.nomor}. ${surah.namaLatin}`;
+        }
+        if (syncEl) {
+            syncEl.textContent = '⏳ Memuat...';
+            syncEl.style.color = 'var(--gray-500)';
+        }
+
+        const bodyEl = document.getElementById('verse-drawer-body');
+        if (bodyEl && (!STATE.currentAyatData || STATE.currentAyatData.nomor !== surahNumber)) {
+            bodyEl.innerHTML = `
+                <div style="text-align: center; padding: 2.5rem 1rem; color: var(--gray-500); font-size: 0.9rem;">
+                    <div style="display: inline-block; width: 22px; height: 22px; border: 3px solid var(--gray-300); border-top-color: var(--green-600); border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 0.5rem;"></div>
+                    <div>Memuat teks ayat & terjemahan ${surah ? surah.namaLatin : ''}...</div>
+                </div>
+            `;
+        }
+
+        // 1. Fetch Verses text (equran.id API v2)
+        let ayatData = AYAT_CACHE[surahNumber];
+        if (!ayatData) {
+            try {
+                const res = await fetch(`https://equran.id/api/v2/surat/${surahNumber}`);
+                if (res.ok) {
+                    const json = await res.json();
+                    if (json && json.data) {
+                        ayatData = json.data;
+                        AYAT_CACHE[surahNumber] = ayatData;
+                    }
+                }
+            } catch (e) {
+                console.warn('Gagal memuat teks ayat dari equran.id:', e);
+            }
+        }
+        STATE.currentAyatData = ayatData;
+
+        // 2. Fetch Timestamps from Quran.com if reciter is supported
+        const quranComId = getQuranComReciterId(reciter);
+        let quranComAudioUrl = null;
+        if (quranComId) {
+            const cacheKey = `${quranComId}_${surahNumber}`;
+            let tsData = TIMESTAMP_CACHE[cacheKey];
+            if (!tsData) {
+                try {
+                    const res = await fetch(`https://api.quran.com/api/v4/chapter_recitations/${quranComId}/${surahNumber}?segments=true`);
+                    if (res.ok) {
+                        const json = await res.json();
+                        if (json && json.audio_file && json.audio_file.timestamps) {
+                            tsData = {
+                                audio_url: json.audio_file.audio_url,
+                                timestamps: json.audio_file.timestamps
+                            };
+                            TIMESTAMP_CACHE[cacheKey] = tsData;
+                        }
+                    }
+                } catch (e) {
+                    console.warn('Gagal memuat timestamps dari quran.com:', e);
+                }
+            }
+
+            if (tsData && tsData.timestamps && tsData.timestamps.length > 0) {
+                STATE.currentTimestamps = tsData.timestamps;
+                STATE.hasSyncTimestamps = true;
+                quranComAudioUrl = tsData.audio_url;
+            }
+        }
+
+        // Update badge & indicator
+        if (syncEl) {
+            if (STATE.hasSyncTimestamps) {
+                syncEl.innerHTML = '<span style="color: #059669; font-weight: 700;">⚡ Sinkron Audio Otomatis</span>';
+            } else {
+                syncEl.innerHTML = '<span style="color: var(--gray-600);">📖 Mode Teks Manual</span>';
+            }
+        }
+
+        STATE.isLoadingVerses = false;
+        renderVerseList();
+
+        return { ayatData, quranComAudioUrl, hasSyncTimestamps: STATE.hasSyncTimestamps };
+    }
+
+    function renderVerseList() {
+        const bodyEl = document.getElementById('verse-drawer-body');
+        if (!bodyEl) return;
+
+        if (!STATE.currentAyatData || !STATE.currentAyatData.ayat) {
+            bodyEl.innerHTML = `
+                <div style="text-align: center; padding: 2.5rem 1rem; color: var(--gray-500); font-size: 0.9rem;">
+                    <p style="margin-bottom: 0.5rem;">⚠️ Teks ayat belum dapat dimuat.</p>
+                    <button type="button" class="verse-tool-btn" onclick="window.smMurottal.retryLoadVerses()">Coba Muat Ulang</button>
+                </div>
+            `;
+            return;
+        }
+
+        const data = STATE.currentAyatData;
+        const html = data.ayat.map((ayah) => {
+            const isPlaying = STATE.currentActiveAyah === ayah.nomorAyat;
+            return `
+                <div class="verse-card-item ${isPlaying ? 'active-playing-verse' : ''}" 
+                     id="verse-card-${ayah.nomorAyat}" 
+                     data-ayah="${ayah.nomorAyat}"
+                     onclick="window.smMurottal.seekToAyah(${ayah.nomorAyat})">
+                    <div class="verse-card-header">
+                        <span class="verse-num-badge">Ayat ${ayah.nomorAyat}</span>
+                        <span class="verse-active-indicator">
+                            <span>🔊 Sedang Diputar</span>
+                        </span>
+                    </div>
+                    <div class="verse-arabic-text" style="font-size: ${STATE.verseFontSize}rem;">
+                        ${ayah.teksArab}
+                    </div>
+                    <div class="verse-latin-text" style="display: ${STATE.verseShowLatin ? 'block' : 'none'};">
+                        ${ayah.teksLatin}
+                    </div>
+                    <div class="verse-trans-text" style="display: ${STATE.verseShowTrans ? 'block' : 'none'};">
+                        ${ayah.teksIndonesia}
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        bodyEl.innerHTML = html;
+
+        if (STATE.currentActiveAyah) {
+            highlightActiveVerse(STATE.currentActiveAyah, false);
+        }
+    }
+
+    function highlightActiveVerse(ayahNum, shouldScroll = true) {
+        if (STATE.currentActiveAyah === ayahNum && !shouldScroll) return;
+
+        if (STATE.currentActiveAyah && STATE.currentActiveAyah !== ayahNum) {
+            const oldCard = document.getElementById(`verse-card-${STATE.currentActiveAyah}`);
+            if (oldCard) oldCard.classList.remove('active-playing-verse');
+        }
+
+        STATE.currentActiveAyah = ayahNum;
+
+        const newCard = document.getElementById(`verse-card-${ayahNum}`);
+        if (newCard) {
+            newCard.classList.add('active-playing-verse');
+            if (shouldScroll && STATE.verseAutoScroll && STATE.verseDrawerOpen) {
+                const body = document.getElementById('verse-drawer-body');
+                if (body) {
+                    const cardTop = newCard.offsetTop - body.offsetTop;
+                    body.scrollTo({
+                        top: Math.max(0, cardTop - 30),
+                        behavior: 'smooth'
+                    });
+                }
+            }
+        }
+    }
+
+    function updateActiveVerseSync(currentTimeSec) {
+        if (!STATE.hasSyncTimestamps || !STATE.currentTimestamps || STATE.currentTimestamps.length === 0) {
+            return;
+        }
+        const curMs = currentTimeSec * 1000;
+        const match = STATE.currentTimestamps.find(ts => curMs >= ts.timestamp_from && curMs < ts.timestamp_to);
+        if (match) {
+            const parts = match.verse_key.split(':');
+            const ayahNum = parseInt(parts[1], 10);
+            if (!isNaN(ayahNum) && ayahNum !== STATE.currentActiveAyah) {
+                highlightActiveVerse(ayahNum, true);
+            }
+        } else if (curMs >= STATE.currentTimestamps[STATE.currentTimestamps.length - 1].timestamp_to) {
+            const lastTs = STATE.currentTimestamps[STATE.currentTimestamps.length - 1];
+            const parts = lastTs.verse_key.split(':');
+            const ayahNum = parseInt(parts[1], 10);
+            if (!isNaN(ayahNum) && ayahNum !== STATE.currentActiveAyah) {
+                highlightActiveVerse(ayahNum, true);
+            }
+        }
+    }
+
+    function seekToAyah(ayahNumber) {
+        if (!STATE.audio) return;
+        if (STATE.hasSyncTimestamps && STATE.currentTimestamps) {
+            const surahNum = STATE.currentlyPlaying ? STATE.currentlyPlaying.surahNumber : 1;
+            const targetKey = `${surahNum}:${ayahNumber}`;
+            const ts = STATE.currentTimestamps.find(t => t.verse_key === targetKey);
+            if (ts) {
+                STATE.audio.currentTime = ts.timestamp_from / 1000;
+                highlightActiveVerse(ayahNumber, false);
+                if (STATE.audio.paused) {
+                    STATE.audio.play().catch(() => {});
+                }
+                return;
+            }
+        }
+        const card = document.getElementById(`verse-card-${ayahNumber}`);
+        if (card) {
+            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+
+    function toggleVerseDrawer(forceState) {
+        const drawer = document.getElementById('player-verse-drawer');
+        const lyricsBtn = document.getElementById('btn-player-lyrics');
+        if (!drawer) return;
+
+        if (typeof forceState === 'boolean') {
+            STATE.verseDrawerOpen = forceState;
+        } else {
+            STATE.verseDrawerOpen = !STATE.verseDrawerOpen;
+        }
+
+        if (STATE.verseDrawerOpen) {
+            drawer.classList.add('open');
+            if (lyricsBtn) lyricsBtn.classList.add('active');
+            if (STATE.currentActiveAyah) {
+                setTimeout(() => {
+                    highlightActiveVerse(STATE.currentActiveAyah, true);
+                }, 100);
+            }
+        } else {
+            drawer.classList.remove('open');
+            if (lyricsBtn) lyricsBtn.classList.remove('active');
+        }
+    }
+
+    function adjustVerseFontSize(delta) {
+        STATE.verseFontSize = Math.min(3.2, Math.max(1.1, STATE.verseFontSize + delta));
+        const texts = document.querySelectorAll('.verse-arabic-text');
+        texts.forEach(el => {
+            el.style.fontSize = `${STATE.verseFontSize}rem`;
+        });
+    }
+
+    function toggleVerseLatin() {
+        STATE.verseShowLatin = !STATE.verseShowLatin;
+        const btn = document.getElementById('btn-verse-toggle-latin');
+        if (btn) btn.classList.toggle('active', STATE.verseShowLatin);
+        const latins = document.querySelectorAll('.verse-latin-text');
+        latins.forEach(el => {
+            el.style.display = STATE.verseShowLatin ? 'block' : 'none';
+        });
+    }
+
+    function toggleVerseTrans() {
+        STATE.verseShowTrans = !STATE.verseShowTrans;
+        const btn = document.getElementById('btn-verse-toggle-trans');
+        if (btn) btn.classList.toggle('active', STATE.verseShowTrans);
+        const trans = document.querySelectorAll('.verse-trans-text');
+        trans.forEach(el => {
+            el.style.display = STATE.verseShowTrans ? 'block' : 'none';
+        });
+    }
+
+    function toggleVerseAutoScroll() {
+        STATE.verseAutoScroll = !STATE.verseAutoScroll;
+        const btn = document.getElementById('btn-verse-toggle-autoscroll');
+        if (btn) btn.classList.toggle('active', STATE.verseAutoScroll);
+        showToast(STATE.verseAutoScroll ? 'Auto scroll aktif 📜' : 'Auto scroll nonaktif');
+    }
+
+    function retryLoadVerses() {
+        if (STATE.currentlyPlaying) {
+            loadSurahAyatData(STATE.currentlyPlaying.surahNumber, {
+                id: STATE.currentlyPlaying.qariId,
+                name: STATE.currentlyPlaying.qariName
+            });
+        }
     }
 
     function togglePlayPause() {
@@ -1425,7 +1771,14 @@
         downloadMp3ToDevice,
         clearAllOfflineStorage,
         onSearchSurah,
-        setFilter
+        setFilter,
+        toggleVerseDrawer,
+        adjustVerseFontSize,
+        toggleVerseLatin,
+        toggleVerseTrans,
+        toggleVerseAutoScroll,
+        seekToAyah,
+        retryLoadVerses
     };
 
     document.addEventListener('DOMContentLoaded', init);

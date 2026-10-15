@@ -857,22 +857,29 @@
             box-shadow: 0 4px 20px rgba(5, 150, 105, 0.15) !important;
         }
 
+        @media (max-width: 640px) {
+            .verse-single-card {
+                padding: 1rem 0.85rem !important;
+            }
+        }
+
         .verse-single-nav {
             display: flex;
             align-items: center;
             justify-content: space-between;
             width: 100%;
             max-width: 840px;
-            margin-top: 0.85rem;
-            gap: 0.5rem;
-            flex-wrap: wrap;
+            margin-top: 0.75rem;
+            gap: 0.4rem;
+            flex-wrap: nowrap !important;
         }
 
         .verse-single-nav-btn {
             display: inline-flex;
             align-items: center;
-            gap: 0.35rem;
-            padding: 0.4rem 0.85rem;
+            justify-content: center;
+            gap: 0.3rem;
+            padding: 0.42rem 0.75rem;
             background: white;
             border: 1.5px solid var(--gray-300);
             border-radius: 10px;
@@ -881,6 +888,9 @@
             color: var(--gray-700);
             cursor: pointer;
             transition: all 0.2s;
+            white-space: nowrap;
+            flex: 1 1 0;
+            min-width: 0;
         }
 
         .verse-single-nav-btn:hover:not(:disabled) {
@@ -894,6 +904,56 @@
             cursor: not-allowed;
             background: var(--gray-100);
             border-color: var(--gray-200);
+        }
+
+        .verse-single-nav-pos {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--gray-700);
+            background: var(--gray-100);
+            padding: 0.35rem 0.65rem;
+            border-radius: 8px;
+            white-space: nowrap;
+            flex-shrink: 0;
+            text-align: center;
+        }
+
+        .verse-single-nav .nav-btn-word-ayat {
+            display: none;
+        }
+
+        @media (min-width: 580px) {
+            .verse-single-nav .nav-btn-word-ayat {
+                display: inline;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .verse-single-wrap {
+                padding: 0.5rem 0.15rem 0.75rem;
+            }
+            .verse-single-nav {
+                gap: 0.3rem;
+            }
+            .verse-single-nav-btn {
+                padding: 0.38rem 0.45rem;
+                font-size: 0.75rem;
+                gap: 0.2rem;
+            }
+            .verse-single-nav-pos {
+                padding: 0.32rem 0.45rem;
+                font-size: 0.75rem;
+            }
+        }
+
+        @media (max-width: 330px) {
+            .verse-single-nav .nav-btn-text {
+                display: none;
+            }
+            .verse-single-nav-btn {
+                padding: 0.38rem 0.6rem;
+                font-size: 0.85rem;
+            }
         }
 
         .player-inner {
@@ -1523,7 +1583,7 @@
     <!-- Scripts -->
     <script src="js/sync.js?v=1"></script>
     <script src="js/quran-data.js"></script>
-    <script src="js/murottal.js?v=11"></script>
+    <script src="js/murottal.js?v=12"></script>
     <script src="js/nav.js?v=3"></script>
 </body>
 </html>

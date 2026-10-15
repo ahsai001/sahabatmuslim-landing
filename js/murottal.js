@@ -742,14 +742,14 @@
 
                 <!-- Navigasi 1 Ayat Sebelumnya / Berikutnya -->
                 <div class="verse-single-nav">
-                    <button type="button" class="verse-single-nav-btn" ${hasPrev ? '' : 'disabled'} onclick="window.smMurottal.navigateSingleAyah(-1)">
-                        ⏮️ Ayat Sebelumnya
+                    <button type="button" class="verse-single-nav-btn" ${hasPrev ? '' : 'disabled'} onclick="window.smMurottal.navigateSingleAyah(-1)" title="Ayat Sebelumnya">
+                        <span>⏮️</span><span class="nav-btn-text"> <span class="nav-btn-word-ayat">Ayat </span>Sebelumnya</span>
                     </button>
-                    <span style="font-size: 0.82rem; font-weight: 700; color: var(--gray-600);">
+                    <span class="verse-single-nav-pos">
                         ${ayah.nomorAyat} / ${totalAyat}
                     </span>
-                    <button type="button" class="verse-single-nav-btn" ${hasNext ? '' : 'disabled'} onclick="window.smMurottal.navigateSingleAyah(1)">
-                        Ayat Berikutnya ⏭️
+                    <button type="button" class="verse-single-nav-btn" ${hasNext ? '' : 'disabled'} onclick="window.smMurottal.navigateSingleAyah(1)" title="Ayat Berikutnya">
+                        <span class="nav-btn-text"><span class="nav-btn-word-ayat">Ayat </span>Berikutnya </span><span>⏭️</span>
                     </button>
                 </div>
             </div>

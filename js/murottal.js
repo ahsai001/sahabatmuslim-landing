@@ -284,6 +284,8 @@
         playlistReciterScope: 'popular',
         downloadingKeys: new Set(),
         verseDrawerOpen: false,
+        verseDisplayMode: 'list', // 'list' | 'single'
+        currentSingleAyah: 1,
         verseFontSize: 1.6,
         verseShowLatin: false,
         verseShowTrans: true,
@@ -661,9 +663,110 @@
         }
 
         STATE.isLoadingVerses = false;
-        renderVerseList();
+        renderVerseContent();
 
         return { ayatData, quranComAudioUrl, hasSyncTimestamps: STATE.hasSyncTimestamps };
+    }
+
+    function renderVerseContent() {
+        if (STATE.verseDisplayMode === 'single') {
+            renderSingleVerse();
+        } else {
+            renderVerseList();
+        }
+    }
+
+    function setVerseDisplayMode(mode) {
+        STATE.verseDisplayMode = mode;
+        try {
+            localStorage.setItem('sm_murottal_verse_mode', mode);
+        } catch (e) {}
+
+        const listBtn = document.getElementById('btn-verse-mode-list');
+        const singleBtn = document.getElementById('btn-verse-mode-single');
+        const autoScrollBtn = document.getElementById('btn-verse-toggle-autoscroll');
+
+        if (listBtn) listBtn.classList.toggle('active', mode === 'list');
+        if (singleBtn) singleBtn.classList.toggle('active', mode === 'single');
+        if (autoScrollBtn) autoScrollBtn.style.display = (mode === 'single') ? 'none' : 'inline-flex';
+
+        renderVerseContent();
+    }
+
+    function renderSingleVerse(targetAyah) {
+        const bodyEl = document.getElementById('verse-drawer-body');
+        if (!bodyEl) return;
+
+        if (!STATE.currentAyatData || !STATE.currentAyatData.ayat) {
+            bodyEl.innerHTML = `
+                <div style="text-align: center; padding: 2.5rem 1rem; color: var(--gray-500); font-size: 0.9rem;">
+                    <p style="margin-bottom: 0.5rem;">⚠️ Teks ayat belum dapat dimuat.</p>
+                    <button type="button" class="verse-tool-btn" onclick="window.smMurottal.retryLoadVerses()">Coba Muat Ulang</button>
+                </div>
+            `;
+            return;
+        }
+
+        const data = STATE.currentAyatData;
+        const totalAyat = data.ayat.length;
+
+        let ayahNum = targetAyah || STATE.currentActiveAyah || STATE.currentSingleAyah || 1;
+        if (ayahNum < 1) ayahNum = 1;
+        if (ayahNum > totalAyat) ayahNum = totalAyat;
+        STATE.currentSingleAyah = ayahNum;
+
+        const ayah = data.ayat.find(a => a.nomorAyat === ayahNum) || data.ayat[0];
+        const isPlaying = STATE.currentActiveAyah === ayah.nomorAyat;
+        const hasPrev = ayah.nomorAyat > 1;
+        const hasNext = ayah.nomorAyat < totalAyat;
+
+        bodyEl.innerHTML = `
+            <div class="verse-single-wrap">
+                <div class="verse-card-item active-playing-verse verse-single-card" id="verse-card-${ayah.nomorAyat}">
+                    <div class="verse-card-header">
+                        <span class="verse-num-badge">Ayat ${ayah.nomorAyat} dari ${totalAyat}</span>
+                        <span class="verse-active-indicator" style="display: ${isPlaying ? 'inline-flex' : 'none'};">
+                            <span>🔊 Sedang Diputar</span>
+                        </span>
+                    </div>
+                    <div class="verse-arabic-text verse-single-arabic" style="font-size: ${STATE.verseFontSize * 1.15}rem; text-align: center; line-height: 2.2;">
+                        ${ayah.teksArab}
+                    </div>
+                    <div class="verse-latin-text" style="display: ${STATE.verseShowLatin ? 'block' : 'none'}; text-align: center; margin-top: 0.6rem; font-size: 0.92rem;">
+                        ${ayah.teksLatin}
+                    </div>
+                    <div class="verse-trans-text" style="display: ${STATE.verseShowTrans ? 'block' : 'none'}; text-align: center; font-size: 0.92rem; line-height: 1.6; margin-top: 0.5rem;">
+                        "${ayah.teksIndonesia}"
+                    </div>
+                </div>
+
+                <!-- Navigasi 1 Ayat Sebelumnya / Berikutnya -->
+                <div class="verse-single-nav">
+                    <button type="button" class="verse-single-nav-btn" ${hasPrev ? '' : 'disabled'} onclick="window.smMurottal.navigateSingleAyah(-1)">
+                        ⏮️ Ayat Sebelumnya
+                    </button>
+                    <span style="font-size: 0.82rem; font-weight: 700; color: var(--gray-600);">
+                        ${ayah.nomorAyat} / ${totalAyat}
+                    </span>
+                    <button type="button" class="verse-single-nav-btn" ${hasNext ? '' : 'disabled'} onclick="window.smMurottal.navigateSingleAyah(1)">
+                        Ayat Berikutnya ⏭️
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+
+    function navigateSingleAyah(delta) {
+        if (!STATE.currentAyatData || !STATE.currentAyatData.ayat) return;
+        const total = STATE.currentAyatData.ayat.length;
+        const current = STATE.currentSingleAyah || STATE.currentActiveAyah || 1;
+        const target = current + delta;
+        if (target >= 1 && target <= total) {
+            seekToAyah(target);
+            if (STATE.verseDisplayMode === 'single') {
+                renderSingleVerse(target);
+            }
+        }
     }
 
     function renderVerseList() {
@@ -715,14 +818,18 @@
     }
 
     function highlightActiveVerse(ayahNum, shouldScroll = true) {
-        if (STATE.currentActiveAyah === ayahNum && !shouldScroll) return;
+        STATE.currentActiveAyah = ayahNum;
+        STATE.currentSingleAyah = ayahNum;
 
-        if (STATE.currentActiveAyah && STATE.currentActiveAyah !== ayahNum) {
-            const oldCard = document.getElementById(`verse-card-${STATE.currentActiveAyah}`);
-            if (oldCard) oldCard.classList.remove('active-playing-verse');
+        if (STATE.verseDisplayMode === 'single') {
+            renderSingleVerse(ayahNum);
+            return;
         }
 
-        STATE.currentActiveAyah = ayahNum;
+        const oldCard = document.querySelector('.verse-card-item.active-playing-verse');
+        if (oldCard && oldCard.id !== `verse-card-${ayahNum}`) {
+            oldCard.classList.remove('active-playing-verse');
+        }
 
         const newCard = document.getElementById(`verse-card-${ayahNum}`);
         if (newCard) {
@@ -763,6 +870,7 @@
     }
 
     function seekToAyah(ayahNumber) {
+        STATE.currentSingleAyah = ayahNumber;
         if (!STATE.audio) return;
         if (STATE.hasSyncTimestamps && STATE.currentTimestamps) {
             const surahNum = STATE.currentlyPlaying ? STATE.currentlyPlaying.surahNumber : 1;
@@ -777,9 +885,13 @@
                 return;
             }
         }
-        const card = document.getElementById(`verse-card-${ayahNumber}`);
-        if (card) {
-            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (STATE.verseDisplayMode === 'single') {
+            renderSingleVerse(ayahNumber);
+        } else {
+            const card = document.getElementById(`verse-card-${ayahNumber}`);
+            if (card) {
+                card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
         }
     }
 
@@ -810,30 +922,21 @@
 
     function adjustVerseFontSize(delta) {
         STATE.verseFontSize = Math.min(3.2, Math.max(1.1, STATE.verseFontSize + delta));
-        const texts = document.querySelectorAll('.verse-arabic-text');
-        texts.forEach(el => {
-            el.style.fontSize = `${STATE.verseFontSize}rem`;
-        });
+        renderVerseContent();
     }
 
     function toggleVerseLatin() {
         STATE.verseShowLatin = !STATE.verseShowLatin;
         const btn = document.getElementById('btn-verse-toggle-latin');
         if (btn) btn.classList.toggle('active', STATE.verseShowLatin);
-        const latins = document.querySelectorAll('.verse-latin-text');
-        latins.forEach(el => {
-            el.style.display = STATE.verseShowLatin ? 'block' : 'none';
-        });
+        renderVerseContent();
     }
 
     function toggleVerseTrans() {
         STATE.verseShowTrans = !STATE.verseShowTrans;
         const btn = document.getElementById('btn-verse-toggle-trans');
         if (btn) btn.classList.toggle('active', STATE.verseShowTrans);
-        const trans = document.querySelectorAll('.verse-trans-text');
-        trans.forEach(el => {
-            el.style.display = STATE.verseShowTrans ? 'block' : 'none';
-        });
+        renderVerseContent();
     }
 
     function toggleVerseAutoScroll() {
@@ -1727,6 +1830,11 @@
         // Preload all 240+ reciters in background
         loadAllReciters();
 
+        const savedVerseMode = localStorage.getItem('sm_murottal_verse_mode');
+        if (savedVerseMode === 'single') {
+            setVerseDisplayMode('single');
+        }
+
         // Listen for cloud sync updates
         window.addEventListener('sm:sync-applied', () => {
             loadPlaylist();
@@ -1786,7 +1894,9 @@
         toggleVerseTrans,
         toggleVerseAutoScroll,
         seekToAyah,
-        retryLoadVerses
+        retryLoadVerses,
+        setVerseDisplayMode,
+        navigateSingleAyah
     };
 
     document.addEventListener('DOMContentLoaded', init);

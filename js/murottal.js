@@ -1140,15 +1140,15 @@
             return `
             <div class="reciter-option-card ${isSelected ? 'selected' : ''}" onclick="window.smMurottal.selectPlaylistQari('${r.id}')" style="cursor: pointer; padding: 0.75rem 1rem;">
                 <div style="flex: 1; min-width: 0;">
-                    <strong style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.92rem; color: var(--green-900); flex-wrap: wrap;">
-                        <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${r.name}</span>
+                    <div style="display: flex; align-items: baseline; gap: 0.35rem; font-size: 0.92rem; color: var(--green-900); flex-wrap: wrap; margin-bottom: 2px;">
+                        <span style="font-weight: 700; line-height: 1.35; word-break: break-word;">${r.name}</span>
                         ${isSelected ? '<span style="color: #059669; font-weight: bold; font-size: 0.85rem;">✓</span>' : ''}
-                        ${hasSync ? '<span style="font-size: 0.7rem; color: #065f46; background: #a7f3d0; padding: 1px 6px; border-radius: 9999px; font-weight: 700;">⚡ Sync Ayat</span>' : ''}
-                        ${isPopular && !hasSync ? '<span style="font-size: 0.7rem; color: #047857; background: #d1fae5; padding: 1px 5px; border-radius: 9999px;">Populer</span>' : ''}
-                    </strong>
-                    <span style="font-size: 0.78rem; color: var(--gray-500); display: block; margin-top: 2px;">${r.desc || ''}</span>
+                        ${hasSync ? '<span style="font-size: 0.7rem; color: #065f46; background: #a7f3d0; padding: 1px 6px; border-radius: 9999px; font-weight: 700; white-space: nowrap;">⚡ Sync Ayat</span>' : ''}
+                        ${isPopular && !hasSync ? '<span style="font-size: 0.7rem; color: #047857; background: #d1fae5; padding: 1px 5px; border-radius: 9999px; white-space: nowrap;">Populer</span>' : ''}
+                    </div>
+                    <span style="font-size: 0.78rem; color: var(--gray-500); display: block; line-height: 1.4;">${r.desc || ''}</span>
                 </div>
-                <div style="font-family: 'Amiri', serif; font-size: 1.15rem; color: var(--green-700); text-align: right; flex-shrink: 0; padding-left: 0.5rem;">
+                <div style="font-family: 'Amiri', serif; font-size: 1.15rem; color: var(--green-700); text-align: right; flex-shrink: 0; padding-left: 0.5rem; white-space: nowrap;">
                     ${r.arabicName || ''}
                 </div>
             </div>
@@ -1337,15 +1337,15 @@
             return `
             <div class="reciter-option-card ${isSelected ? 'selected' : ''}" onclick="window.smMurottal.selectReciter('${r.id}')" style="cursor: pointer;">
                 <div style="flex: 1; min-width: 0;">
-                    <strong style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.95rem; color: var(--green-900); flex-wrap: wrap;">
-                        <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${r.name}</span>
+                    <div style="display: flex; align-items: baseline; gap: 0.4rem; font-size: 0.95rem; color: var(--green-900); flex-wrap: wrap; margin-bottom: 3px;">
+                        <span style="font-weight: 700; line-height: 1.35; word-break: break-word;">${r.name}</span>
                         ${r.id === '76' ? '⭐' : ''}
-                        ${hasSync ? '<span style="font-size: 0.7rem; color: #065f46; background: #a7f3d0; padding: 1px 6px; border-radius: 9999px; font-weight: 700;">⚡ Sync Ayat</span>' : ''}
-                        ${isPopular && !hasSync ? '<span style="font-size: 0.72rem; color: #047857; background: #d1fae5; padding: 1px 6px; border-radius: 9999px;">Populer</span>' : ''}
-                    </strong>
-                    <span style="font-size: 0.78rem; color: var(--gray-500); display: block; margin-top: 2px;">${r.desc || ''}</span>
+                        ${hasSync ? '<span style="font-size: 0.7rem; color: #065f46; background: #a7f3d0; padding: 1px 6px; border-radius: 9999px; font-weight: 700; white-space: nowrap;">⚡ Sync Ayat</span>' : ''}
+                        ${isPopular && !hasSync ? '<span style="font-size: 0.72rem; color: #047857; background: #d1fae5; padding: 1px 6px; border-radius: 9999px; white-space: nowrap;">Populer</span>' : ''}
+                    </div>
+                    <span style="font-size: 0.78rem; color: var(--gray-500); display: block; line-height: 1.4;">${r.desc || ''}</span>
                 </div>
-                <div style="font-family: 'Amiri', serif; font-size: 1.15rem; color: var(--green-700); text-align: right; flex-shrink: 0; padding-left: 0.75rem;">
+                <div style="font-family: 'Amiri', serif; font-size: 1.15rem; color: var(--green-700); text-align: right; flex-shrink: 0; padding-left: 0.75rem; white-space: nowrap;">
                     ${r.arabicName || ''}
                 </div>
             </div>

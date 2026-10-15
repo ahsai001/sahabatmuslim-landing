@@ -479,6 +479,21 @@
         }
     }
 
+    async function loadDhikrFromApi() {
+        try {
+            const res = await fetch('/api/dhikr');
+            if (res.ok) {
+                const data = await res.json();
+                if (data.ok && data.categories && Object.keys(data.categories).length > 0) {
+                    window.DZIKIR_DATA = data.categories;
+                    renderDzikirList();
+                }
+            }
+        } catch (e) {
+            console.warn('Dhikr API offline, using embedded fallback data', e);
+        }
+    }
+
     // Expose public API
     window.smDzikir = {
         init: function () {
@@ -517,6 +532,7 @@
             });
 
             renderDzikirList();
+            loadDhikrFromApi();
         },
         setCategory,
         setSholatSub,

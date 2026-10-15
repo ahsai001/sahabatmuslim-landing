@@ -161,11 +161,24 @@ def fetch_channel_videos(url, limit=4):
         sys.stderr.write(f"Scrape error for {url}: {e}\n")
         return []
 
+def get_active_kids_channels_from_db():
+    try:
+        with get_db() as conn:
+            with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+                cur.execute("SELECT id, handle, youtube_url as url FROM kids_channels WHERE is_active = true ORDER BY sort_order ASC, id ASC;")
+                rows = cur.fetchall()
+                if rows:
+                    return rows
+    except Exception as e:
+        sys.stderr.write(f"DB load error for kids_channels: {e}\n")
+    return KIDS_TARGETS
+
 def refresh_kids_videos_job():
     global KIDS_CACHE
     sys.stderr.write("Refreshing kids YouTube videos cache...\n")
     new_data = {}
-    for target in KIDS_TARGETS:
+    targets = get_active_kids_channels_from_db()
+    for target in targets:
         cid = target["id"]
         vids = fetch_channel_videos(target["url"], limit=4)
         if vids:
@@ -364,6 +377,102 @@ class SahabatMuslimHandler(http.server.BaseHTTPRequestHandler):
                     "ok": True,
                     "total": len(rows),
                     "leaderboard": rows
+                })
+            except Exception as e:
+                self.send_json(500, {"ok": False, "error": str(e)})
+            return
+
+        if path == "/api/kids/channels":
+            category = query.get("category", ["all"])[0].strip()
+            sql = """
+                SELECT id, title, category, category_label as "categoryLabel", 
+                       handle, youtube_url as "youtubeUrl", avatar, badge_color as "badgeColor", 
+                       description, featured_video_id as "featuredVideoId", 
+                       featured_title as "featuredTitle", tags, sort_order 
+                FROM kids_channels 
+                WHERE is_active = true
+            """
+            params = []
+            if category and category != "all":
+                sql += " AND category = %s"
+                params.append(category)
+            sql += " ORDER BY sort_order ASC, id ASC;"
+            try:
+                with get_db() as conn:
+                    with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+                        cur.execute(sql, tuple(params))
+                        rows = cur.fetchall()
+                self.send_json(200, {
+                    "ok": True,
+                    "total": len(rows),
+                    "channels": rows
+                })
+            except Exception as e:
+                self.send_json(500, {"ok": False, "error": str(e)})
+            return
+
+        if path == "/api/duas":
+            grup = query.get("grup", [""])[0].strip()
+            q = query.get("q", [""])[0].strip().lower()
+            sql = """
+                SELECT id, grup, nama, ar, tr, idn, tentang, tags as "tag" 
+                FROM duas 
+                WHERE is_active = true
+            """
+            params = []
+            if grup:
+                sql += " AND grup = %s"
+                params.append(grup)
+            if q:
+                sql += " AND (nama ILIKE %s OR idn ILIKE %s OR grup ILIKE %s)"
+                term = f"%{q}%"
+                params.extend([term, term, term])
+            sql += " ORDER BY id ASC;"
+            try:
+                with get_db() as conn:
+                    with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+                        cur.execute(sql, tuple(params))
+                        rows = cur.fetchall()
+                self.send_json(200, {
+                    "ok": True,
+                    "total": len(rows),
+                    "duas": rows
+                })
+            except Exception as e:
+                self.send_json(500, {"ok": False, "error": str(e)})
+            return
+
+        if path == "/api/dhikr":
+            cat = query.get("category", ["all"])[0].strip()
+            sql = """
+                SELECT id, category, item_index as index, title, bacaan_key, target, 
+                       runningtext, arabic, latin, terjemah, dalil, sound, sort_order 
+                FROM dhikr 
+                WHERE is_active = true
+            """
+            params = []
+            if cat and cat != "all":
+                sql += " AND category = %s"
+                params.append(cat)
+            sql += " ORDER BY sort_order ASC, item_index ASC;"
+            try:
+                with get_db() as conn:
+                    with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+                        cur.execute(sql, tuple(params))
+                        rows = cur.fetchall()
+                
+                categories = {}
+                for r in rows:
+                    c = r["category"]
+                    if c not in categories:
+                        categories[c] = []
+                    categories[c].append(r)
+
+                self.send_json(200, {
+                    "ok": True,
+                    "total": len(rows),
+                    "dhikr": rows,
+                    "categories": categories
                 })
             except Exception as e:
                 self.send_json(500, {"ok": False, "error": str(e)})

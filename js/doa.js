@@ -317,6 +317,22 @@
         renderDoaList();
     }
 
+    async function loadDuasFromApi() {
+        try {
+            const res = await fetch('/api/duas');
+            if (res.ok) {
+                const data = await res.json();
+                if (data.ok && Array.isArray(data.duas) && data.duas.length > 0) {
+                    window.DOA_DATA = data.duas;
+                    populateGroupSelect(window.DOA_DATA);
+                    renderDoaList();
+                }
+            }
+        } catch (e) {
+            console.warn('Duas API offline, using embedded fallback data', e);
+        }
+    }
+
     // Expose API
     window.smDoa = {
         init: function () {
@@ -330,6 +346,8 @@
                 populateGroupSelect(window.DOA_DATA);
                 renderDoaList();
             }
+
+            loadDuasFromApi();
 
             window.addEventListener('sm:sync-applied', () => {
                 loadStorage();

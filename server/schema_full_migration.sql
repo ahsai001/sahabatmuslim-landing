@@ -1,0 +1,4880 @@
+-- ==============================================================================
+-- Full Database Migration: Kids Channels, Duas (Doa Harian), and Dhikr
+-- Database: sahabatmuslim_db
+-- ==============================================================================
+
+-- 1. KIDS CHANNELS
+CREATE TABLE IF NOT EXISTS kids_channels (
+    id VARCHAR(50) PRIMARY KEY,
+    title VARCHAR(150) NOT NULL,
+    category VARCHAR(50) NOT NULL,
+    category_label VARCHAR(100),
+    handle VARCHAR(100) NOT NULL,
+    youtube_url TEXT NOT NULL,
+    avatar VARCHAR(10) DEFAULT '📺',
+    badge_color VARCHAR(20) DEFAULT '#059669',
+    description TEXT,
+    featured_video_id VARCHAR(50),
+    featured_title TEXT,
+    tags JSONB DEFAULT '[]'::jsonb,
+    sort_order INT DEFAULT 0,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_kids_channels_cat ON kids_channels(category, is_active);
+
+-- 2. DUAS (DOA HARIAN)
+CREATE TABLE IF NOT EXISTS duas (
+    id INT PRIMARY KEY,
+    grup VARCHAR(150) NOT NULL,
+    nama VARCHAR(255) NOT NULL,
+    ar TEXT NOT NULL,
+    tr TEXT,
+    idn TEXT NOT NULL,
+    tentang TEXT,
+    tags JSONB DEFAULT '[]'::jsonb,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_duas_grup ON duas(grup, is_active);
+CREATE INDEX IF NOT EXISTS idx_duas_search ON duas USING gin(to_tsvector('simple', nama || ' ' || idn || ' ' || grup));
+
+-- 3. DHIKR (DZIKIR HARIAN)
+CREATE TABLE IF NOT EXISTS dhikr (
+    id VARCHAR(50) PRIMARY KEY,
+    category VARCHAR(50) NOT NULL, -- 'pagi', 'petang', 'sholat_subuh', 'sholat_maghrib', 'sholat_dz_a_i'
+    item_index INT,
+    title VARCHAR(255) NOT NULL,
+    bacaan_key TEXT,
+    target INT DEFAULT 1,
+    runningtext VARCHAR(255),
+    arabic TEXT NOT NULL,
+    latin TEXT,
+    terjemah TEXT NOT NULL,
+    dalil TEXT,
+    sound VARCHAR(255),
+    sort_order INT DEFAULT 0,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_dhikr_category ON dhikr(category, sort_order, is_active);
+
+-- ==============================================================================
+-- INSERTS: KIDS CHANNELS
+-- ==============================================================================
+INSERT INTO kids_channels (id, title, category, category_label, handle, youtube_url, avatar, badge_color, description, featured_video_id, featured_title, tags, sort_order)
+VALUES ('yufid-kids', 'Yufid Kids', 'hijaiyah-quran', 'Belajar Huruf & Doa', '@YufidKids', 'https://www.youtube.com/@YufidKids', '👶', '#10b981', 'Animasi edukasi Islam resmi dari Yufid. Menampilkan Cerita Ubay, belajar huruf Hijaiyah, doa harian anak, adab makan, sholat, dan kosa kata bahasa Arab ceria.', 'GNe-8K78pmU', 'Cerita Ubay: Membereskan Mainan Ternyata Tidak Mudah! | Belajar Disiplin', '["Hijaiyah","Cerita Ubay","Doa Anak","Adab","Animasi"]'::jsonb, 1)
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  category = EXCLUDED.category,
+  category_label = EXCLUDED.category_label,
+  handle = EXCLUDED.handle,
+  youtube_url = EXCLUDED.youtube_url,
+  avatar = EXCLUDED.avatar,
+  badge_color = EXCLUDED.badge_color,
+  description = EXCLUDED.description,
+  featured_video_id = EXCLUDED.featured_video_id,
+  featured_title = EXCLUDED.featured_title,
+  tags = EXCLUDED.tags,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO kids_channels (id, title, category, category_label, handle, youtube_url, avatar, badge_color, description, featured_video_id, featured_title, tags, sort_order)
+VALUES ('kak-erlan', 'Kak Erlan Bercerita', 'kisah-nabi', 'Kisah Nabi & Adab', '@KakErlanBercerita', 'https://www.youtube.com/@KakErlanBercerita', '🎙️', '#f59e0b', 'Pendongeng anak muslim nusantara. Membawakan kisah para Nabi, sahabat Rasulullah ﷺ, dan adab akhlakul karimah dengan tutur kata santun dan ekspresif.', '0qwboNPKSNM', 'Adab Toilet: Jangan Lakukan Ini di Kamar Mandi! | Cerita Keluarga AMCA', '["Kisah Sahabat","Dongeng Shahih","Adab Harian","Kak Erlan"]'::jsonb, 2)
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  category = EXCLUDED.category,
+  category_label = EXCLUDED.category_label,
+  handle = EXCLUDED.handle,
+  youtube_url = EXCLUDED.youtube_url,
+  avatar = EXCLUDED.avatar,
+  badge_color = EXCLUDED.badge_color,
+  description = EXCLUDED.description,
+  featured_video_id = EXCLUDED.featured_video_id,
+  featured_title = EXCLUDED.featured_title,
+  tags = EXCLUDED.tags,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO kids_channels (id, title, category, category_label, handle, youtube_url, avatar, badge_color, description, featured_video_id, featured_title, tags, sort_order)
+VALUES ('rodja-ceria', 'Rodja Ceria', 'aqidah-tauhid', 'Aqidah & Ilmu Dasar', '@RodjaCeria', 'https://www.youtube.com/@RodjaCeria', '📻', '#059669', 'Program anak resmi Radio & TV Rodja. Berisi hafalan doa harian, cerdas cermat anak muslim, belajar tajwid, kisah sirah nabawiyah, dan nasehat ustadz untuk anak.', 'Jw7XiuJO024', 'Rodja Ceria Roadshow Ramadhan Cahaya Sunnah', '["Radio Rodja","Hafalan Doa","Tajwid","Sirah"]'::jsonb, 3)
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  category = EXCLUDED.category,
+  category_label = EXCLUDED.category_label,
+  handle = EXCLUDED.handle,
+  youtube_url = EXCLUDED.youtube_url,
+  avatar = EXCLUDED.avatar,
+  badge_color = EXCLUDED.badge_color,
+  description = EXCLUDED.description,
+  featured_video_id = EXCLUDED.featured_video_id,
+  featured_title = EXCLUDED.featured_title,
+  tags = EXCLUDED.tags,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO kids_channels (id, title, category, category_label, handle, youtube_url, avatar, badge_color, description, featured_video_id, featured_title, tags, sort_order)
+VALUES ('keluarga-hamzi', 'Keluarga Hamzi', 'aktivitas-adab', 'Serial Kartun & Karakter', '@KeluargaHamzi', 'https://www.youtube.com/@KeluargaHamzi', '👨‍👩‍👧‍👦', '#3b82f6', 'Serial animasi 3D keluarga muslim Indonesia (Cerita Hamzi). Meneladani adab harian, tolong-menolong, kejujuran, dan kebersamaan keluarga sakinah.', 'rXwP2mF2vXw', 'Cerita Hamzi: Belajar Menjaga Lisan & Bicara Santun', '["Animasi 3D","Keluarga Hamzi","Adab Santun","Karakter"]'::jsonb, 4)
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  category = EXCLUDED.category,
+  category_label = EXCLUDED.category_label,
+  handle = EXCLUDED.handle,
+  youtube_url = EXCLUDED.youtube_url,
+  avatar = EXCLUDED.avatar,
+  badge_color = EXCLUDED.badge_color,
+  description = EXCLUDED.description,
+  featured_video_id = EXCLUDED.featured_video_id,
+  featured_title = EXCLUDED.featured_title,
+  tags = EXCLUDED.tags,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO kids_channels (id, title, category, category_label, handle, youtube_url, avatar, badge_color, description, featured_video_id, featured_title, tags, sort_order)
+VALUES ('kids-tauhid', 'Kids Tauhid (kidstauhid.or.id)', 'aqidah-tauhid', 'Tauhid & Rukun Iman', '@KidsTauhidorid', 'https://www.youtube.com/@KidsTauhidorid', '☝️', '#065f46', 'Media pembelajaran aqidah islamiyah yang murni untuk anak-anak: mengenal Allah Rabbul ''Alamin, Rukun Iman, Rukun Islam, dan menjauhi kesyirikan sejak usia dini.', 'Ibb4xpTbsMk', 'Kids Tauhid: Fondasi Aqidah Sejak Usia Dini', '["Tauhid","Rukun Iman","Pondasi Aqidah","Anak Sholeh"]'::jsonb, 5)
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  category = EXCLUDED.category,
+  category_label = EXCLUDED.category_label,
+  handle = EXCLUDED.handle,
+  youtube_url = EXCLUDED.youtube_url,
+  avatar = EXCLUDED.avatar,
+  badge_color = EXCLUDED.badge_color,
+  description = EXCLUDED.description,
+  featured_video_id = EXCLUDED.featured_video_id,
+  featured_title = EXCLUDED.featured_title,
+  tags = EXCLUDED.tags,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO kids_channels (id, title, category, category_label, handle, youtube_url, avatar, badge_color, description, featured_video_id, featured_title, tags, sort_order)
+VALUES ('kak-yogi', 'Kak Yogi the Explorer', 'eksplorasi-sains', 'Tadabbur Alam & Petualangan', '@KakErlanBercerita', 'https://www.youtube.com/@KakErlanBercerita', '🧭', '#d97706', 'Petualangan seru Kak Yogi menjelajahi ciptaan Allah: olahraga renang, petualangan alam, dan sains islami yang menumbuhkan rasa syukur dan kecerdasan anak.', 'RGBeqvHcPuY', 'Kak Yogi The Explorer: Belajar Berenang Sesuai Sunnah', '["Petualangan","Tadabbur Alam","Sains Islami","Olahraga Sunnah"]'::jsonb, 6)
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  category = EXCLUDED.category,
+  category_label = EXCLUDED.category_label,
+  handle = EXCLUDED.handle,
+  youtube_url = EXCLUDED.youtube_url,
+  avatar = EXCLUDED.avatar,
+  badge_color = EXCLUDED.badge_color,
+  description = EXCLUDED.description,
+  featured_video_id = EXCLUDED.featured_video_id,
+  featured_title = EXCLUDED.featured_title,
+  tags = EXCLUDED.tags,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO kids_channels (id, title, category, category_label, handle, youtube_url, avatar, badge_color, description, featured_video_id, featured_title, tags, sort_order)
+VALUES ('jawwada-hijaiyah', 'Hijaiyah Journey Jawwada', 'hijaiyah-quran', 'Makhraj & Al-Qur''an', '@hijaiyahjourneyjawwada', 'https://www.youtube.com/results?search_query=Hijaiyah+Journey+Jawwada', '📖', '#047857', 'Metode visual modern belajar huruf Al-Qur''an secara tartil, harakat fathah, kasrah, dhammah, tanwin, dan makharijul huruf untuk balita dan anak-anak.', 'qMA48oh8MTI', 'Jawwada: Pasir Sedot (Belajar Huruf ظ & ع)', '["Belajar Membaca","Huruf Arab","Tajwid Cilik","Jawwada"]'::jsonb, 7)
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  category = EXCLUDED.category,
+  category_label = EXCLUDED.category_label,
+  handle = EXCLUDED.handle,
+  youtube_url = EXCLUDED.youtube_url,
+  avatar = EXCLUDED.avatar,
+  badge_color = EXCLUDED.badge_color,
+  description = EXCLUDED.description,
+  featured_video_id = EXCLUDED.featured_video_id,
+  featured_title = EXCLUDED.featured_title,
+  tags = EXCLUDED.tags,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO kids_channels (id, title, category, category_label, handle, youtube_url, avatar, badge_color, description, featured_video_id, featured_title, tags, sort_order)
+VALUES ('al-firqatun-najiyah', 'Al Firqatun Najiyah Kids', 'aqidah-tauhid', 'Sunnah & Bimbingan', '@alfirqotunnajiyahkids', 'https://www.youtube.com/@alfirqotunnajiyahkids', '🌿', '#059669', 'Bimbingan akidah, fiqih dasar anak (wudhu & tata cara sholat sesuai sifat sholat Nabi ﷺ), serta murottal animasi surat-surat pendek Al-Qur''an.', 'cGHwvmWcd-8', 'Surah At-Takwir - Bilal (Murottal Animasi Anak)', '["Murottal Anak","Juz Amma","Sunnah Shahih","Al-Qur''an"]'::jsonb, 8)
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  category = EXCLUDED.category,
+  category_label = EXCLUDED.category_label,
+  handle = EXCLUDED.handle,
+  youtube_url = EXCLUDED.youtube_url,
+  avatar = EXCLUDED.avatar,
+  badge_color = EXCLUDED.badge_color,
+  description = EXCLUDED.description,
+  featured_video_id = EXCLUDED.featured_video_id,
+  featured_title = EXCLUDED.featured_title,
+  tags = EXCLUDED.tags,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO kids_channels (id, title, category, category_label, handle, youtube_url, avatar, badge_color, description, featured_video_id, featured_title, tags, sort_order)
+VALUES ('sarah-playschool', 'Sarah Playschool', 'aktivitas-adab', 'Aktivitas Balita & Motorik', '@Sarahplayschool', 'https://www.youtube.com/@Sarahplayschool', '🎨', '#ec4899', 'Aktivitas montessori islami, kreasi bermain di rumah, adab kepada orang tua, stimulasi sensori motorik, dan belajar rukun iman yang menyenangkan untuk toddler.', 'JDRx4Td4t8g', 'Rukun Iman Ketiga: Beriman Kepada Kitab-Kitab Allah', '["Toddler","Rukun Iman","Montessori","Bermain Sehat"]'::jsonb, 9)
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  category = EXCLUDED.category,
+  category_label = EXCLUDED.category_label,
+  handle = EXCLUDED.handle,
+  youtube_url = EXCLUDED.youtube_url,
+  avatar = EXCLUDED.avatar,
+  badge_color = EXCLUDED.badge_color,
+  description = EXCLUDED.description,
+  featured_video_id = EXCLUDED.featured_video_id,
+  featured_title = EXCLUDED.featured_title,
+  tags = EXCLUDED.tags,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO kids_channels (id, title, category, category_label, handle, youtube_url, avatar, badge_color, description, featured_video_id, featured_title, tags, sort_order)
+VALUES ('rofif-kids', 'Rofif Kids (Rumaysho)', 'aqidah-tauhid', 'Kajian Anak & Adab', '@rumayshotv', 'https://www.youtube.com/@rumayshotv', '👦', '#0284c7', 'Program anak asuhan Ustadz Muhammad Abduh Tuasikal (Rumaysho). Mengenal Nabi Muhammad ﷺ, amalan ibadah harian, adab berteman, dan akhlak mulia.', 'tqg5_-Ry0WE', 'Rofif Kids: Mengenal Nabiku Muhammad ﷺ - Ust. Muhammad Abduh Tuasikal', '["Rumaysho","Mengenal Nabi","Adab Berteman","Kajian Anak"]'::jsonb, 10)
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  category = EXCLUDED.category,
+  category_label = EXCLUDED.category_label,
+  handle = EXCLUDED.handle,
+  youtube_url = EXCLUDED.youtube_url,
+  avatar = EXCLUDED.avatar,
+  badge_color = EXCLUDED.badge_color,
+  description = EXCLUDED.description,
+  featured_video_id = EXCLUDED.featured_video_id,
+  featured_title = EXCLUDED.featured_title,
+  tags = EXCLUDED.tags,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO kids_channels (id, title, category, category_label, handle, youtube_url, avatar, badge_color, description, featured_video_id, featured_title, tags, sort_order)
+VALUES ('muslim-zone', 'Muslim Zone', 'hijaiyah-quran', 'Kebiasaan & Huruf Hijaiyah', '@muslimzone', 'https://www.youtube.com/@muslimzone', '🕌', '#6366f1', 'Video edukasi kebiasaan harian anak muslim: belajar huruf hijaiyah ceria, membaca bismillah sebelum beraktivitas, menjaga kebersihan, dan adab santun.', 'sPUDFXWS9VU', 'Belajar Huruf Hijaiyah Ceria untuk Anak Muslim', '["Huruf Hijaiyah","Kebiasaan Baik","Bismillah","Anak Muslim"]'::jsonb, 11)
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  category = EXCLUDED.category,
+  category_label = EXCLUDED.category_label,
+  handle = EXCLUDED.handle,
+  youtube_url = EXCLUDED.youtube_url,
+  avatar = EXCLUDED.avatar,
+  badge_color = EXCLUDED.badge_color,
+  description = EXCLUDED.description,
+  featured_video_id = EXCLUDED.featured_video_id,
+  featured_title = EXCLUDED.featured_title,
+  tags = EXCLUDED.tags,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO kids_channels (id, title, category, category_label, handle, youtube_url, avatar, badge_color, description, featured_video_id, featured_title, tags, sort_order)
+VALUES ('annawawi-tv', 'Annawawi TV', 'kisah-nabi', 'Kajian & Bahasa Arab', '@ANNAWAWITV', 'https://www.youtube.com/@ANNAWAWITV', '📚', '#8b5cf6', 'Serial animasi edukatif santri cilik Imam & Nawa: lomba kebaikan, kosa kata bahasa Arab bergambar, cerita teladan, dan mencintai Al-Qur''an.', 'oWoJKGMcvks', 'Imam & Nawa: Lomba Kebaikan di Bulan Penuh Berkah', '["Imam & Nawa","Bahasa Arab","Animasi Santri","Adab Belajar"]'::jsonb, 12)
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  category = EXCLUDED.category,
+  category_label = EXCLUDED.category_label,
+  handle = EXCLUDED.handle,
+  youtube_url = EXCLUDED.youtube_url,
+  avatar = EXCLUDED.avatar,
+  badge_color = EXCLUDED.badge_color,
+  description = EXCLUDED.description,
+  featured_video_id = EXCLUDED.featured_video_id,
+  featured_title = EXCLUDED.featured_title,
+  tags = EXCLUDED.tags,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO kids_channels (id, title, category, category_label, handle, youtube_url, avatar, badge_color, description, featured_video_id, featured_title, tags, sort_order)
+VALUES ('anak-cerdas-indonesia', 'Anak Cerdas Indonesia', 'eksplorasi-sains', 'Murottal & Wawasan Cerdas', '@AnakCerdasIndonesiaOfficial', 'https://www.youtube.com/@AnakCerdasIndonesiaOfficial', '💡', '#f97316', 'Murottal anak metode Al-Muyassar, eksperimen sains sederhana, dan wawasan ilmu pengetahuan umum bernafaskan nilai-nilai ketauhidan.', '_68QzGWsr1k', 'Murottal Anak: Metode Al-Muyassar | Anak Cerdas Indonesia', '["Murottal Anak","Tajwid","Kreativitas","Cerdas"]'::jsonb, 13)
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  category = EXCLUDED.category,
+  category_label = EXCLUDED.category_label,
+  handle = EXCLUDED.handle,
+  youtube_url = EXCLUDED.youtube_url,
+  avatar = EXCLUDED.avatar,
+  badge_color = EXCLUDED.badge_color,
+  description = EXCLUDED.description,
+  featured_video_id = EXCLUDED.featured_video_id,
+  featured_title = EXCLUDED.featured_title,
+  tags = EXCLUDED.tags,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO kids_channels (id, title, category, category_label, handle, youtube_url, avatar, badge_color, description, featured_video_id, featured_title, tags, sort_order)
+VALUES ('happy-hola', 'Happy Hola Official', 'aktivitas-adab', 'Animasi Ceria & Karakter', '@happyhola', 'https://www.youtube.com/@happyhola', '🎉', '#14b8a6', 'Animasi edukatif yang ramah anak mengenalkan hewan, buah-buahan, tolong-menolong, dan ucapan-ucapan thayyibah (alhamdulillah, subhanallah, jazakallahu khairan).', 'VT6YICs0azM', 'Happy Hola: Belajar Berbagi Kado & Kebaikan', '["Animasi Ceria","Kalimat Thayyibah","Karakter","Tolong Menolong"]'::jsonb, 14)
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  category = EXCLUDED.category,
+  category_label = EXCLUDED.category_label,
+  handle = EXCLUDED.handle,
+  youtube_url = EXCLUDED.youtube_url,
+  avatar = EXCLUDED.avatar,
+  badge_color = EXCLUDED.badge_color,
+  description = EXCLUDED.description,
+  featured_video_id = EXCLUDED.featured_video_id,
+  featured_title = EXCLUDED.featured_title,
+  tags = EXCLUDED.tags,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO kids_channels (id, title, category, category_label, handle, youtube_url, avatar, badge_color, description, featured_video_id, featured_title, tags, sort_order)
+VALUES ('tumbuh-kembang-anak', 'Tumbuh Kembang Anak Saleh & Cerdas', 'aqidah-tauhid', 'Parenting & Karakter Anak', '@tumbuhkembanganak', 'https://www.youtube.com/results?search_query=mendidik+anak+sholeh+dan+cerdas+sunnah', '🌱', '#15803d', 'Bimbingan tumbuh kembang mental, emosional, dan spiritual anak muslim agar tumbuh kuat aqidahnya, cerdas akalnya, dan santun perilakunya.', 'AxeBjs7qgzU', 'Mendidik Anak adalah Ibadah Mulia - Ust. Abu Salma Muhammad', '["Parenting","Karakter Anak","Tumbuh Kembang","Aqidah"]'::jsonb, 15)
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  category = EXCLUDED.category,
+  category_label = EXCLUDED.category_label,
+  handle = EXCLUDED.handle,
+  youtube_url = EXCLUDED.youtube_url,
+  avatar = EXCLUDED.avatar,
+  badge_color = EXCLUDED.badge_color,
+  description = EXCLUDED.description,
+  featured_video_id = EXCLUDED.featured_video_id,
+  featured_title = EXCLUDED.featured_title,
+  tags = EXCLUDED.tags,
+  sort_order = EXCLUDED.sort_order;
+
+-- ==============================================================================
+-- INSERTS: DUAS (227 DOA HARIAN)
+-- ==============================================================================
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (1, 'Doa Sebelum dan Sesudah Tidur', 'Doa Sebelum Tidur 1', 'بِاسْمِكَ رَبِّيْ وَضَعْتُ جَنْبِيْ، وَبِكَ أَرْفَعُهُ، إِنْ أَمْسَكْتَ نَفْسِيْ فَارْحَمْهَا، وَإِنْ أَرْسَلْتَهَا فَاحْفَظْهَا بِمَا تَحْفَظُ بِهِ عِبَادَكَ الصَّالِحِيْنَ', 'Bismika robbii wa dho''tu janbii, wa bika arfa''uhu, in amsakta nafsii farhamhaa, wa in arsaltahaa fahfazhhaa bimaa tahfazhu bihi ''ibaadakash-sholihiin.', 'Dengan nama Engkau, wahai Tuhanku, aku meletakkan lambungku. Dan dengan namaMu pula aku bangun daripadanya. Apabila Engkau menahan rohku (mati), maka berilah rahmat padanya. Tapi apabila Engkau melepaskannya, maka peliharalah, sebagaimana Engkau memelihara hamba-hambaMu yang shalih.', 'HR. Al-Bukhari 11/126, Muslim 4/2084.
+"Apabila seseorang di antara kalian bangkit dari tempat tidurnya kemudian ingin kembali lagi, hendaknya ia mengibaskan ujung kainnya 3x, dan menyebut nama Allah, karena ia tidak tahu apa yang ditinggalkannya di atas tempat tidur setelah ia bangkit. Apabila ia ingin berbaring, maka hendaknya ia membaca: (doa di atas)."
+
+
+Sumber: Hisnul Muslim.', '["tidur","malam"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (2, 'Doa Sebelum dan Sesudah Tidur', 'Doa Sebelum Tidur 2', 'بِاسْمِكَ اللَّهُمَّ أَمُوْتُ وَأَحْيَا', 'Bismika-llaahumma amuutu wa ahyaa.', 'Dengan Nama-Mu ya Allah, aku mati dan aku hidup.', 'HR. Bukhari 6324.
+
+Keterangan:
+Orang yang sedang tidur, sejatinya sedang Allah wafatkan. Allah berfirman: "Allah mewafatkan jiwa (orang) ketika matinya dan (mewafatkan) jiwa (orang) yang belum mati di waktu tidurnya. Maka Dia tahan jiwa (orang) yang telah Dia tetapkan kematiannya (sehingga tidak bangun dari tidurnya) dan Dia melepaskan jiwa yang lain sampai waktu yang ditetapkan." (Az-Zumar [39]: 42).
+
+Karena itulah, ketika hendak tidur, kita membaca: (doa di atas). Maknanya, aku mati ketika tidur dan aku hidup ketika bangun.
+Allahu a''lam.
+
+Hadis Selengkapnya:
+Dari Hudzaifah radhiyallahu ''anhu, beliau mengatakan: "Apabila Rasulullah shallallahu ''alaihi wa sallam hendak tidur, beliau membaca: (doa di atas)."
+
+Sumber: http://www.facebook.com/doa.dzikir.shahih.harian/posts/320686431364755', '["tidur","malam"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (3, 'Doa Sebelum dan Sesudah Tidur', 'Doa Bila Takut Dan Kesepian Ketika Tidur', 'أَعُوْذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ غَضَبِهِ وَعِقَابِهِ، وَشَرِّ عِبَادِهِ، وَمِنْ هَمَزَاتِ الشَّيَاطِيْنِ وَأَنْ يَحْضُرُوْنِ', 'A''uudzu bikalimaatillaahit-taammaati min ghodhobihi wa ''iqoobihi, wa syarri ''ibaadihi, wa min hamazaatisy-syayaathiini wa an yahdhuruun.', 'Aku berlindung dengan kalimat Allah yang sempurna dari kemarahan dan siksaanNya, serta kejahatan hamba-hambaNya, dan dari godaan setan (bisikannya) serta jangan sampai mereka hadir (kepadaku).', 'HR. Abu Dawud 4/12. Dan lihat Shahih At-Tirmidzi 3/171.
+
+Sumber: Hisnul Muslim.', '["tidur","malam"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (4, 'Doa Sebelum dan Sesudah Tidur', 'Doa Membalikkan Tubuh Ketika Tidur Malam', 'لاَ إِلَـٰهَ إِلاَّ اللَّهُ الْوَاحِدُ الْقَهَّارُ، رَبُّ السَّمَاوَاتِ وَاْلأَرْضِ وَمَا بَيْنَهُمَا الْعَزِيْزُ الْغَفَّارُ', 'Laa ilaaha illallaahul waahidul qohhaar, robbus-samaawaati wal ardhi wa maa bainahumal ''aziizul ghoffaar.', 'Tidak ada sesembahan yang berhak disembah kecuali Allah, Yang Maha Esa, Maha Perkasa, Tuhan yang menguasai langit dan bumi dan apa yang di antara keduanya, Yang Maha Mulia lagi Maha Pengampun.', 'HR. Al-Hakim, menurut pendapatnya, hadits di atas adalah shahih, Imam Adz-Dzahabi setuju pendapatnya 1/540 dan An-Nasai dalam ''Amalul Yaum wal Lailah, serta Ibnus Sunni. Lihat juga Shahihul Jami'' 4/231.
+
+Beliau membaca doa ini ketika berbalik dari satu sisi ke sisi lain pada malam hari.
+
+Sumber: Hisnul Muslim.', '["tidur","malam"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (5, 'Doa Sebelum dan Sesudah Tidur', 'Doa Bila Terjaga Di Malam Hari', 'لاَ إِلَـٰهَ إِلاَّ اللَّهُ، وَحْدَهُ لاَ شَرِيْكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ، وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيْرٌ، اَلْحَمْدُ لِلَّهِ، وَسُبْحَانَ اللَّهِ، وَلاَ إِلَـٰهَ إِلاَّ اللَّهُ، وَاللَّهُ أَكْبَرُ، وَلاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللَّهِ', 'Laa ilaaha illallaah, wahdahu laa syariika lah, lahul mulku wa lahul hamdu, wa huwa ''alaa kulli syai-in qodiir, alhamdulillaah, wa subhaanallaah, wa laa ilaaha illallaah, wallaahu akbar, wa laa haula wa laa quwwata illaa billaah.', 'Tidak ada sesembahan yang berhak disembah kecuali Allah, Yang Maha Esa, tiada sekutu bagiNya. BagiNya kerajaan dan pujian. Dia-lah Yang Maha Kuasa atas segala sesuatu. Segala Puji bagi Allah, Maha Suci Allah, tidak ada sesembahan yang berhak disembah kecuali Allah, Allah Maha Besar, tiada daya dan kekuatan kecuali dengan pertolongan Allah.', 'Dari ''Ubadah bin Shamit Radhiallahu''anhu, dari Rasulullah Shallallahu''alaihi wasallam beliau bersabda: "Barangsiapa yang terjaga di malam hari, kemudian dia membaca: (doa di atas)
+
+kemudian dia mengucapkan:
+اَللَّهُمَّ اغْفِرْ لِي
+Allaahummaghfir lii.
+
+Ya Allah, ampunilah dosaku.
+Atau dia berdoa (dengan doa yang lain), maka akan dikabulkan doanya, jika dia berwudhu dan melaksanakan shalat maka akan diterima shalatnya."
+
+HR. al-Bukhari 1103, Abu Dawud 5060, at-Tirmidzi 3414 dan Ibnu Majah 3878, shahih.
+Imam Ibnu Baththal Rahimahullah berkata, "Bagi orang sampai kepadanya hadits ini, sepantasnya dia berusaha mengamalkannya dan mengikhlaskan niatnya (ketika mengamalkannya) untuk Allah Ta''ala." (dinukil oleh Imam Ibnu Hajar Rahimahullah dalam kitab Fathul Baari 3/41).', '["tidur","malam"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (6, 'Doa Sebelum dan Sesudah Tidur', 'Doa Bangun Tidur 1', 'اَلْحَمْدُ لِلَّهِ الَّذِيْ أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُوْرِ', 'Alhamdulillaahil-ladzii ahyaanaa ba''da maa amaatanaa wa ilaihin-nusyuur.', 'Segala puji bagi Allah, yang membangunkan kami setelah ditidurkanNya dan kepadaNya kami dibangitkan.', 'HR. Al-Bukhari dalam Fathul Baari 11/113, Muslim 4/2083.
+Sumber: Hisnul Muslim.', '["tidur","malam"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (7, 'Doa Sebelum dan Sesudah Tidur', 'Doa Bangun Tidur 2', 'اَلْحَمْدُ لِلَّهِ الَّذِيْ عَافَانِيْ فِيْ جَسَدِيْ، وَرَدَّ عَلَيَّ رُوْحِيْ، وَأَذِنَ لِيْ بِذِكْرِهِ', 'Alhamdulillaahil-ladzii ''aafaanii fii jasadii, wa rodda ''alayya ruuhii, wa adzina lii bidzikrih.', 'Segala puji bagi Allah yang telah memberikan kesehatan pada jasadku dan mengembalikan ruhku kepadaku serta mengizinkanku untuk berdzikir kepadaNya.', 'HR. At-Tirmidzi 5/473 dan lihat Shahih At-Tirmidzi 3/144.
+
+Sumber: Hisnul Muslim.', '["tidur","malam"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (8, 'Doa di Kamar Mandi', 'Doa Masuk Kamar Mandi', '(بِسْمِ اللَّهِ) اَللَّهُمَّ إِنِّيْ أَعُوْذُ بِكَ مِنَ الْخُبُثِ وَالْخَبَائِثِ', '(Bismillaah) Allaahumma innii a''uudzu bika minal khubutsi wal khobaa-its.', 'Dengan nama Allah. Ya Allah, sesungguhnya aku berlindung kepadaMu dari godaan setan laki-laki dan perempuan.', 'HR. Al-Bukhari 1/45 dan Muslim 1/283. Sedang tambahan bismillaah pada permulaan hadits, menurut riwayat Said bin Manshur. Lihat Fathul Baari 1/244.
+
+Sumber: Hisnul Muslim.', '["kamar mandi"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (9, 'Doa di Kamar Mandi', 'Doa Keluar Kamar Mandi', 'غُفْرَانَكَ', 'Ghufroonak.', 'Aku minta ampun kepadaMu.', 'HR. Seluruh penyusun kitab Sunan, kecuali An-Nasai yang meriwayatkan dalam ''Amalul Yaumi wal Lailah, lihat Takhrij Zaadul Ma''aad 2/387.', '["kamar mandi"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (10, 'Doa Saat Wudhu', 'Doa Sebelum Wudhu', 'بِسْمِ اللَّهِ', 'Bismillaah.', 'Dengan nama Allah (aku berwudhu).', 'HR. Abu Dawud, Ibnu Majah dan Ahmad. Lihat Irwa''ul Ghalil 1/122.
+
+Sumber: Hisnul Muslim.', '["wudhu"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (11, 'Doa Saat Wudhu', 'Doa Setelah Wudhu', 'أَشْهَدُ أَنْ لاَ إِلَـٰهَ إِلاَّ اللَّهُ، وَحْدَهُ لاَ شَرِيْكَ لَهُ، وَأَشْهَدُ أَنَّ مُحَمَّدًا عَبْدُهُ وَرَسُوْلُهُ', 'Asyhadu al-laa ilaaha illallaah, wahdahu laa syariika lah, wa asyhadu anna muhammadan ''abduhu wa rosuuluh.', 'Aku bersaksi, bahwa tidak ada sesembahan yang berhak disembah kecuali Allah, Yang Maha Esa dan tiada sekutu bagiNya. Aku bersaksi, bahwa Muhammad adalah hamba dan utusanNya.', 'HR. Muslim 1/209.
+
+Sumber: Hisnul Muslim.', '["wudhu"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (12, 'Doa Berpakaian', 'Doa Mengenakan Pakaian', 'اَلْحَمْدُ لِلَّهِ الَّذِيْ كَسَانِيْ هَـٰذَا (الثَّوْبَ) وَرَزَقَنِيْهِ مِنْ غَيْرِ حَوْلٍ مِنِّيْ وَلاَ قُوَّةٍ', 'Alhamdulillaahil-ladzii kasaanii haadzats-tsauba wa rozaqoniihi min ghoiri haulin minnii wa laa quwwah.', 'Segala puji bagi Allah yang memberi pakaian ini kepadaku sebagai rezeki dariNya tanpa daya dan kekuatan dariku.', 'HR. Seluruh penyusun kitab Sunan, kecuali An-Nasai, lihat kitab Irwa''ul Ghalil 7/47. Sumber: Hisnul Muslim.', '["pakaian"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (13, 'Doa Berpakaian', 'Doa Mengenakan Pakaian Baru', 'اَللَّهُمَّ لَكَ الْحَمْدُ أَنْتَ كَسَوْتَنِيْهِ، أَسْأَلُكَ مِنْ خَيْرِهِ وَخَيْرِ مَا صُنِعَ لَهُ، وَأَعُوْذُ بِكَ مِنْ شَرِّهِ وَشَرِّ مَا صُنِعَ لَهُ', 'Allaahumma lakal hamdu anta kasautaniihi, as-aluka min khoirihi wa khoiri maa shuni''a lahu, wa a''uudzu bika min syarrihi wa syarri maa shuni''a lah.', 'Ya Allah, hanya milikMu segala puji, Engkaulah yang memberi pakaian ini kepadaku. Aku mohon kepadaMu untuk memperoleh kebaikannya dan kebaikan yang ia diciptakan karenanya. Aku berlindung kepadaMu dari kejahatannya dan kejahatan yang ia diciptakan karenanya.', 'HR. Abu Dawud, At-Tirmidzi, Al-Baghawi dan lihat Mukhtashar Syamaailit Tirmidzi, oleh Al-Albani, halaman 47.
+
+Sumber: Hisnul Muslim.', '["pakaian"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (14, 'Doa Berpakaian', 'Doa Melepas/Meletekkan Pakaian', 'بِسْمِ اللَّهِ', 'Bismillaah', 'Dengan nama Allah (aku meletakkan baju).', 'HR. Ibnu Majah 2/1178, Al-Baghawi 12/41 dan lihat Shahih Ibnu Majah 2/275.
+
+Sumber: Hisnul Muslim.', '["pakaian"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (15, 'Doa Perlindungan', 'Doa berlindung dari keburukan', 'اَللَّهُمَّ إِنِّيْ أَعُوْذُ بِكَ مِنْ زَوَالِ نِعْمَتِكَ، وَتَحَوُّلِ عَافِيَتِكَ، وَفُجَاءَةِ نِقْمَتِكَ، وَجَمِيْعِ سَخَطِكَ', 'Allaahumma innii a''uudzu bika min zawaali ni''matik, wa tahawwuli ''aafiyatik, wa fujaa-ati niqmatik, wa jamii''i sakhathik.', 'Ya Allah, sesungguhnya aku berlindung kepada-Mu dari hilangnya nikmat yang telah Engkau berikan, dari berubahnya kesehatan yang telah Engkau anugerahkan, dari siksa-Mu yang datang secara tiba-tiba, dan dari segala kemurkaan-Mu.', 'HR.Muslim no.2739', '["perlindungan","keburukan"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (16, 'Doa Perlindungan', 'Doa berlindung dari sifat malas. lemah, pikun, kikir dan siksa kubur', 'اَللَّهُمَّ إِنِّى أَعُوذُ بِكَ مِنَ الْكَسَلِ، وَأَعُوذُ بِكَ مِنَ الْجُبْنِ، وَأَعُوذُ بِكَ مِنَ الْهَرَمِ، وَأَعُوذُ بِكَ مِنَ الْبُخْلِ', 'Allaahumma innii a''uudzu bika minal kasali, wa a''uudzu bika minal jubni, wa a''uudzu bika minal haromi, wa a''uudzu bika minal bukhli.', 'Ya Allah, aku meminta perlindungan pada-Mu dari rasa malas, aku meminta perlindungan pada-Mu dari lemahnya hati, aku meminta perlindungan pada-Mu dari usia tua (yang sulit untuk beramal) dan aku meminta perlindungan pada-Mu dari sifat kikir (pelit)', 'HR. Bukhari. Bukhari: 83-Kitab Ad Da''awaat, 41-Bab Meminta Perlindungan dari Umur yang Sulit Untuk Beramal.', '["perlindungan","sifat buruk"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (17, 'Doa Perlindungan', 'Doa berlindung dari syirik', 'اَللَّهُمَّ إِنِّيْ أَعُوْذُ بِكَ أَنْ أُشْرِكَ بِكَ وَأَنَا أَعْلَمُ، وَأَسْتَغْفِرُكَ لِمَا لاَ أَعْلَمُ', 'Allaahumma innii a''uudzu bika an usyrika bika wa anaa a''lam, wa astagh-firuka limaa laa a''lam.', 'Ya Allah, aku berlindung kepada-Mu dari menyekutukan-Mu sedangkan aku mengetahuinya, dan aku memohon ampun terhadap apa yang tidak aku ketahui.', 'HR. Ahmad dan imam yang lain 4/403, lihat Shahihul Jami'' 3/233, dan Shahihut Targhrib wat Tarhib oleh Al-Albani 1/19.', '["perlindungan","syirik"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (18, 'Doa Menghadapi Fenomena Alam', 'Doa ketika angin ribut, halilintar dan hujan', 'اَللَّهُمَّ إِنِّيْ أَسْأَلُكَ خَيْرَهَا وَأَعُوْذُ بِكَ مِنْ شَرِّهَا', 'Allaahumma innii as-aluka khoirohaa wa a''uudzu bika min syarrihaa.', 'Ya Allah, sesungguhnya aku mohon kepadaMu kebaikan angin ini, dan aku berlindung kepadaMu dari kejelekannya', 'HR. Abu Dawud 4/326, Ibnu Majah 2/1228, dan lihatlah kitab Shahih Ibnu Majah 2/305.', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (19, 'Doa Menghadapi Fenomena Alam', 'Doa minta hujan', 'اَللَّهُمَّ اسْقِنَا غَيْثًا مُغِيْثًا، مَرِيْئًا، مَرِيْعًا، نَافِعًا غَيْرَ ضَارٍّ، عَاجِلًا غَيْرَ آجِلٍ', 'Allaahummas-qinaa ghoitsan mughiitsan, marii-an, marii''an, naafi''an ghoiro dhorrin, ''aajilan ghoiro aajilin.', 'Ya Allah, berilah kami hujan yang merata, menyegarkan tubuh, menyuburkan tanaman, bermanfaat, tidak membahayakan, secepatnya, tidak ditunda-tunda.', 'HR. Abu Dawud 1/303, dinyatakan shahih oleh Al-Albani dalam Shahih Abi Dawud 1/216.
+
+Sumber: Hisnul Muslim.', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (20, 'Doa Menghadapi Fenomena Alam', 'Doa ketika hujan', 'اَللَّهُمَّ صَيِّبًا نَافِعًا', 'Allaahumma shoyyiban naafi''an.', 'Ya Allah, turunkanlah hujan yang bermanfaat (untuk manusia, tanaman dan binatang).', 'HR. Bukhari no. 985.
+Hadits:
+Dari A''isyah radhiyallahu ''anha, bahwa Rasulullah shallallahu ''alaihi wa sallam apabila turun hujan, beliau membaca: (doa di atas).
+
+Keterangan:
+Doa ini dibaca ketika hujan turun dalam curah normal.
+
+
+Sumber: http://www.facebook.com/doa.dzikir.shahih.harian/posts/188127331287333', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (21, 'Doa Menghadapi Fenomena Alam', 'Doa Ketika Hujan Lebat, Atau Agar Hujan Berhenti', 'اَللَّهُمَّ حَوَالَيْنَا وَلَا عَلَيْنَا', 'Allaahumma hawaalainaa wa laa ''alainaa.', 'Ya Allah, turunkanlah hujan di sekitar kami, bukan yang merusak kami.', 'HR. al-Bukhari, Sahih al-Bukhari 1015.
+
+Sumber: https://muslim.or.id/19836-doa-saat-banjir-melanda-dan-hujan-tak-kunjung-reda.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (22, 'Doa Pernikahan', 'Doa Kepada Pengantin', 'بَارَكَ اللَّهُ لَكَ وَبَارَكَ عَلَيْكَ وَجَمَعَ بَيْنَكُمَا فِيْ خَيْرٍ', 'Baarokallaahu laka wa baaroka ''alaika wa jama''a bainakumaa fii khoirin.', 'Semoga Allah memberkahimu di waktu bahagia dan memberkahimu di waktu susah, dan semoga Allah menyatukan kalian berdua dalam kebaikan.', 'HR. Abu Dawud no. 2130.
+
+Sumber: http://muslim.or.id/22459-bila-di-undang-ke-walimah-nikah.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (23, 'Doa Pernikahan', 'Doa Pengantin Pria Kepada Pasangannya', 'اَللَّهُمَّ إِنِّيْ أَسْأَلُكَ خَيْرَهَا وَخَيْرَ مَا جَبَلْتَهَا عَلَيْهِ، وَأَعُوْذُ بِكَ مِنْ شَرِّهَا وَشَرِّ مَا جَبَلْتَهَا عَلَيْهِ', 'Allaahumma innii as-aluka khoirohaa, wa khoiro maa jabaltahaa ''alaihi, wa a''uudzu bika min syarrihaa, wa syarri maa jabaltahaa ''alaihi.', 'Ya Allah, sesungguhnya aku mohon kepadaMu kebaikan perempuan atau budak ini dan apa yang telah Engkau ciptakan dalam wataknya. Dan aku mohon perlindungan kepadaMu dari kejelekan perempuan atau budak ini dan apa yang telah Engkau ciptakan dalam wataknya.', 'HR. Abu Dawud 2/248, Ibnu Majah 1/617 dan lihatlah Shahih Ibnu Majah 1/324.
+Apabila seseorang di antara kamu kawin dengan seorang perempuan atau membeli budak, hendaklah mengucapkan: (doa di atas). Apabila membeli unta, hendaklah memegang puncak punuknya, lalu mengucapkan seperti itu.
+
+
+Sumber: Hisnul Muslim.', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (24, 'Doa Pernikahan', 'Doa Bersetubuh (Jima'')', 'بِسْمِ اللَّهِ، اَللَّهُمَّ جَنِّبْنَا الشَّيْطَانَ وَجَنِّبِ الشَّيْطَانَ مَا رَزَقْتَنَا', 'Bismillaah. Allaahumma jannibnasy-syaithoona wa jannibisy-syaithoona maa rozaqtanaa.', 'Dengan nama Allah. Ya Allah, jauhkan kami dari setan, dan jauhkan setan untuk mengganggu apa yang Engkau rezekikan kepada kami.', 'HR. Al-Bukhari 6/141 dan Muslim 2/1028 dari sahabat Abdullah bin Abbas radhiyallaahu ''anhu.
+Dalam hadits tersebut disebutkan bahwa seandainya Allah mengkaruniakan anak, maka syaithan tidak akan bisa mencelakakan anak tersebut. Al Qadhi menjelaskan maksudnya adalah syaithan tidak akan bisa merasukinya. Sebagaimana dinukilkan dari Al Minhaj.
+
+
+Sumber: Hisnul Muslim dan https://www.facebook.com/doa.dzikir.shahih.harian/posts/357411314358933', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (25, 'Doa Saat Sakit', 'Doa Ketika Sakit', 'بِسْمِ اللَّهِ (3×) أَعُوذُ بِاللَّهِ وَقُدْرَتِهِ مِنْ شَرِّ مَا أَجِدُ وَأُحَاذِرُ (7×)', 'Bismillaah (3x). A''uudzu billaahi wa qudrotihi min syarri maa ajidu wa uhaadzir (7x).', 'Dengan nama Allah (3x). Aku berlindung kepada Allah dan kekuasaanNya, dari kejahatan sesuatu yang aku jumpai dan aku khawatirkan (7x).', 'HR. Muslim 4/1728, Abu Daud, Malik, dll.
+Keterangan:
+
+Doa ini dibaca ketika ada salah satu bagian tubuh kita yang sakit.
+Caranya: letakkan tangan kita di bagian tubuh yang sakit, pijat pelan-pelan, sambil membaca: (doa di atas).
+Hadis selengkapnya:
+Dari Utsman bin Abil ''Ash radhiyallahu ''anhu, bahwa beliau mengadu kepada Nabi shallallahu ''alaihi wa sallam karena rasa sakit yang ada di badannya. Kemudian Nabi shallallahu ''alaihi wa sallam memberi nasihat kepadanya: "Letakkan tanganmu di bagian tubuh yang sakit, dan ucapkanlah: (doa di atas)."
+
+
+Sumber: Hisnul Muslim dan http://www.facebook.com/doa.dzikir.shahih.harian/posts/225870794179653', '["sakit"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (26, 'Doa Saat Sakit', 'Doa Nabi Ayyub ketika sakit', 'رَبِّ إِنِّي مَسَّنِيَ الضُّرُّ وَأَنْتَ أَرْحَمُ الرَّاحِمِينَ', 'Robbi innii massaniyadh-dhurru wa anta arhamur-roohimiin', 'Ya Allah, sesungguhnya aku telah ditimpa penyakit, dan Engkau adalah Tuhan Yang Maha Penyayang di antara semua penyayang.', 'Di atas adalah doa Nabi Ayyub ''alaihis salam di puncak sakitnya. 
+Sumber: http://www.facebook.com/doa.dzikir.shahih', '["sakit"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (27, 'Doa untuk Orang Sakit', 'Doa Kepada Orang Sakit', 'اَللَّهُمَّ رَبَّ النَّاسِ، أَذْهِبِ البَاسَ، اِشْفِ، أَنْتَ الشَّافِي، لاَ شِفَاءَ إِلاَّ شِفَاؤُكَ، شِفَاءً لاَ يُغَادِرُ سَقَمًا', 'Allaahumma robban-naas, adz-hibil baas, isyfi, antasy-syaafii, laa syifaa-a illaa syifaa-uka, syifaa-an laa yughoodiru saqoman.', 'Ya Allah, Tuhan seluruh manusia, hilangkanlah sakit ini, sembuhkanlah, Engkaulah As-Syafi (Sang Penyembuh), tidak ada kesembuhan kecuali kesembuhan dari-Mu, kesembuhan yang tidak meninggalkan penyakit.', 'HR. Bukhari 5675 dan Muslim 2191.
+Hadis selengkapnya:
+Dari A''isyah radhiyallahu ''anha, beliau menceritakan: Apabila ada di antara kami yang sakit maka Nabi shallallahu ''alaihi wa sallam mengusapkan tangan kanan beliau, kemudian membaca: (doa di atas).
+
+
+Sumber: https://konsultasisyariah.com/24268-orang-tua-pintu-surga-paling-tengah.html', '["sakit"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (28, 'Doa Menjelang Wafat', 'Doa ketika sakit menjelang kematian/tanpa harapan hidup', 'اَللَّهُمَّ اغْفِرْ لِيْ وَارْحَمْنِيْ وَأَلْحِقْنِيْ بِالرَّفِيْقِ اْلأَعْلَى', 'Allaahummagh-fir lii warhamnii wa alhiqnii bir-rofiiqil a''laa.', 'Ya Allah, ampuni aku, rahmati aku, dan kumpulkan aku bersama rekan-rekan yang berada di atas (malaikat).', 'HR. Al-Bukhari 7/10, Muslim 4/1893.
+Jika seseorang sudah merasakan dekatnya ajal, dia harus menjaga lisannya dan terus berdzikir dan memohon ampunan kepada Allah. Hindari keluh kesah, ingat dunia, ingat harta yang ditinggalkan, terus berdzikir dan memohon ampunan kepada Allah.
+
+Aisyah radhiyallahu ''anha, menuturkan: Saya mendengar Rasulullah shallallahu ''alaihi wa sallam mengucapkan kalimat berikut sambil bersandar di dadaku: (doa di atas). Dan itulah detik-detik kematian Nabi shallallahu ''alaihi wa sallam. Meskipun beliau manusia yang paling sempurna, beliau tetap memohon ampunan kepada Allah dan kasih sayang Allah.
+
+
+Sumber: Hisnul Muslim dan http://www.facebook.com/doa.dzikir.shahih.harian/posts/235659089867490', '["sakit"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (29, 'Doa Jenazah', 'Mengajari (Talqin) Orang Yang Akan Meninggal Dunia', 'لاَ إِلَـٰهَ إِلاَّ اللَّهُ', 'Laa ilaaha illallaah.', 'Tidak ada sesembahan yang berhak disembah kecuali Allah.', 'HR. Abu Dawud 3/190 dan lihat Shahihul Jami'' 5/432.
+Ketika seseorang hendak meninggal dunia, maka orang yang dicintai si sakit dianjurkan untuk mentalqin-nya. Nabi shallallahu ''alaihi wa sallam bersabda: Talqinlah orang yang hendak meninggal dengan ucapan: (kalimat di atas). Karena siapa yang kalimat terakhirnya (kalimat di atas) ketika mati, maka dia akan masuk surga pada suatu saat nanti, meskipun dia mendapatkan adzab sebelumnya. (Shahih Ibn Hiban).
+
+Hadits di atas menunjukkan bahwa talqin, yang diajarkan Nabi shallallahu ''alaihi wa sallam, dilakukan sebelum orangnya meninggal, BUKAN setelah meninggal.
+
+Caranya:
+
+Perintahkan si sakit untuk mengucapkan: (kalimat di atas).
+Jika dia belum mengucapkannya, ulangi perintahnya.
+Jika si sakit sudah mengucapkannya, maka jangan diajak bicara sedikitpun dan jangan melakukan sesuatu yang mengundang perhatian si sakit.
+Hendaknya yang mentalqin adalah orang terdekat si sakit, seperti ibunya, ayahnya, kakaknya, suaminya, istrinya atau yang lainnya. Artinya, tidak harus tokoh masyarakat.
+
+
+Sumber: Hisnul Muslim dan http://www.facebook.com/doa.dzikir.shahih.harian/posts/243017882464944', '["jenazah"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (30, 'Doa Jenazah', 'Doa Memejamkan Mata Jenazah', 'اَللَّهُمَّ اغْفِرْ لِفُلاَنٍ (بِاسْمِهِ) وَارْفَعْ دَرَجَتَهُ فِي الْمَهْدِيِّيْنَ، وَاخْلُفْهُ فِيْ عَقِبِهِ فِي الْغَابِرِيْنَ، وَاغْفِرْ لَنَا وَلَهُ يَا رَبَّ الْعَالَمِيْنَ، وَافْسَحْ لَهُ فِيْ قَبْرِهِ وَنَوِّرْ لَهُ فِيْهِ', 'Allaahummaghfir lifulaan (bismihi), warfa'' darojatahu fiil mahdiyyiin, wakhlufhu fii ''aqibihi fiil ghoobiriin, waghfir lanaa wa lahu, yaa robbal ''aalamiin, wafsah lahu fii qobrihi wa nawwir lahu fiihi.', 'Ya Allah, ampunilah si Fulan (hendaklah menyebut namanya), angkatlah derajatnya bersama orang-orang yang mendapat petunjuk, berilah penggantinya bagi orang-orang yang ditinggalkan sesudahnya. Dan ampunilah kami dan dia, wahai Tuhan seru sekalian alam. Lebarkan kuburannya dan berilah penerangan di dalamnya.', 'HR. Muslim 2/634.
+Setelah meninggal, hendaknya mata jenazah dipejamkan dan didoakan kebaikan untuknya, seperti memohonkan ampunan dan rahmat.
+
+Dari Ummu Salamah radhiyallahu ''anha, Nabi shallallahu ''alaihi wa sallam menjenguk Abu Salamah ketika meninggal, sementara matanya terbelalak, kemudian Nabi shallallahu ''alaihi wa sallam memejamkannya. Lalu beliau bersabda: "Sesungguhnya ruh apabila dicabut, dia diikuti oleh mata." Akhirnya keluarga Abu Salamah banyak berteriak histeris. Mendengar itu, Nabi shallallahu ''alaihi wa sallam berpesan kepada mereka: "Janganlah kalian mendoakan keburukan untuk diri kalian, berdoalah yang baik. Sesungguhnya malaikat MENGAMINKAN apa yang kalian ucapkan." (Malaikat mengaminkan doa pentakziah). Lalu Nabi shallallahu ''alaihi wa sallam berdoa: (doa di atas).
+
+
+Sumber: Hisnul Muslim dan http://www.facebook.com/doa.dzikir.shahih', '["jenazah"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (31, 'Doa Jenazah', 'Doa Belasungkawa (Ta''ziyah)', 'إِنَّ لِلَّهِ مَا أَخَذَ، وَلَهُ مَا أَعْطَى وَكُلُّ شَيْءٍ عِنْدَهُ بِأَجَلٍ مُسَمًّى، فَلْتَصْبِرْ وَلْتَحْتَسِبْ', 'Inna lillaahi maa akhodza, wa lahu maa a''thoo wa kullu syai-in ''indahu bi-ajalin musamman, faltashbir wal tahtasib.', 'Sesungguhnya hak Allah adalah mengambil sesuatu dan memberikan sesuatu. Segala sesuatu yang di sisi-Nya dibatasi dengan ajal yang ditentukan. Oleh karena itu, bersabarlah dan carilah ridha Allah. [1]', 'Apabila seseorang berkata seperti berikut, maka itu adalah suatu perkataan yang baik:
+
+أَعْظَمَ اللَّهُ أَجْرَكَ، وَأَحْسَنَ عَزَاءَكَ وَغَفَرَ لِمَيِّتِكَ
+
+A''zhomallaahu ajroka, wa ahsana ''azaa-aka wa ghofara limayyitik.
+
+Semoga Allah memperbesar pahalamu dan memperbagus dalam menghiburmu dan semoga diampuni mayatmu. [2]
+
+
+[1] HR. Al-Bukhari 2/80, Muslim 2/636.
+[2] An-Nawawi, Al-Adzkar, hal. 126.
+
+Sumber: Hisnul Muslim.', '["jenazah"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (32, 'Doa Jenazah', 'Doa Memasukkan Jenazah Ke Liang Kubur', 'بِسْمِ اللَّهِ وَعَلَى سُنَّةِ رَسُوْلِ اللَّهِ', 'Bismillaahi wa ''alaa sunnati rosuulillaah.', 'Dengan nama Allah dan sesuai petunjuk Rasulullah.', 'HR. Abu Dawud 3/314 dengan sanad yang shahih.
+
+Sumber: Hisnul Muslim', '["jenazah"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (33, 'Doa Jenazah', 'Doa Setelah Jenazah Dimakamkan', 'اَللَّهُمَّ اغْفِرْ لَهُ اَللَّهُمَّ ثَبِّتْهُ', 'Allaahummaghfir lahu, allaahumma tsabbit-hu.', 'Ya Allah ampunilah dia, Ya Allah teguhkanlah dia (untuk menjawab pertanyaan malaikat).', 'HR. Abu Dawud 3/315 dan Al-Hakim, ia menshahihkannya dan disepakati oleh Adz-Dzahabi 1/370.
+Doa ini dibaca oleh semua pengiring jenazah setelah pemakaman sempurna, sambil berdiri sejenak di samping makam.
+
+Adalah Nabi Shallallahu''alaihi wasallam apabila selesai memakamkan mayat, beliau berdiri di atasnya (di samping makam) lalu bersabda: "Mintalah ampun kepada Allah untuk saudaramu, dan mohonkan agar dia teguh dan tahan hati (ketika ditanya oleh dua malaikat), sesungguhnya dia sekarang sedang ditanya."
+
+
+Sumber: Hisnul Muslim dan http://www.facebook.com/doa.dzikir.shahih.harian/posts/263488677084531', '["jenazah"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (34, 'Doa Jenazah', 'Doa Ziarah Kubur', 'اَلسَّلَامُ عَلَيْكُمْ أَهْلَ الدِّيَارِ مِنَ الْمُؤْمِنِيْنَ وَالْمُسْلِمِيْنَ، وَإِنَّا إِنْ شَاءَ اللَّهُ بِكُمْ لَاحِقُوْنَ، (وَيَرْحَمُ اللَّهُ الْمُسْتَقْدِمِيْنَ مِنَّا وَالْمُسْتَأْخِرِيْنَ)، نَسْأَلُ اللَّهَ لَنَا وَلَكُمُ الْعَافِيَةَ', 'As-salaamu ''alaikum ahlad-diyaari minal mu''miniina wal muslimiin, wa innaa in syaa-allaahu bikum laa hiquun. (Wa yarhamullaahul mustaqdimiina minnaa wal musta''khiriin). Nas-alullaaha lanaa wa lakumul ''aafiyah.', 'Semoga keselamatan atas kalian, wahai penghuni kubur, dari kaum mukminin dan muslimin. Sesungguhnya kami insya Allah akan menyusul kalian. (Semoga Allah merahmati orang-orang yang mendahului kita dan yang datang belakangan). Kami memohon kepada Allah untuk kami dan kalian keselamatan (dari apa yang tidak diinginkan).', 'HR. Muslim 2/671 dan Ibnu Majah. Lafal hadits di atas milik Ibnu Majah 1/494, sedangkan doa yang ada di antara dua kurung, menurut riwayat Muslim, 2/671.
+
+Sumber: Hisnul Muslim.', '["jenazah"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (35, 'Doa Saat Sedih dan Sulit', 'Doa Ketika Sedih, Gundah Atau Galau', 'اَللَّهُمَّ إِنِّيْ عَبْدُكَ، وَابْنُ عَبْدِكَ، وَابْنُ أَمَتِكَ، نَاصِيَتِيْ بِيَدِكَ، مَاضٍ فِيَّ حُكْمُكَ، عَدْلٌ فِيَّ قَضَاؤُكَ، أَسْأَلُكَ بِكُلِّ اسْمٍ هُوَ لَكَ، سَمَّيْتَ بِهِ نَفْسَكَ، أَوْ أَنْزَلْتَهُ فِيْ كِتَابِكَ، أَوْ عَلَّمْتَهُ أَحَدًا مِنْ خَلْقِكَ، أَوِ اسْتَأْثَرْتَ بِهِ فِيْ عِلْمِ الْغَيْبِ عِنْدَكَ، أَنْ تَجْعَلَ الْقُرْآنَ رَبِيْعَ قَلْبِيْ، وَنُوْرَ صَدْرِيْ، وَجَلاَءَ حُزْنِيْ، وَذَهَابَ هَمِّيْ', 'Allaahumma innii ''abduka, wabnu ''abdika, wabnu amatika, naashiyatii biyadika, maadhin fiyya hukmuka, ''adlun fiyya qodhoo-uka, as-aluka bikullismin huwa laka, sammaita bihi nafsaka, au anzaltahu fii kitaabika, au ''allamtahu ahadan min kholqika, awista''tsarta bihi fii ''ilmil ghoibi ''indaka, an taj''alal qur-aana robii''a qolbii, wa nuuro shodrii, wa jalaa-a huznii, wa dzahaaba hammii.', 'Ya Allah, sesungguhnya aku adalah hambaMu, anak hambaMu (Adam), dan anak hamba perempuanMu (Hawa), ubun-ubunku berada di tanganMu, hukumMu berlaku terhadap diriku, dan ketetapanMu adil pada diriku. Aku memohon kepadaMu dengan segala Nama yang menjadi milikMu, yang Engkau namai diriMu dengannya, atau yang Engkau turunkan di dalam kitabMu, atau yang Engkau ajarkan kepada seseorang dari makhlukMu, atau yang Engkau rahasiakan dalam ilmu ghaib yang ada di sisiMu, maka aku mohon dengan itu agar Engkau jadikan Al-Qur''an sebagai penyejuk hatiku, cahaya bagi dadaku, pelipur kesedihanku, dan penghilang bagi kesusahanku', 'HR. Ahmad 1/391. Menurut pendapat Al-Albani, hadits tersebut adalah sahih.
+
+Sumber: Hisnul Muslim.', '["sedih","sulit"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (36, 'Doa Saat Sedih dan Sulit', 'Doa Ketika Mengalami Kesulitan / Minta diberi Kemudahan', 'اَللَّهُمَّ لاَ سَهْلَ إِلاَّ مَا جَعَلْتَهُ سَهْلاً، وَأَنْتَ تَجْعَلُ الْحَزْنَ إِذَا شِئْتَ سَهْلاً', 'Allahumma laa sahla illaa maa ja''altahu sahlan, wa anta taj''alul hazna idzaa syi''ta sahlan.', 'Ya Allah, tidak ada kemudahan kecuali apa yang Engkau jadikan mudah. Sedang yang susah bisa Engkau jadikan mudah, apabila Engkau menghendakinya.', 'HR. Ibnu Hibban dalam kitab Shahih-nya no. 2427 (Mawaarid), Ibnus Sunni no. 351. Al-Hafizh berkata: Hadits di atas sahih, dan dinyatakan shahih pula oleh Abdul Qadir Al-Arnauth dalam Takhrij Al-Adzkar oleh Imam An-Nawawi, h. 106.
+
+Sumber: Hisnul Muslim.', '["sedih","sulit"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (37, 'Doa Saat Sedih dan Sulit', 'Doa Nabi Yunus Ketika Mengalami Kesulitan', 'لاَ إِلَـٰهَ إِلاَّ أَنْتَ سُبْحَانَكَ إِنِّيْ كُنْتُ مِنَ الظَّالِمِيْنَ', 'Laa ilaaha illaa anta, subhaanaka, innii kuntu minazh-zhoolimiin.', 'Tidak ada sesembahan yang berhak disembah kecuali Engkau. Maha Suci Engkau. Sesungguhnya aku termasuk orang-orang yang zalim.', 'HR. At-Tirmidzi 5/529 dan Al-Hakim. Menurut pendapatnya yang disetujui oleh Adz-Dzahabi: Hadits tersebut adalah shahih 1/505, lihat Shahih At-Tirmidzi 3/168.
+Hadis selengkapnya:
+Dari Sa''d radhiyallahu ''anhu, Nabi shallallahu ''alaihi wa sallam bersabda: Doa Dzun Nun (Nabi Yunus), yang beliau lantunkan ketika di perut ikan: (doa di atas). Tidaklah doa ini dibaca oleh seorang muslim dalam setiap kejadian apapun, kecuali Allah akan mengijabahinya.
+
+Keterangan:
+
+Nabi Yunus diberi gelar Dzun Nun, karena beliau pernah ditelan ikan. Nun artinya ikan.
+Doa ini dianjurkan untuk dibaca ketika seseorang dalam keadaan terjepit, butuh bantuan Allah, dst.
+Doa ini memiliki keutamaan yang besar karena:
+Mengandung pengakuan terhadap keesaan Allah dan pengakuan bahwa Allah Dzat yang Maha Suci.
+Pengakuan bahwa dirinya adalah orang zalim, yang telah menganiaya dirinya sendiri, bukan Allah yang zalim.
+Doa ini tidak berisi permintaan, tapi murni pujian untuk Allah dan pengakuan terhadap dosa dan kezalimannya. Karena orang yang membacanya disertai rasa malu kepada Allah, sehingga tidak mengungkapkan permintaannya, meskipun dia mengakui bahwa Allah Maha Pemurah, yang Kuasa dan murah untuk memberikan apa yang diinginkan hamba.
+Allahu a''lam.
+
+
+Sumber: Hisnul Muslim dan http://www.facebook.com/doa.dzikir.shahih.harian/posts/220655811367818', '["sedih","sulit"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (38, 'Doa Saat Mendapat Kabar', 'Doa Bila Tertimpa Musibah', 'إِنَّا لِلَّهِ وَإِنَّا إِلَيْهِ رَاجِعُوْنَ، اَللَّهُمَّ أُجُرْنِيْ فِيْ مُصِيْبَتِيْ وَأَخْلِفْ لِيْ خَيْرًا مِنْهَا', 'Innaa lillaahi wa innaa ilaihi rooji''uun, allaahumma ujurnii fii mushiibatii wa akhlif lii khoiron minhaa.', 'Sesungguhnya kami milik Allah dan kepadaNya kami akan kembali (di hari Kiamat). Ya Allah, berilah pahala kepadaku dan gantilah untukku dengan yang lebih baik (dari musibahku).', 'HR. Muslim 2/632.
+
+Sumber: Hisnul Muslim.', '["musibah","kabar"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (39, 'Doa Saat Mendapat Kabar', 'Doa Bila Melihat Orang Lain Tertimpa Musibah, Cobaan Atau Penyakit', 'اَلْحَمْدُ لِلَّهِ الَّذِيْ عَافَانِيْ مِمَّا ابْتَلَاكَ بِهِ، وَفَضَّلَنِيْ عَلَى كَثِيْرٍ مِمَّنْ خَلَقَ تَفْضِيْلًا', 'Alhamdulillaahil-ladzii ''aafaanii mimmab-talaaka bihi, wa fadh-dholanii ''alaa katsiirin mimman kholaqo tafdhiilan.', 'Segala puji bagi Allah yang telah menyelamatkanku dari musibah yang menimpamu, dan benar-benar memuliakanku dari banyak makhluk lainnya.', 'HR. Tirmidzi no. 3431, Ibnu Majah no. 3892. Al-Hafizh Abu Thahir mengatakan bahwa hadits ini dha’if dan penguatnya, syawahidnya juga dha’if. Syaikh Al-Albani mengatakan bahwa hadits ini hasan.
+Kalau ada orang yang tertimpa musibah apa pun, sakit berat, sampai pada musibah dalam hal agama, maka kita baiknya mengamalkan doa di atas agar tidak tertimpa cobaan sepertinya.
+
+Dari Ibnu ‘Umar, dari bapaknya ‘Umar radhiyallahu ‘anhuma berkata bahwa Rasulullah shallallahu ‘alaihi wa sallam bersabda, “Siapa saja yang melihat yang lain tertimpa musibah, lalu ia mengucapkan: (doa di atas), maka ia akan diselamatkan dari musibah tersebut, musibah apa pun itu semasa ia hidup.”
+
+Dalam riwayat di atas ada kalimat lanjutan, diriwayatkan dari Abu Ja’far bin ‘Ali bahwa ia berkata, “Jika ada yang melihat yang lainnya tertimpa musibah, maka memintalah perlindungan (pada Allah) darinya. Hendaklah ia mengucapkan bacaan tadi, namun jangan sampai didengar oleh orang yang tertimpa musibah.”
+
+Penulis Tuhfatul Ahwadzi (9: 375), Syaikh Muhammad ‘Abdurrahman Al-Mubarakfuri berkata bahwa maksud dari melihat yang lain yang tertimpa musibah, yaitu musibah yang menimpa badan seperti lepra, cebol (terlalu pendek), jangkung (terlalu tinggi), buta, pincang, tangan bengkok, dan semacamnya. Juga yang dimaksud adalah musibah yang menimpa agama seseorang, seperti kefasikan, kezaliman, terjerumus dalam bid’ah, kafir dan selainnya.
+
+Diterangkan pula di halaman selanjutnya dalam kitab yang sama, baiknya doa tadi diucapkan lirih di hadapan orang yang tertimpa musibah dunia (seperti tertimpa penyakit), termasuk juga yang tertimpa musibah agama apalagi kalau ada dampak negatif jika diucapkan di hadapannya. Namun bisa jadi doa tadi dikeraskan di hadapan orang yang tertimpa musibah agama (orang fasik, misalnya, pen.) agar melarang dari maksiat yang dilakukan sehingga ia bisa tercegah (sadar).
+
+Moga Allah beri taufik untuk mengamalkan doa di atas.
+
+
+Sumber: https://rumaysho.com/14975-doa-ketika-melihat-yang-lain-tertimpa-musibah-atau-penyakit.html', '["musibah","kabar"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (40, 'Doa Saat Mendapat Kabar', 'Bacaan Bila Ada Sesuatu Yang  Menyusahkan', 'اَلْحَمْدُ لِلَّهِ عَلَى كُلِّ حَالٍ', 'Alhamdulillaahi ''alaa kulli haal.', 'Segala puji bagi Allah atas segala keadaan.', 'HR. Ibnu Sunni dalam kitab ''Amalul Yaum wal Lailah, Al-Hakim menshahihkannya 1/499. Al-Albani juga menshahihkannya dalam Shahihul Jami'' 4/201.
+
+Sumber: Hisnul Muslim.', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (41, 'Doa Saat Mendapat Kabar', 'Bacaan Bila Ada Sesuatu Yang Menyenangkan', 'اَلْحَمْدُ لِلَّهِ الَّذِي بِنِعْمَتِهِ تَتِمُّ الصَّالِحَاتُ', 'Alhamdulillaahil-ladzii bini''matihi tatimmush-shoolihaat.', 'Segala puji bagi Allah yang dengan nikmat-Nya segala amal shalih sempurna.', 'HR. Ibnu Sunni dalam kitab ''Amalul Yaum wal Lailah, Al-Hakim menshahihkannya 1/499. Al-Albani juga menshahihkannya dalam Shahihul Jami'' 4/201.
+
+Sumber: Hisnul Muslim.', '["musibah","kabar"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (42, 'Doa Saat Mendapat Kabar', 'Bila Ada Sesuatu Yang Menggembirakan', 'Nabi Shallallahu''alaihi wasallam apabila ada sesuatu yang menggembirakan atau menyenangkannya, beliau bersujud, karena syukur kepada Allah Yang Maha Suci dan Maha Tinggi.', '', '', 'HR. Ashhabus Sunan, kecuali An-Nasai, lihat Shahih Ibnu Majah 1/233 dan Irwa''ul Ghalil 2/226.
+
+Sumber: Hisnul Muslim.', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (43, 'Doa Terkait Harta dan Hutang', 'Doa agar terbebas hutang', 'اَللَّهُمَّ اكْفِنِيْ بِحَلاَلِكَ عَنْ حَرَامِكَ وَأَغْنِنِيْ بِفَضْلِكَ عَمَّنْ سِوَاكَ', 'Allaahummakfinii bihalaalika ''an haroomika, wa aghninii bifadhlika ''amman siwaak.', 'Ya Allah, cukupilah aku dengan rezekiMu yang halal (hingga aku terhindar) dari yang haram. Jadikanlah aku kaya dengan karuniaMu (hingga aku tidak minta) kepada selainMu.', 'HR. Abdullah bin Ahmad dalam Zawa-idul Musnad No. 1319; At-Tirmidzi No. 3563 dan Al-Hakim 1/537. At-Tirmidzi mengatakannya sebagai hadis hasan, dan dihasankan pula oleh Syaikh Al-Albani. Sedangkan Al-Hakim mensahihkannya.', '["hutang","rezeki"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (44, 'Doa Terkait Harta dan Hutang', 'Doa Kepada Orang Yang Menawarkan Hartanya Untukmu', 'بَارَكَ اللَّهُ لَكَ فِيْ أَهْلِكَ وَمَالِكَ', 'Baarokallaahu laka fii ahlika wa maalika.', 'Semoga Allah memberkahimu dalam keluarga dan hartamu.', 'HR. Al-Bukhari dengan Fathul Baari 4/88.
+
+Sumber: Hisnul Muslim.', '["harta","hutang"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (45, 'Doa Terkait Harta dan Hutang', 'Doa Kepada Orang Yang Meminjami Ketika Membayar Hutang', 'بَارَكَ اللَّهُ لَكَ فِيْ أَهْلِكَ وَمَالِكَ، إِنَّمَا جَزَاءُ السَّلَفِ الْحَمْدُ وَاْلأَدَاءُ', 'Baarokallaahu laka fii ahlika wa maalika, innamaa jazaa-us-salafil hamdu wal adaa-u.', 'Semoga Allah memberikan berkah kepadamu dalam keluarga dan hartamu. Sesungguhnya balasan meminjami adalah pujian dan pembayaran.', 'HR. An-Nasai dalam ''Amalul Yaum wal Lailah, hal. 300, Ibnu Majah 2/809, dan lihat Shahih Ibnu Majah 2/55.
+
+Sumber: Hisnul Muslim.', '["harta","hutang"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (46, 'Doa Terkait Harta dan Hutang', 'Doa Ketika Sempit Rizki', 'اَللَّهُمَّ إِنِّي أَسْأَلُكَ مِنْ فَضْلِكَ وَرَحْمَتِكَ، فَإِنَّهُ لاَ يَمْلِكُهَا إِلاَّ أَنْتَ', 'Allaahumma innii as-aluka min fadhlika wa rohmatik, fa-innahu laa yamlikuhaa illaa anta.', 'Ya Allah, aku memohon kepada-Mu akan sebagian karunia-Mu dan rahmat-Mu, karena sesungguhnya tidak ada yang memilikinya kecuali Engkau.', 'HR. Abu Nu''aim dalam al Hilyah dan Thabrani dalam al Mu''jam al Kabir. Al Haitsami mengatakan, "Diriwayatkan oleh Thabrani dan para perawinya adalah perawi kitab shahih selain Muhammad bin Ziyad al Burjumi dan dia adalah perawi yang tsiqoh." Al Albani dalam Silsilah Shahihah no 1543 mengatakan, "Sanadnya menurutku shahih." Dalam Shahih al Jami'' no 1278 al albani juga mengatakan "shahih."
+Dari Murrah dari Abdullah bin Mas''ud, "Nabi mendapatkan tamu. Beliau lantas mengutus seseorang untuk menemui para isteri beliau, barangkali ada yang punya makanan, namun ternyata tidak ada satu pun isteri beliau yang punya makanan yang bisa disuguhkan kepada tamu Nabi. Nabi lantas berdoa: (doa di atas). Tak lama setelah itu beliau mendapatkan daging kambing panggang. Nabi lantas berkomentar, ''Ini adalah sebagian dari karunia-Nya. Kami sedang menunggu rahmat-Nya.''"
+
+Hadits di atas diberi judul bab oleh Ibnu Abi Syaibah dalam al Mushannaf sebagai berikut: "Manakala seorang itu kelaparan atau mengalami kesempitan rizki bacaan doa seperti apa yang mesti dia ucapkan".
+
+
+Sumber: http://pengusahamuslim.com/doa-sempit-rizki-1674', '["harta","hutang"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (47, 'Doa Terkait Harta dan Hutang', 'Doa Ketika Orang-Orang Telah Sibuk Dengan Harta', 'اَللَّهُمَّ إِنِّي أَسْأَلُكَ الثَّبَاتَ فِي الْأَمْرِ، وَالْعَزِيمَةَ عَلَى الرُّشْدِ،
+وَأَسْأَلُكَ مُوجِبَاتِ رَحْمَتِكَ، وَعَزَائِمَ مَغْفِرَتِكَ،
+وَأَسْأَلُكَ شُكْرَ نِعْمَتِكَ، وَحُسْنَ عِبَادَتِكَ،
+وَأَسْأَلُكَ قَلْبًا سَلِيمًا، وَلِسَانًا صَادِقًا،
+وَأَسْأَلُكَ مِنْ خَيْرِ مَا تَعْلَمُ، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا تَعْلَمُ، وَأَسْتَغْفِرُكَ لِمَا تَعْلَمُ،
+إِنَّكَ أَنْتَ عَلَّامُ الْغُيُوبِ', 'Allaahumma innii as-alukats-tsabaata fil amri, wal ''aziimata ''alar-rusydi,
+wa as-aluka muujibaati rohmatika, wa ''azaa-ima magh-firotika,
+wa as-aluka syukro ni''matika, wa husna ''ibaadatika,
+wa as-aluka qolban saliiman, wa lisaanan shoodiqon,
+wa as-aluka min khoiri maa ta''lam, wa a''uudzu bika min syarri maa ta''lam, wa astagh-firuka limaa ta''lam,
+innaka anta ''allaamul ghuyuub.', 'Ya Allah, aku memohon kepada-Mu keteguhan dalam segala perkara, dan kesungguhan dalam petunjuk.
+Aku memohon kepada-Mu segala yang bisa mendatangkan rahmat-Mu, segala yang bisa mengundang ampunan-Mu.
+Aku memohon kepada-Mu rasa syukur atas nikmat-Mu, dan ibadah yang bagus kepada-Mu.
+Aku memohon kepada-Mu hati yang selamat, dan lisan yang jujur.
+Aku memohon kepada-Mu kebaikan yang Engkau ketahui, aku berlindung kepada-Mu dari keburukan yang engkau ketahui, dan aku memohon ampun kepada-Mu atas dosa yang Engkau ketahui.
+Sesungguhnya Engkau Maha Mengetahui perkara-perkara ghaib.', 'HR. At-Thabrani dalam al-Mu''jamil Kabiir, no. 7135.
+Rasulullah shallallahu ''alaihi wasallam bersabda, “Wahai Syaddad bin Aus, apabila kamu melihat orang menimbun emas dan perak, maka kamu timbunlah kalimat-kalimat ini: (doa di atas).”
+
+
+Sumber: https://bbg-alilmu.com/archives/25195', '["harta","hutang"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (48, 'Doa Perjalanan', 'Doa Naik Kendaraan', 'بِسْمِ اللَّهِ، اَلْحَمْدُ لِلَّهِ (سُبْحَانَ الَّذِيْ سَخَّرَ لَنَا هَـٰذَا وَمَا كُنَّا لَهُ مُقْرِنِيْنَ. وَإِنَّا إِلَى رَبِّنَا لَمُنْقَلِبُوْنَ) اَلْحَمْدُ لِلَّهِ، اَلْحَمْدُ لِلَّهِ، اَلْحَمْدُ لِلَّهِ، اَللَّهُ أَكْبَرُ، اَللَّهُ أَكْبَرُ، اَللَّهُ أَكْبَرُ، سُبْحَانَكَ اللَّهُمَّ إِنِّيْ ظَلَمْتُ نَفْسِيْ فَاغْفِرْ لِيْ، فَإِنَّهُ لاَ يَغْفِرُ الذُّنُوْبَ إِلاَّ أَنْتَ', 'Bismillaah, alhamdulillaah, (subhaanal-ladzii sakh-khoro lanaa haadzaa wa maa kunnaa lahu muqriniin. Wa innaa ilaa robbinaa lamunqolibuun), alhamdulillaah (3x), allaahu akbar (3x), subhaanakallaahumma innii zholamtu nafsii faghfir lii, fa-innahu laa yaghfirudz-dzunuuba illaa anta.', 'Dengan nama Allah, segala puji bagi Allah, (Maha Suci Tuhan yang menundukkan kendaraan ini untuk kami, padahal kami sebelumnya tidak mampu menguasainya. Dan sesungguhnya kami akan kembali kepada Tuhan kami (di hari Kiamat)). Segala puji bagi Allah (3x), Allah Maha Besar (3x), Maha Suci Engkau ya Allah, sesungguhnya aku menganiaya diriku, maka ampunilah aku. Sesungguhnya tidak ada yang mengampuni dosa-dosa kecuali Engkau.', 'HR. Abu Dawud 3/34, At-Tirmidzi 5/501, dan lihat Shahih At-Tirmidzi 3/156. Sumber: Hisnul Muslim', '["perjalanan"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (49, 'Doa Perjalanan', 'Doa Musafir Kepada Orang Yang Ditinggalkan', 'أَسْتَوْدِعُكُمُ اللَّهَ الَّذِيْ لاَ تَضِيْعُ وَدَائِعُهُ', 'Astaudi''ukumullaahal-ladzii laa tadhii''u wa daa-i''uh.', 'Aku menitipkan kamu kepada Allah yang tidak akan hilang titipan-Nya.', 'HR. Ahmad 2/403, Ibnu Majah 2/943, dan lihat Shahih Ibnu Majah 2/133.
+
+Sumber: Hisnul Muslim.', '["perjalanan"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (50, 'Doa Perjalanan', 'Doa Orang Mukim Kepada Musafir', 'أَسْتَوْدِعُ اللَّهَ دِيْنَكَ وَأَمَانَتَكَ وَخَوَاتِيْمَ عَمَلِكَ', 'Astaudi''ullaaha diinaka wa amaanataka wa khowaatiima ''amalik.', 'Aku menitipkan agamamu, amanatmu dan penutup amalmu kepada Allah.', 'HR. At-Tirmidzi 2/7, At-Tirmidzi 5/499, dan lihat Shahih At-Tirmidzi 2/155.
+
+Sumber: Hisnul Muslim.', '["perjalanan"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (51, 'Doa Perjalanan', 'Doa Bepergian', 'اَللَّهُ أَكْبَرُ، اَللَّهُ أَكْبَرُ، اَللَّهُ أَكْبَرُ، (سُبْحَانَ الَّذِيْ سَخَّرَ لَنَا هَـٰذَا وَمَا كُنَّا لَهُ مُقْرِنِيْنَ. وَإِنَّا إِلَى رَبِّنَا لَمُنْقَلِبُوْنَ) اَللَّهُمَّ إِنَّا نَسْأَلُكَ فِيْ سَفَرِنَا هَـٰذَا الْبِرَّ وَالتَّقْوَى، وَمِنَ الْعَمَلِ مَا تَرْضَى، اَللَّهُمَّ هَوِّنْ عَلَيْنَا سَفَرَنَا هَـٰذَا وَاطْوِ عَنَّا بُعْدَهُ، اَللَّهُمَّ أَنْتَ الصَّاحِبُ فِي السَّفَرِ وَالْخَلِيْفَةُ فِي اْلأَهْلِ، اَللَّهُمَّ إِنِّيْ أَعُوْذُ بِكَ مِنْ وَعْثَاءِ السَّفَرِ وَكَآبَةِ الْمَنْظَرِ وَسُوْءِ الْمُنْقَلَبِ فِي الْمَالِ وَاْلأَهْلِ', 'Allaahu akbar (3x), (subhaanal-ladzii sakh-khoro lanaa haadzaa wa maa kunnaa lahu muqriniin. Wa innaa ilaa robbinaa lamunqolibuun), allaahumma innaa nas-aluka fii safarinaa haadzal birro wat-taqwaa, wa minal ''amali maa tardhoo, allaahumma hawwin ''alainaa safaronaa haadzaa wathwi ''annaa bu''dah, allaahumma antash-shoohibu fis-safari wal kholiifatu fil ahli, allaahumma innii a''uudzu bika min wa''tsaa-is-safari wa ka-aabatil manzhori wa suu-il munqolabi fil maali wal ahli.', 'Allah Maha Besar (3x). (Maha Suci Tuhan yang menundukkan kendaraan ini untuk kami, padahal kami sebelumnya tidak mampu menguasainya. Dan sesungguhnya kami akan kembali kepada Tuhan kami (di hari Kiamat)). Ya Allah, sesungguhnya kami memohon kebaikan dan taqwa dalam bepergian ini, kami mohon perbuatan yang meridhakanMu. Ya Allah, permudahlah perjalanan kami ini, dan dekatkan jaraknya bagi kami. Ya Allah, Engkaulah teman dalam bepergian dan yang mengurusi keluarga(ku). Ya Allah, sesungguhnya aku berlindung kepada-Mu dari kelelahan dalam bepergian, pemandangan yang menyedihkan dan kepulangan yang jelek dalam harta dan keluarga.', 'Apabila kembali dari bepergian, doa di atas dibaca, dan ditambah:
+
+آيِبُوْنَ تَائِبُوْنَ عَابِدُوْنَ لِرَبِّنَا حَامِدُوْنَ
+
+Aayibuuna taa-ibuuna ''aabiduuna lirobbinaa haamiduun.
+
+Kami kembali dengan bertaubat, tetap beribadah dan selalu memuji kepada Tuhan kami.
+
+
+HR. Muslim 2/998.
+
+Sumber: Hisnul Muslim.', '["perjalanan"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (52, 'Doa Perjalanan', 'Doa Musafir Menjelang Subuh', 'سَمَّعَ سَامِعٌ بِحَمْدِ اللَّهِ، وَحُسْنِ بَلاَئِهِ عَلَيْنَا. رَبَّنَا صَاحِبْنَا، وَأَفْضِلْ عَلَيْنَا عَائِذًا بِاللَّهِ مِنَ النَّارِ', 'Samma''a saami''un bihamdillaah, wa husni balaa-ihi ''alainaa. robbanaa shoohibnaa, wa afdhil ''alainaa ''aa-idzan billaahi minan-naar.', 'Semoga ada yang memperdengarkan puji kami kepada Allah (atas nikmat) dan cobaanNya yang baik bagi kami. Wahai Tuhan kami, temanilah kami (peliharalah kami) dan berilah karunia kepada kami dengan berlindung kepada Allah dari api Neraka.', 'HR. Muslim 4/2086, Syarah An-Nawawi 17/39.
+
+Sumber: Hisnul Muslim.', '["perjalanan"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (53, 'Doa Perjalanan', 'Doa Singgah Di Suatu Tempat, Baik Dalam Bepergian Ataupun Tidak', 'أَعُوْذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ', 'A''uudzu bikalimaatillaahit-taammaati min syarri maa kholaq.', 'Aku berlindung dengan kalimat-kalimat Allah yang sempurna, dari kejahatan apa yang diciptakan-Nya.', 'HR. Tirmidzi 3437 dan An Nasai 5433.
+Dari Khaulah binti Hakim, bahwasanya Rasulullah shallallahu ‘alaihi wasallam bersabda, “Barang siapa yang singgah di sebuah tempat kemudian ia mengatakan: (doa di atas), niscaya tidak akan ada yang memudharatkannya.”
+
+
+Sumber: https://muslim.or.id/19063-dzikir-dan-doa-mohon-perlindungan-dari-bahaya.html', '["perjalanan"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (54, 'Doa Perjalanan', 'Doa Masuk Desa Atau Kota', 'اَللَّهُمَّ رَبَّ السَّمَاوَاتِ السَّبْعِ وَمَا أَظْلَلْنَ، وَرَبَّ اْلأَرَضِيْنَ السَّبْعِ وَمَا أَقْلَلْنَ، وَرَبَّ الشَّيَاطِيْنِ وَمَا أَضْلَلْنَ، وَرَبَّ الرِّيَاحِ وَمَا ذَرَيْنَ. أَسْأَلُكَ خَيْرَ هَـٰذِهِ الْقَرْيَةِ وَخَيْرَ أَهْلِهَا، وَخَيْرَ مَا فِيْهَا، وَأَعُوْذُ بِكَ مِنْ شَرِّهَا وَشَرِّ أَهْلِهَا وَشَرِّ مَا فِيْهَا', 'Allaahumma robbas-samaawaatis-sab''i wa maa azhlalna, wa robbal arodhiinas-sab''i wa maa aqlalna, wa robbasy-syayaathiini wa maa adhlalna, wa robbar-riyaahi wa maa dzaroina. As-aluka khoiro haadzihil quryati wa khoiro ahlihaa, wa khoiro maa fiihaa, wa a''uudzu bika min syarrihaa wa syarri ahlihaa wa syarri maa fiihaa.', 'Ya Allah, Tuhan tujuh langit dan apa yang dinaunginya, Tuhan penguasa tujuh bumi dan apa yang di atasnya, Tuhan yang menguasai setan-setan dan apa yang mereka sesatkan, Tuhan yang menguasai angin dan apa yang diterbangkannya. Aku mohon kepadaMu kebaikan desa ini, kebaikan penduduknya dan apa yang ada di dalamnya. Aku berlindung kepadaMu dari kejelekan desa ini, kejelekan penduduknya dan apa yang ada di dalamnya.', 'HR. Al-Hakim, menurut pendapatnya, hadits tersebut adalah sahih. Imam Adz-Dzahabi menyetujuinya 2/100, Ibnus Sunni, no. 524. Menurut Al-Hafizh Ibnu Hajar dalam Takhrij Adzkar 5/154: "Hadits tersebut adalah hasan." Bin Baz berkata: Hadits itu diriwayatkan pula oleh An-Nasai dengan sanad yang hasan. Lihat Tuhfatul Akhyar, hal. 37.
+
+Sumber: Hisnul Muslim.', '["perjalanan"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (55, 'Doa Perjalanan', 'Doa Masuk Pasar, Mall, Terminal, Bandara Dan Pusat Keramaian Lainnya', 'لاَ إِلَـٰهَ إِلاَّ اللَّهُ وَحْدَهُ لاَ شَرِيْكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ يُحْيِيْ وَيُمِيْتُ وَهُوَ حَيٌّ لاَ يَمُوْتُ، بِيَدِهِ الْخَيْرُ، وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيْرٌ', 'Laa ilaaha illallaah, wahdahu laa syariika lah, lahul mulku wa lahul hamd, yuhyii wa yumiit, wa huwa hayyun laa yamuut, biyadihil khoir, wa huwa ''alaa kulli syai-in qodiir.', 'Tidak ada sesembahan yang berhak disembah kecuali Allah, Yang Maha Esa, tiada sekutu bagiNya. BagiNya kerajaan, bagiNya segala pujian. Dia-lah Yang Menghidupkan dan Yang Mematikan. Dia-lah Yang Hidup, tidak akan mati. Di tanganNya kebaikan. Dia-lah Yang Maha kuasa atas segala sesuatu.', 'HR. Turmudzi 5/291, Hakim 1/538, dan dihasankan al-Albani dalam shahih Turmudzi 3/152.
+Dari Abdullah bin Umar radhiyallahu ''anhuma, bahwa Rasulullah shallallahu ''alaihi wa sallam bersabda: "Siapa yang masuk pasar, kemudian dia membaca: (doa di atas), maka akan dicatat untuknya satu juta kebaikan, dihapuskan satu juta kesalahan, dan diangkat satu juta derajat."
+
+Bisa anda bayangkan, dengan hanya membaca dzikir di atas ketika masuk pasar, kita bisa mendapatkan pahala yang sangat besar. Mengapa bisa demikian?
+
+Sebagian ulama menjelaskan:
+Orang yang berdzikir ketika masuk pasar menunjukkan kedekatan yang sangat kuat antara orang ini dengan Allah. Di pasar, umumnya orang sibuk dengan dunia, dia masih mengingat Allah. Di pasar, umumnya orang lupa Allah, dia justru berdzikir kepada Allah. Di pasar, umumnya orang bermaksiat, dia justru mendekatkan diri kepada Allah. Dia mengingat Allah di tengah-tengah masyarakat yang lupa Allah. Dia berdzikir, di tengah-tengah orang yang lengah dengan ibadah.
+
+Sikap semacam ini tidak mungkin bisa dilakukan kecuali oleh orang yang hatinya merasa diawasi oleh Allah dan rajin dalam membasahi lidahnya dengan dzikir. Karena itu, layaklah orang ini mendapatkan imbalan yang besar di sisi Allah. (Tajridul Ittiba'', Ibrahim Ibrahim ar-Ruhaili).
+
+Catatan:
+Memperbanyak dzikir juga berlaku ketika anda memasuki daerah yang umumnya manusia lupa Allah, seperti tempat rekreasi, terminal, bandara, mall, dst.
+
+Manfaatkan kesempatan besar di tengah kelengahan masyarakat, untuk mendapatkan pahala yang berharga di sisi Allah. Karena itu, biasakan lisan anda untuk selalu basah dengan dzikir.
+
+
+Sumber: http://www.facebook.com/doa.dzikir.shahih.harian/posts/146376235462443', '["perjalanan"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (56, 'Doa Perjalanan', 'Doa Bila Binatang Atau Kendaraan Tergelincir', 'بِسْمِ اللَّهِ', 'Bismillaah.', 'Dengan nama Allah.', 'HR. Abu Dawud 4/296 dan Al-Albani menyatakan, hadits tersebut shahih dalam Shahih Abi Dawud 3/941.
+
+Sumber: Hisnul Muslim.', '["perjalanan"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (57, 'Doa Perjalanan', 'Doa Pulang Dari Bepergian', 'Di atas tempat yang tinggi, membaca:
+
+اَللَّهُ أَكْبَرُ، اَللَّهُ أَكْبَرُ، اَللَّهُ أَكْبَرُ. لاَ إِلَـٰهَ إِلاَّ اللَّهُ وَحْدَهُ لاَ شَرِيْكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيْرٌ. آيِبُوْنَ تَائِبُوْنَ عَابِدُوْنَ لِرَبِّنَا حَامِدُوْنَ، صَدَقَ اللَّهُ وَعْدَهُ وَنَصَرَ عَبْدَهُ وَهَزَمَ اْلأَحْزَابَ وَحْدَهُ', 'Allaahu akbar (3x). Laa ilaaha illallaah, wahdahu laa syariika lah, lahul mulku wa lahul hamdu, wa huwa ''alaa kulli syai-in qodiir. Aayibuuna taa-ibuuna ''aabiduuna lirobbinaa haamiduun, shodaqollaahu wa''dah, wa nashoro ''abdah, wa hazamal ahzaaba wahdah.', 'Allah Maha Besar (3x). Tidak ada sesembahan yang berhak disembah kecuali Allah, Yang Maha Esa, tiada sekutu bagiNya. Bagi-Nya kerajaan dan pujaan. Dia-lah Yang Mahakuasa atas segala sesuatu. Kami kembali dengan bertaubat, beribadah dan memuji kepada Tuhan kami. Allah telah menepati janjiNya, membela hambaNya (Muhammad) dan mengalahkan golongan musuh dengan sendirian.', 'HR. Al-Bukhari 7/163, Muslim 2/980.
+
+Sumber: Hisnul Muslim.', '["perjalanan"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (58, 'Doa Berlindung dari setan', 'Doa Berlindung/Menghilangkan Gangguan Setan', 'أَعُوْذُ بِاللَّهِ مِنَ الشَّيْطَانِ الرَّجِيْمِ', 'A''uudzu billaahi minasy-syaithoonir-rojiim.', 'Aku berlindung kepada Allah dari godaan syaitan yang terkutuk.', 'HR. Abu Dawud 1/206, At-Tirmidzi, lihat Shahih At-Tirmidzi 1/77, dan lihat surah Al-Mukminun 98-99.
+
+Sumber: Hisnul Muslim.', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (59, 'Doa Berlindung dari setan', 'Doa Menghilangkan Gangguan Setan Ketika Shalat Atau Membaca Al-Qur''an', 'أَعُوْذُ بِاللَّهِ مِنَ الشَّيْطَانِ الرَّجِيْمِ', 'A''uudzu billaahi minasy-syaithoonir-rojiim.', 'Aku berlindung kepada Allah dari godaan syaitan yang terkutuk. (Lantas meludahlah ke kirimu 3x).', 'HR. Muslim 4/1729. Dari hadits Utsman bin Al Aash, ia berkata: "Aku laksanakan hal itu, maka Allah menghilangkan (gangguan tersebut) dariku."
+
+Sumber: Hisnul Muslim.', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (60, 'Doa memohon surga dan berlindung dari neraka', 'Doa Memohon Surga Dan Berlindung Dari Neraka', 'اَللَّهُمَّ إِنِّيْ أَسْأَلُكَ الْجَنَّةَ، وَأَعُوْذُ بِكَ مِنَ النَّارِ', 'Allaahumma innii as-alukal jannah, wa a''uudzu bika minan-naar.', 'Ya Allah, aku mohon kepada-Mu surga, dan aku berlindung kepada-Mu dari neraka.', 'HR. Abu Daud no. 792, Ibnu Majah no. 910, dan Ahmad (3/474). Syaikh Al Albani mengatakan bahwa hadits ini shahih.
+Hadits selengkapnya:
+Dari Abu Sholih, dari beberapa sahabat Nabi shallallahu ''alaihi wa sallam, beliau shallallahu ''alaihi wa sallam pernah bertanya kepada seseorang, "Doa apa yang engkau baca di dalam shalat?" "Aku membaca tahiyyat, lalu aku ucapkan (doa di atas)." "Aku sendiri tidak mengetahui kalau engkau mendengungkannya begitu pula Mu''adz," jawab orang tersebut. Kemudian Nabi shallallahu ''alaihi wa sallam bersabda, "Kami sendiri memohon surga (atau berlindung dari neraka)."
+
+
+Sumber: http://rumaysho.com/belajar-islam/tafsir-al-quran/3504-sifat-ibadurrahman-3-berlindung-dari-siksa-neraka.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (61, 'Doa memohon surga dan berlindung dari neraka', 'Doa Memohon Surga, Berlindung Dari Neraka Dan Mohon Takdir Baik', 'اَللَّهُمَّ إِنِّى أَسْأَلُكَ الْجَنَّةَ وَمَا قَرَّبَ إِلَيْهَا مِنْ قَوْلٍ أَوْ عَمَلٍ، وَأَعُوذُ بِكَ مِنَ النَّارِ وَمَا قَرَّبَ إِلَيْهَا مِنْ قَوْلٍ أَوْ عَمَلٍ، وَأَسْأَلُكَ أَنْ تَجْعَلَ كُلَّ قَضَاءٍ قَضَيْتَهُ لِى خَيْرًا', 'Allaahumma innii as-alukal jannata wa maa qorroba ilaihaa min qoulin au ''amal, wa a''uudzu bika minan-naari wa maa qorroba ilaihaa min qoulin au ''amal, wa as-aluka an taj''ala kulla qodhoo-in qodhoitahu lii khoiron.', 'Ya Allah, aku memohon kepada-Mu surga dan segala hal yang mendekatkan kepadanya, dari perkataan maupun perbuatan. Dan aku berlindung kepada-Mu dari neraka dan dari segala hal yang mendekatkan kepadanya, dari perkataan maupun perbuatan. Dan aku mohon kepada-Mu agar Engkau jadikan setiap yang Engkau takdirkan bagiku adalah baik.', 'HR. Ibnu Majah no. 3846 dan Ahmad 1/172. Syaikh Al Albani mengatakan bahwa hadits ini shohih.
+
+Sumber: http://rumaysho.com/belajar-islam/tafsir-al-quran/3699-sifat-ibadurrahman-8-akhir-yang-mulia-bagi-ibadurrahman.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (62, 'Doa memohon surga dan berlindung dari neraka', 'Doa Berlindung Dari Neraka', 'رَبَّنَا اصْرِفْ عَنَّا عَذَابَ جَهَنَّمَ إِنَّ عَذَابَهَا كَانَ غَرَامًا إِنَّهَا سَاءَتْ مُسْتَقَرًّا وَمُقَامًا', 'Robbanash-rif ''annaa ''adzaaba jahannam, inna ''adzaabahaa kaana ghorooman, innahaa saa-at mustaqorron wa muqoomaa.', 'Ya Tuhan kami, jauhkan azab jahannam dari kami, sesungguhnya azabnya itu adalah kebinasaan yang kekal. Sesungguhnya jahannam itu seburuk-buruk tempat menetap dan tempat kediaman. (Al Furqan [25]: 65-66).', 'Sumber: https://muslim.or.id/26031-doa-doa-dari-al-quran-2.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (63, 'Doa memohon akhlak mulia', 'Doa Memohon Akhlak Mulia', 'اَللَّهُمَّ أَحْسَنْتَ خَلْقِي فَأَحْسِنْ خُلُقِي', 'Allaahumma ahsanta kholqii, fa-ahsin khuluqii.', 'Ya Allah, Engkau telah memperbagus penciptaanku, maka baguskanlah akhlakku.', 'HR. Ahmad, dishahihkan oleh Asy Syaikh Al Albani.
+
+Sumber: BBG Al-Ilmu (BlackBerry Group)', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (64, 'Doa memohon akhlak mulia', 'Doa Memohon Akhlak Dan Amal Yang Baik', 'اَللَّهُمَّ اهْدِنِيْ لِأَحْسَنِ الْأَعْمَالِ، وَأَحْسَنِ الْأَخْلَاقِ، لَا يَهْدِي لِأَحْسَنِهَا إِلَّا أَنْتَ، وَقِنِي سَيِّئَ الْأَعْمَالِ، وَسَيِّئَ الْأَخْلَاقِ، لَا يَقِي سَيِّئَهَا إِلَّا أَنْتَ', 'Allaahummahdinii li-ahsanil a''maal, wa ahsanil akhlaaq, laa yahdii li-ahsanihaa illaa anta, wa qinii sayyi-al a''maal, wa sayyi-al akhlaaq, laa yaqii sayyi-ahaa illaa anta.', 'Ya Allah, berilah petunjuk kepadaku untuk berbuat sebaik-baik amalan, sebaik-baik akhlak, tidak ada yang bisa menunjuki untuk berbuat sebaik-baiknya kecuali Engkau. Dan lindungi kami dari jeleknya amalan dan jeleknya akhlak, dan tidak ada yang melindungi dari kejelekannya kecuali Engkau', 'HR. An Nasa''i.
+
+Sumber: BBG Al-Ilmu (BlackBerry Group)', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (65, 'Doa memohon akhlak mulia', 'Doa Berlindung Dari Kemungkaran Akhlak, Amal Dan Hawa Nafsu', 'اَللَّهُمَّ إِنِّيْ أَعُوْذُ بِكَ مِنْ مُنْكَرَاتِ الْأَخْلَاقِ، وَالْأَعْمَالِ، وَالْأَهْوَاءِ', 'Allaahumma innii a''uudzu bika min munkarootil akhlaaq, wal a''maal, wal ahwaa''.', 'Ya Allah, sesungguhnya aku berlindung kepada-Mu dari kemungkaran akhlak, amal dan hawa nafsu.', 'HR. Tirmidzi no. 3591, shahih.
+Faedah:
+
+Dalam doa ini kita meminta perlindungan dari akhlak yang jelek. Doa ini mencakup kita meminta berlindung dari akhlak yang jelek dari sisi syari''at. Termasuk pula kita meminta perlindungan pada Allah dari sesuatu yang dikenal jelek secara batin.
+Doa ini mencakup berlindung dari akhlak mungkar seperti begitu takjub dengan diri sendiri, sombong, berbangga diri, hasad dan melampaui batas.
+Doa ini mencakup kita berlindung pada Allah dari amalan yang mungkar, yaitu amalan yang zhohir atau ditampakkan.
+Doa berlindung dari amal yang mungkar mencakup zina, minum khomr dan bentuk keharaman lainnya.
+Doa ini juga mencakup meminta perlindungan pada keinginan atau nafsu yang mungkar. Dan kebanyakan hawa nafsu mengantarkan kepada kejelekan, itulah umumnya.
+Doa berlindung dari keinginan atau nafsu yang mungkar mencakup berlindung dari aqidah yang jelek, niatan-niatan yang batil dan pemikiran yang sesat.
+Doa ini mendorong kita agar berakhlak yang mulia dan beramal yang sholih.
+
+Sumber: http://rumaysho.com/belajar-islam/amalan/3078-doa-berlindung-dari-akhlak-amal-dan-hawa-nafsu-yang-mungkar.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (66, 'Doa Terkait Orang Tua', 'Doa Memohon Ampun diri sendiri dan orang tua (Doa Nabil Ibrahim)', 'رَبَّنَا اغْفِرْ لِي وَلِوَالِدَيَّ وَلِلْمُؤْمِنِينَ يَوْمَ يَقُومُ الْحِسَابُ', 'Robbanagh-fir lii wa liwaalidayya wa lil mu''miniina yauma yaquumul hisaab.', 'Ya Tuhan kami, beri ampunlah aku dan kedua ibu bapakku dan sekalian orang-orang mukmin pada hari terjadinya hisab (hari kiamat).', '(QS. Ibrahim [14]: 41)', '["ampunan","orang tua"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (67, 'Doa Terkait Orang Tua', 'Doa Memohon Ampun Untuk Diri Sendiri, Orang Tua Dan Kaum Mukminin (Doa Nabi Nuh)', 'رَّبِّ اغْفِرْ لِي وَلِوَالِدَيَّ وَلِمَن دَخَلَ بَيْتِيَ مُؤْمِنًا وَلِلْمُؤْمِنِينَ وَالْمُؤْمِنَاتِ وَلَا تَزِدِ الظَّالِمِينَ إِلَّا تَبَارًا', 'Robbigh-fir lii wa liwaalidayya wa liman dakhola baitiya mu''minan wa lil mu''miniina wal mu''minaati wa laa tazidizh-zhoolimiina illaa tabaaroo.', 'Ya Tuhanku! Ampunilah aku, ibu bapakku, orang yang masuk ke rumahku dengan beriman dan semua orang yang beriman laki-laki dan perempuan. Dan janganlah Engkau tambahkan bagi orang-orang yang zalim itu selain kebinasaan.', '(QS. Nuh [71]: 28).', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (68, 'Doa Terkait Orang Tua', 'Doa Memohon Kasih Sayang Untuk Orang Tua', 'رَّبِّ ارْحَمْهُمَا كَمَا رَبَّيَانِي صَغِيرًا', 'Robbir-hamhumaa kamaa robbayaanii shoghiiroo.', 'Wahai Tuhanku, kasihilah mereka keduanya, sebagaimana mereka berdua telah mendidik aku waktu kecil.', '(QS. Al-Isra'' [17]: 24).', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (69, 'Doa Terkait Istri Dan Anak', 'Doa Memohon Istri Dan Anak Sebagai Penyenang Hati', 'رَبَّنَا هَبْ لَنَا مِنْ أَزْوَاجِنَا وَذُرِّيَّاتِنَا قُرَّةَ أَعْيُنٍ وَاجْعَلْنَا لِلْمُتَّقِينَ إِمَامًا', 'Robbanaa hab lanaa min azwaajinaa wa dzurriyyaatinaa qurrota a''yun, waj''alnaa lil muttaqiina imaamaa.', 'Ya Rabb kami, anugrahkanlah kepada kami isteri-isteri kami dan keturunan kami sebagai penyenang hati (kami), dan jadikanlah kami imam bagi orang-orang yang bertakwa. (QS. Al-Furqan [25]: 74).', 'Sangat dianjurkan jika seorang muslim memperbanyak doa ini untuk memperbaiki istri, keturunan dan dirinya sendiri.
+
+Penjelasan ulama:
+Ibnu Katsir berkata, "Mereka (hamba yang beriman) berdoa kepada Allah agar mendapatkan keturunan yang taat kepada Allah dan menyembah Allah semata tidak berbuat syirik kepada-Nya." Masya Allah… Tafsiran yang sangat bagus. Yang orang beriman harap adalah mendapatkan keturunan yang rajin ibadah dan bertauhid kepada Allah, bukan keturunan yang berbuat syirik.
+
+Ibnu ''Abbas berkata, "Yaitu mereka (ibadurrahman) meminta agar mendapatkan keturunan yang gemar beramal ketaatan sehingga sejuklah mata mereka di dunia dan akhirat."
+
+''Ikrimah berkata, "Yaitu mereka (orang yang beriman) tidaklah menginginkan keturunan yang memiliki paras cantik, akan tetapi yang mereka inginkan adalah keturunan yang taat."
+
+Al Hasan Al Bashri ditanya mengenai ayat di atas. Beliau pun berkata, "Yang ingin dilihat Allah pada hamba muslim dari istri, saudara, dan sahabat karibnya adalah mereka semua taat pada Allah. Wallahi, demi Allah, tidak ada sesuatu yang lebih menyenangkan pandangan mata seorang muslim melebihi ketaatan pada Allah yang ia lihat pada anak, cucu, saudara dan sahabat karibnya."
+
+Ibnu Juraij berkata mengenai ayat tersebut, "Hamba beriman meminta pada Allah agar keturunannya dapat beribadah dan memperbagus ibadahnya kepada Allah, tidak berbuat maksiat dan tindak kejahatan."
+
+''Abdurrahman bin Zaid bin Aslam berkata, "Orang beriman meminta kepada Allah agar istri-istrinya dan keturunannya mendapatkan hidayah Islam."
+
+Sedangkan ayat, "Dan jadikanlah kami imam bagi orang-orang yang bertakwa":
+Ibnu ''Abbas, Al Hasan Al Bashri, Qotada, As Sudi, Ar Robi'' bin Anas menafsirkan ayat tersebut, "Ya Allah, jadikanlah kami sebagai imam yang dapat menunjuki dalam kebaikan."
+
+Ada pula ulama yang mengatakan bahwa maksudnya adalah ia meminta pada Allah agar ia sendiri mendapatkan petunjuk dan sebagai pengajak kepada kebaikan. Hamba Allah yang mewariskan kebaikan pada keturunannya, inilah yang dipuji dalam hadits, "Jika seseorang meninggal dunia, maka terputuslah amalannya kecuali tiga perkara (yaitu): sedekah jariyah, ilmu yang dimanfaatkan, atau doa anak yang sholeh." (HR. Muslim no. 1631). Orang tua yang menunjuki anak dan keturunannya dalam kebaikan, ia termasuk dalam hadits ini.
+
+Sumber: http://rumaysho.com/belajar-islam/tafsir-al-quran/3690-sifat-ibadurrahman-7-meminta-anugerah-istri-dan-anak-sebagai-penyejuk-mata.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (70, 'Doa Terkait Istri Dan Anak', 'Doa Memohon Banyak Harta, Anak, Panjang Umur, Dibaguskan Amal Dan Diampuni Dosa (Doa Nabi Muhammad)', 'اَللَّهُمَّ أَكْثِرْ مَالِي، وَوَلَدِي، وَبَارِكْ لِي فِيمَا أَعْطَيْتَنِي، وَأَطِلْ حَيَاتِي عَلَى طَاعَتِكَ، وَأَحْسِنْ عَمَلِي، وَاغْفِرْ لِي', 'Allaahumma ak-tsir maalii wa waladii, wa baarik lii fiimaa a''thoitanii, wa athil hayaatii ''alaa thoo''atik, wa ahsin ''amalii, wagh-fir lii.', 'Ya Allah, perbanyaklah harta dan anakku, serta berkahilah karunia yang Engkau beri. Panjangkanlah umurku dalam ketaatan kepada-Mu, dan baguskanlah amalku serta ampunilah dosa-dosaku.', 'HR. Bukhari no. 6334 dan Muslim no. 2480.
+
+Sumber: http://rumaysho.com/amalan/doa-minta-kaya-dan-lepas-dari-utang-10221.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (71, 'Doa Terkait Istri Dan Anak', 'Doa Memohon Anak Shaleh (Doa Nabi Ibrahim)', 'رَبِّ هَبْ لِي مِنَ الصَّالِحِينَ', 'Robbi hab lii minash-shoolihiin.', 'Ya Rabb-ku, anugrahkanlah kepadaku (seorang anak) yang termasuk orang-orang yang saleh. (QS. Ash-Shaffat [37]: 100).', 'Nabi Ibrahim ''alaihis salaam berdoa dengan doa di atas.
+Ini adalah doa yang bisa dipanjatkan untuk meminta keturunan, terutama keturunan yang sholeh. Dalam Zaadul Masiir (7/71), dijelaskan maksud ayat tersebut oleh Ibnul Jauzi rahimahullah, "Ya Rabbku, anugerahkanlah padaku anak yang sholeh yang nanti termasuk jajaran orang-orang yang sholeh."
+
+Asy Syaukani rahimahullah mengatakan apa yang dikatakan oleh para pakar tafsir, "Ya Rabb, anugerahkanlah padaku anak yang sholeh yang termasuk jajaran orang-orang yang sholeh, yang bisa semakin menolongku taat pada-Mu." Jadi yang namanya keturunan terutama yang sholeh bisa membantu seseorang semakin taat pada Allah.
+
+
+Sumber: http://rumaysho.com/belajar-islam/keluarga/3437-doa-meminta-anak-yang-sholeh.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (72, 'Doa Terkait Istri Dan Anak', 'Doa Memohon Keturunan (Doa Nabi Dzakariya)', 'رَبِّ لَا تَذَرْنِي فَرْدًا وَأَنتَ خَيْرُ الْوَارِثِينَ', 'Robbi laa tadzarnii fardan, wa anta khoirul waaritsiin.', 'Ya Rabb-ku, janganlah Engkau biarkan aku hidup seorang diri (tanpa keturunan), dan Engkaulah Waris yang Paling Baik.', '(QS. Al-Anbiya'' [21]: 89).', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (73, 'Doa Terkait Istri Dan Anak', 'Doa Agar Menjadi Hamba Yang Bersyukur, Agar Bisa Beramal Shaleh Dan Minta Anak Shaleh', 'رَبِّ أَوْزِعْنِي أَنْ أَشْكُرَ نِعْمَتَكَ الَّتِي أَنْعَمْتَ عَلَيَّ وَعَلَى وَالِدَيَّ وَأَنْ أَعْمَلَ صَالِحًا تَرْضَاهُ وَأَصْلِحْ لِي فِي ذُرِّيَّتِي إِنِّي تُبْتُ إِلَيْكَ وَإِنِّي مِنَ الْمُسْلِمِينَ', 'Robbi auzi''nii an asykuro ni''matakallatii an''amta ''alayya wa ''alaa waalidayya wa an a''mala shoolihan tardhoohu, wa ashlih lii fii dzurriyyatii, innii tubtu ilaika wa innii minal muslimiin.', 'Ya Rabbku, tunjukilah aku untuk mensyukuri nikmat-Mu yang telah Engkau berikan kepadaku dan kepada ibu bapakku, dan supaya aku dapat berbuat amal shaleh yang Engkau ridhai. Berilah kebaikan kepadaku dengan (memberi kebaikan) kepada anak cucuku. Sesungguhnya aku bertaubat kepada-Mu dan sesungguhnya aku termasuk orang-orang yang berserah diri. (Al-Ahqaf [46]: 15).', 'Seseorang yang telah dewasa dan menginjak usia 40 tahun memohon pada Allah dengan doa di atas. Doa ini juga berisi permintaan kebaikan pada anak dan keturunan.
+
+Sumber: http://rumaysho.com/belajar-islam/keluarga/3437-doa-meminta-anak-yang-sholeh.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (74, 'Doa Terkait Istri Dan Anak', 'Ucapan Selamat Kepada Orang Yang Dikaruniai Anak Dan Balasannya', 'بَارَكَ اللَّهُ لَكَ فِي الْمَوْهُوْبِ لَكَ، وَشَكَرْتَ الْوَاهِبَ، وَبَلَغَ أَشُدَّهُ، وَرُزِقْتَ بِرَّهُ', 'Baarokallaahu laka fil mauhuubi laka, wa syakartal waahiba, wa balagho asyuddahu, wa ruziqta birroh.', 'Semoga Allah memberkahimu dalam anak yang diberikan kepadamu. Semoga kamu bersyukur kepada Sang Pemberi, dan dia dapat mencapai dewasa, serta kamu dikaruniai kebaikannya.', 'Doa Terkait Istri Dan Anak
+Ucapan Selamat Kepada Orang Yang Dikaruniai Anak Dan Balasannya
+بَارَكَ اللَّهُ لَكَ فِي الْمَوْهُوْبِ لَكَ، وَشَكَرْتَ الْوَاهِبَ، وَبَلَغَ أَشُدَّهُ، وَرُزِقْتَ بِرَّهُ
+
+Baarokallaahu laka fil mauhuubi laka, wa syakartal waahiba, wa balagho asyuddahu, wa ruziqta birroh.
+
+Semoga Allah memberkahimu dalam anak yang diberikan kepadamu. Semoga kamu bersyukur kepada Sang Pemberi, dan dia dapat mencapai dewasa, serta kamu dikaruniai kebaikannya.
+
+Sedang orang yang diberi ucapan selamat membalas dengan mengucapkan:
+
+بَارَكَ اللَّهُ لَكَ وَبَارَكَ عَلَيْكَ، وَجَزَاكَ اللَّهُ خَيْرًا، وَرَزَقَكَ اللَّهُ مِثْلَهُ، وَأَجْزَلَ ثَوَابَكَ
+
+Baarokallaahu laka wa baaroka ''alaika, wa jazaakallaahu khoiron, wa rozaqokallaahu mitslahu, wa ajzala tsawaabak.
+
+Semoga Allah juga memberkahimu dan melimpahkan kebahagiaan untukmu. Semoga Allah membalasmu dengan sebaik-baik balasan, mengaruniakan kepadamu seperti itu dan melipatgandakan pahalamu.
+
+
+Lihat Al-Adzkar, karya An-Nawawi, hal. 349, dan Shahih Al-Adzkar lin Nawawi, oleh Salim Al-Hilali 2/713.
+
+Sumber: Hisnul Muslim.', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (75, 'Doa Terkait Istri Dan Anak', 'Doa Agar Anak Terjaga Dari Zina', 'اَللَّهُمَّ اغْفِرْ ذَنْبَهُ، وَطَهِّرْ قَلْبَهُ، وَحَصِّنْ فَرْجَهُ', 'Allaahummagh-fir dzanbahu, wa thohhir qolbahu, wa hash-shin farjahu.', 'Ya Allah, ampunilah dosanya, sucikanlah hatinya, dan jagalah kemaluannya.', 'HR. Ahmad, At Thabrani, Al Baihaqy dan dinyatakan sebagai hadits shahih oleh Al Albany.
+
+Sumber: http://www.salamdakwah.com/artikel/5170-jangan-dianggap-biasa-anak-yang-sudah-tidak-perawan dan http://www.salamdakwah.com/artikel/3283-zina-itu-adalah-hutang-tebusannya-ada-pada-keluargamu-sendiri', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (76, 'Doa Kepada Anak Yang Baru Lahir', 'Doa Perlindungan Kepada Anak (Doa Istri Imran)', 'Kepada bayi laki-laki, lafalnya:
+اَللَّهُمَّ إِنِّي أُعِيذُهُ بِكَ وَذُرِّيَّتَهُ مِنَ الشَّيْطَانِ الرَّجِيمِ', 'Allaahumma innii u''iidzuhu bika wa dzurriyyatahu minasy-syaithoonir-rojiim.', 'Ya Allah, aku memohon perlindungan kepada-Mu untuknya dan keturunannya dari setan yang terkutuk.', 'Kepada bayi perempuan, lafalnya:
+
+اَللَّهُمَّ إِنِّي أُعِيذُهَا بِكَ وَذُرِّيَّتَهَا مِنَ الشَّيْطَانِ الرَّجِيمِ
+
+Allaahumma innii u''iidzuhaa bika wa dzurriyyatahaa minasy-syaithoonir-rojiim.
+
+Ya Allah, aku memohon perlindungan kepada-Mu untuknya dan keturunannya dari setan yang terkutuk.
+
+
+Selengkapnya:
+Salah satu di antara contoh hal ini (memohon perlindungan dari setan) adalah apa yang dipraktekkan oleh istri Imran, yang merupakan ibunya maryam. Allah menceritakan kejadian ketika istri Imran melahirkan Maryam, ‘Tatkala isteri ‘Imran melahirkan anaknya, diapun berkata, “Ya Tuhanku, sesungguhnya aku melahirkannya seorang anak perempuan; dan Allah lebih mengetahui apa yang dilahirkannya itu; dan anak laki-laki tidaklah seperti anak perempuan. Sesungguhnya aku telah menamai Dia Maryam dan aku mohon perlindungan untuknya serta anak-anak keturunannya kepada (pemeliharaan) Engkau daripada syaitan yang terkutuk.”’ (Ali Imran [3]: 36).
+
+Satu hal yang istimewa, karena doa ibunda Maryam ini, ketika Maryam lahir, dia tidak diganggu setan, demikian pula ketika Nabi Isa dilahirkan. Allah mengabulkan doa ibunya Maryam. Dari Abu Hurairah radhiyallahu ‘anhu, Rasulullah shallallahu ‘alaihi wa sallam bersabda, “Setiap bayi dari anak keturunan adam akan ditusuk dengan tangan setan ketika dia dilahirkan, sehingga dia berteriak menangis, karena disentuh setan. Selain Maryam dan putranya.” (HR. Bukhari 3431). Kemudian Abu Hurairah radhiyallahu ‘anhu membaca surat Ali Imran ayat 36 di atas.
+
+Kita bisa meniru doa wanita sholihah, istri Imran ini.
+
+
+Sumber: https://konsultasisyariah.com/18705-doa-untuk-bayi-yang-baru-lahir.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (77, 'Doa Kepada Anak Yang Baru Lahir', 'Doa Perlindungan Kepada Anak (Doa Nabi Muhammad)', 'Kepada bayi laki-laki, lafalnya:
+أُعِيْذُكَ بِكَلِمَاتِ اللَّهِ التَّامَّةِ، مِنْ كُلِّ شَيْطَانٍ وَهَامَّةٍ، وَمِنْ كُلِّ عَيْنٍ لَامَّةٍ', 'U''iidzuka bikalimaatillaahit-taammah, min kulli syaithoonin wa haammah, wa min kulli ''ainin laammah.', 'Aku memohon perlindungan untukmu dengan kalimat-kalimat Allah yang sempurna, dari semua godaan setan dan binatang pengganggu, dan dari pandangan mata buruk.', 'Kepada bayi perempuan, lafalnya:
+
+أُعِيْذُكِ بِكَلِمَاتِ اللَّهِ التَّامَّةِ، مِنْ كُلِّ شَيْطَانٍ وَهَامَّةٍ، وَمِنْ كُلِّ عَيْنٍ لَامَّةٍ
+
+U''iidzuki bikalimaatillaahit-taammah, min kulli syaithoonin wa haammah, wa min kulli ''ainin laammah.
+
+Aku memohon perlindungan untukmu dengan kalimat-kalimat Allah yang sempurna, dari semua godaan setan dan binatang pengganggu, dan dari pandangan mata buruk.
+
+
+Selengkapnya:
+Kita bisa memohon perlindungan untuk anak dari gangguan setan, dengan doa seperti yang pernah dipraktekkan Nabi shallallahu ‘alaihi wa sallam, ketika mendoakan cucunya, Hasan dan Husain.
+
+Ibnu Abbas menceritakan, bahwa Rasulullah shallallahu ‘alaihi wa sallam membacakan doa perlindungan untuk kedua cucunya,
+
+أُعِيْذُكُمَا بِكَلِمَاتِ اللَّهِ التَّامَّةِ، مِنْ كُلِّ شَيْطَانٍ وَهَامَّةٍ، وَمِنْ كُلِّ عَيْنٍ لَامَّةٍ
+
+U''iidzukumaa bikalimaatillaahit-taammah, min kulli syaithoonin wa haammah, wa min kulli ''ainin laammah.
+
+Aku memohon perlindungan untuk kamu berdua, dengan kalimat-kalimat Allah yang sempurna, dari semua godaan setan dan binatang pengganggu, dan dari pandangan mata buruk. (HR. Abu Daud 3371, dan dishahihkan al-Albani).
+
+Kita bisa meniru doa beliau ini.
+
+Kata ganti disesuaikan dengan jenis kelamin dan jumlah anak yang didoakan:
+
+Jika satu anak laki: U''iidzu - ka.
+Jika satu anak perempuan: U''iidzu - ki.
+Jika dua anak, laki maupun perempuan: U''iidzu - kumaa.
+Jika lebih dari dua anak, semua laki: U''iidzu - kum.
+Jika lebih dari dua anak, semua perempuan: U''iidzu - kunna.
+Jika lebih dari dua anak, laki dan perempuan: U''iidzu - kum.
+
+Sumber: https://konsultasisyariah.com/18705-doa-untuk-bayi-yang-baru-lahir.html dan http://bbg-alilmu.com/archives/35100', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (78, 'Doa Memohon Keteguhan Hati', 'Doa Memohon Keteguhan Hati', 'يَا مُقَلِّبَ الْقُلُوبِ، ثَبِّتْ قَلْبِى عَلَى دِينِكَ', 'Yaa muqollibal quluub, tsabbit qolbii ''alaa diinik.', 'Wahai Dzat yang Maha Membolak-balikkan hati, teguhkanlah hatiku di atas agama-Mu.', 'HR. Tirmidzi no. 3522. Syaikh Al Albani mengatakan bahwa hadits ini shahih.
+Ummu Salamah pernah menanyakan kepada Rasulullah shallallahu ''alaihi wa sallam, kenapa doa tersebut yang sering beliau baca. Nabi shallallahu ''alaihi wa sallam seraya menjawab, "Wahai Ummu Salamah, yang namanya hati manusia selalu berada di antara jari-jemari Allah. Siapa saja yang Allah kehendaki, maka Allah akan berikan keteguhan dalam iman. Namun siapa saja yang dikehendaki, Allah pun bisa menyesatkannya."
+
+Dalam riwayat lain dikatakan, "Sesungguhnya hati berada di tangan Allah ''azza wa jalla, Allah yang membolak-balikkannya." (HR. Ahmad 3: 257. Syaikh Syu''aib Al Arnauth mengatakan bahwa sanad hadits ini kuat sesuai syarat Muslim).
+
+
+Sumber: http://rumaysho.com/amalan/kiat-agar-semangat-tidak-kendor-dalam-belajar-islam-3315', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (79, 'Doa Memohon Ampun, Rahmat Dan Kebaikan Lainnya', 'Doa Memohon Ampun Dan Rahmat', 'رَبَّنَا آمَنَّا فَاغْفِرْ لَنَا وَارْحَمْنَا وَأَنْتَ خَيْرُ الرَّاحِمِينَ', 'Robbanaa, aamannaa, fagh-fir lanaa warhamnaa, wa anta khoirur-roohimiin.', 'Ya Tuhan kami, kami telah beriman, maka ampunilah kami dan berilah kami rahmat, dan Engkau adalah Pemberi rahmat Yang Paling Baik. (QS. Al Mu’minun [23]: 109).', 'Sumber: https://muslim.or.id/26012-doa-doa-dari-al-quran-1.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (80, 'Doa Memohon Ampun, Rahmat Dan Kebaikan Lainnya', 'Doa Memohon Ampun Dan Rahmat (Doa Nabi Adam)', 'رَبَّنَا ظَلَمْنَا أَنْفُسَنَا وَإِنْ لَمْ تَغْفِرْ لَنَا وَتَرْحَمْنَا لَنَكُونَنَّ مِنَ الْخَاسِرِينَ', 'Robbanaa zholamnaa anfusanaa, wa in lam tagh-fir lanaa wa tarhamnaa, lanakuunanna minal khoosiriin.', 'Ya Tuhan kami, kami telah menganiaya diri kami sendiri, dan jika Engkau tidak mengampuni kami dan memberi rahmat kepada kami, niscaya pastilah kami termasuk orang-orang yang merugi. (QS. Al A''raf [7]: 23).', 'Sumber: https://muslim.or.id/26012-doa-doa-dari-al-quran-1.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (81, 'Doa Memohon Ampun, Rahmat Dan Kebaikan Lainnya', 'Doa Memohon Ampun (Doa Nabi Musa)', 'رَبِّ إِنِّي ظَلَمْتُ نَفْسِي فَاغْفِرْ لِي', 'Robbi innii zholamtu nafsii, fagh-fir lii.', 'Ya Tuhanku, sesungguhnya aku telah menganiaya diriku sendiri, karena itu ampunilah aku. (QS. Al Qashash [28]: 16).', 'Sumber: https://muslim.or.id/26012-doa-doa-dari-al-quran-1.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (82, 'Doa Memohon Ampun, Rahmat Dan Kebaikan Lainnya', 'Doa Memohon Ampun, Rahmat, Petunjuk, Keselamatan Dan Rizki', 'اَللَّهُمَّ اغْفِرْ لِيْ، وَارْحَمْنِيْ، وَاهْدِنِيْ، وَعَافِنِيْ، وَارْزُقْنِيْ', 'Allaahummagh-fir lii, warhamnii, wahdinii, wa ''aafinii, warzuqnii.', 'Ya Allah, ampunilah aku, kasihanilah aku, berilah petunjuk kepadaku, selamatkanlah aku (dari penyakit dan dari apa yang tidak kuinginkan) dan berilah rezeki kepadaku.', 'HR. Muslim no. 35 dan 2697. Dari Thoriq bin Asy-yam –radhiyallahu ''anhu–, ia berkata, “Jika seseorang baru masuk Islam, Nabi shallallahu ''alaihi wa sallam mengajarkan pada beliau shalat, lalu beliau memerintahkannya untuk membaca: (doa di atas).”
+Faedah hadits:
+
+Ketika seseorang masuk Islam, maka hendaklah ia diajarkan shalat dan diajarkan doa ini.
+Keutamaan meminta ampunan dari segala dosa pada Allah. Jika orang kafir masuk Islam, dosanya yang telah lalu akan diampuni. Namun permintaan ampunan ini bukan hanya bagi orang yang masuk Islam, namun juga untuk semua muslim. Karena setiap manusia tidak pernah terlepas dari dosa sebagaimana disebutkan dalam hadits.
+Keutamaan meminta rahmat Allah yaitu agar diperoleh kasih sayang Allah. Karena manusia barulah meraih kesempurnaan jika ia selamat dari berbagai kesusahan dan meraih kebahagiaan yang ia cari-cari.
+Keutamaan meminta hidayah, yaitu berupa petunjuk ilmu sekaligus amal.
+Keutamaan meminta keselamatan dari berbagai penyakit. Penyakit itu ada dua macam yaitu penyakit badan dan penyakit hati. Penyakit hati ini tentu saja lebih parah dari penyakit badan. Karena jika seseorang tertimpa penyakit hati maka kerugiaan di dunia dan akhirat sekaligus akan menimpa dirinya. Wal ''iyadzu billaah.
+Keutamaan meminta rizki yaitu agar dimudahkan oleh Allah untuk memperolehnya sehingga tidak sampai lalai dari melakukan ketaatan. Rizki itu ada dua macam yaitu yang bisa menegakkan badan dan bisa menguatkan hati. Menguatkan badan yaitu melalui makanan, pakaian, dan tempat tinggal. Menguatkan hati yaitu melalui ilmu bermanfaat (ilmu diin) dan amalan sholih. Permintaan rizki tersebut mencakup dua macam rizki ini.
+Keutamaan meminta kebaikan di dunia dan akhirat sekaligus, bukan hanya dunia saja. Ingatlah, kebahagiaan hakiki adalah kebahagiaan di akhirat kelak.
+Keutamaan membaca doa yang diajarkan oleh Nabi shallallahu ''alaihi wa sallam ini, terutama diajarkan bagi orang yang baru masuk Islam.
+
+Sumber: http://rumaysho.com/belajar-islam/amalan/3002-doa-meminta-kesehatan-dan-kelapangan-rizki.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (83, 'Doa Memohon Ampun, Rahmat Dan Kebaikan Lainnya', 'Doa Memohon Ampun, Rahmat, Keselamatan Dan Rizki', 'اَللَّهُمَّ اغْفِرْ لِيْ، وَارْحَمْنِيْ، وَعَافِنِيْ، وَارْزُقْنِيْ', 'Allaahummagh-fir lii, warhamnii, wa ''aafinii, warzuqnii.', 'Ya Allah, ampunilah aku, kasihanilah aku, selamatkanlah aku (dari penyakit dan dari apa yang tidak kuinginkan) dan berilah rezeki kepadaku.', 'HR. Muslim no. 36 dan 2697. Dalam riwayat lain, dari Thoriq, ia berkata bahwa ia mendengar Nabi shallallahu ''alaihi wa sallam –dan ketika itu beliau didatangi seorang laki-laki–, lalu laki-laki tersebut berkata, “Wahai Rasulullah, apa yang harus aku katakan ketika aku ingin memohon pada Rabbku?” Beliau bersabda, “Katakanlah: (doa di atas), karena doa ini telah mencakup dunia dan akhiratmu.”
+
+Sumber: http://rumaysho.com/belajar-islam/amalan/3002-doa-meminta-kesehatan-dan-kelapangan-rizki.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (84, 'Doa Memohon Ampun, Rahmat Dan Kebaikan Lainnya', 'Doa Memohon Ampun, Teguh Pendirian Dan Pertolongan Terhadap Orang Kafir', 'رَبَّنَا اغْفِرْ لَنَا ذُنُوبَنَا وَإِسْرَافَنَا فِي أَمْرِنَا وَثَبِّتْ أَقْدَامَنَا وَانْصُرْنَا عَلَى الْقَوْمِ الْكَافِرِينَ', 'Robbanagh-fir lanaa dzunuubanaa, wa isroofanaa fii amrinaa, wa tsabbit aqdaamanaa, wan-shurnaa ''alal qoumil kaafiriin.', 'Ya Rabb kami, ampunilah dosa-dosa kami, dan tindakan-tindakan kami yang berlebih-lebihan dalam urusan kami, dan teguhkanlah pendirian kami, dan tolonglah kami terhadap kaum yang kafir. (QS. Ali Imran [3]: 147).', 'Sumber: http://rumaysho.com/amalan/kiat-agar-semangat-tidak-kendor-dalam-belajar-islam-3315', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (85, 'Doa Memohon Ampun, Rahmat Dan Kebaikan Lainnya', 'Doa Memohon Ampun Dalam Segala Hal', 'اَللَّهُمَّ اغْفِرْ لِيْ خَطِيْئَتِيْ وَجَهْلِيْ، وَإِسْرَافِيْ فِي أَمْرِيْ، وَمَا أَنْتَ أَعْلَمُ بِهِ مِنِّيْ. اَللَّهُمَّ اغْفِرْ لِيْ جَدِّيْ وَهَزْلِيْ، وَخَطَئِيْ وَعَمْدِيْ، وَكُلُّ ذَالِكَ عِنْدِيْ. اَللَّهُمَّ اغْفِرْ لِيْ مَا قَدَّمْتُ وَمَا أَخَّرْتُ، وَمَا أَسْرَرْتُ وَمَا أَعْلَنْتُ، وَمَا أَنْتَ أَعْلَمُ بِهِ مِنِّيْ. أَنْتَ الْمُقَدِّمُ وَأَنْتَ الْمُؤَخِّرُ، وَأَنْتَ عَلَى كُلِّ شَيْءٍ قَدِيْرٌ', 'Allaahummagh-fir lii khothii-atii wa jahlii, wa isroofii fii amrii, wa maa anta a''lamu bihi minnii. Allaahummagh-fir lii jaddii wa hazlii, wa khoto-ii wa ''amdii, wa kullu dzaalika ''indii. Allaahummagh-fir lii maa qoddamtu wa maa akh-khortu, wa maa asrortu wa maa a''lantu, wa maa anta a''lamu bihi minnii. Antal muqoddimu wa antal mu-akh-khiru, wa anta ''alaa kulli syai-in qodiir.', 'Ya Allah, ampunilah kesalahanku dan kebodohanku, keberlebih-lebihan dalam perkaraku, dan apa yang Engkau lebih mengetahui daripadaku. Ya Allah, ampunilah aku dalam kesungguhanku dan kelalaianku, kesalahanku dan kesengajaanku, dan semua itu berasal dari sisiku. Ya Allah, ampunilah aku dari dosa yang telah aku lakukan dan yang belum, yang aku sembunyikan dan yang aku tampakkan, dan apa yang Engkau lebih mengetahui daripadaku. Engkaulah Yang Maha Mendahulukan dan Yang Mengakhirkan, dan Engkau Mahakuasa atas segala sesuatu.', 'HR. Bukhari 6398 dan Muslim 2719.
+
+Sumber: https://konsultasisyariah.com/21758-kumpulan-doa-nabi-shallallahu-alaihi-wa-sallam.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (86, 'Doa Memohon Ampun, Rahmat Dan Kebaikan Lainnya', 'Doa Memohon Ampun Dan Berlindung Dari Neraka', 'رَبَّنَا إِنَّنَا آمَنَّا فَاغْفِرْ لَنَا ذُنُوبَنَا وَقِنَا عَذَابَ النَّارِ', 'Robbanaa innanaa aamannaa, fagh-fir lanaa dzunuubanaa, wa qinaa ''adzaaban-naar.', 'Ya Tuhan kami, sesungguhnya kami telah beriman, maka ampunilah segala dosa kami, dan peliharalah kami dari siksa neraka. (QS. Ali Imran [3]: 16).', 'Sumber: https://muslim.or.id/26012-doa-doa-dari-al-quran-1.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (87, 'Doa Memohon Ampun, Rahmat Dan Kebaikan Lainnya', 'Doa Memohon Ampun, Dihapuskan Kesalahan Dan Agar Tidak Dihinakan Pada Hari Kiamat', 'رَبَّنَا إِنَّنَا سَمِعْنَا مُنَادِيًا يُنَادِي لِلْإِيمَانِ أَنْ آمِنُوا بِرَبِّكُمْ فَآمَنَّا رَبَّنَا فَاغْفِرْ لَنَا ذُنُوبَنَا وَكَفِّرْ عَنَّا سَيِّئَاتِنَا وَتَوَفَّنَا مَعَ الْأَبْرَارِ رَبَّنَا وَآتِنَا مَا وَعَدْتَنَا عَلَى رُسُلِكَ وَلَا تُخْزِنَا يَوْمَ الْقِيَامَةِ إِنَّكَ لَا تُخْلِفُ الْمِيعَادَ', 'Robbanaa innanaa sami''naa munaadiyan yunaadii lil iimaani an aaminuu birobbikum, fa-aamannaa, robbanaa fagh-fir lanaa dzunuubanaa, wa kaffir ''annaa sayyi-aatinaa, wa tawaffanaa ma''al abroor, robbanaa wa aatinaa maa wa ''adtanaa ''alaa rusulika, wa laa tukh-zinaa yaumal qiyaamah, innaka laa tukh-liful mii''aad.', 'Ya Tuhan kami, sesungguhnya kami mendengar (seruan) yang menyeru kepada iman, (yaitu): “Berimanlah kamu kepada Tuhanmu”, maka kamipun beriman. Ya Tuhan kami, ampunilah bagi kami dosa-dosa kami, dan hapuskanlah dari kami kesalahan-kesalahan kami, dan wafatkanlah kami beserta orang-orang yang banyak berbakti. Ya Tuhan kami, berilah kami apa yang telah Engkau janjikan kepada kami dengan perantaraan rasul-rasul Engkau. Dan janganlah Engkau hinakan kami di hari kiamat. Sesungguhnya Engkau tidak menyalahi janji. (QS. Ali Imran [3]: 193-194).', 'Sumber: https://muslim.or.id/26012-doa-doa-dari-al-quran-1.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (88, 'Doa Memohon Ampun, Rahmat Dan Kebaikan Lainnya', 'Doa Memohon Ampun Untuk Diri Sendiri Dan Kaum Mukminin, Dan Agar Tidak Dengki Kepada Orang Beriman', 'رَبَّنَا اغْفِرْ لَنَا وَلِإِخْوَانِنَا الَّذِينَ سَبَقُونَا بِالْإِيمَانِ وَلَا تَجْعَلْ فِي قُلُوبِنَا غِلًّا لِلَّذِينَ آمَنُوا رَبَّنَا إِنَّكَ رَءُوفٌ رَحِيمٌ', 'Robbanagh-fir lanaa wa li-ikhwaaninal-ladziina sabaquunaa bil-iimaan, wa laa taj''al fii quluubinaa ghillan lilladziina aamanuu, robbanaa innaka ro-uufun rohiim.', 'Ya Rabb kami, beri ampunlah kami dan saudara-saudara kami yang telah beriman lebih dulu dari kami, dan janganlah Engkau membiarkan kedengkian dalam hati kami terhadap orang-orang yang beriman. Ya Rabb kami, Sesungguhnya Engkau Maha Penyantun lagi Maha Penyayang. (QS. Al Hasyr [59]: 10).', 'Sumber: https://muslim.or.id/26012-doa-doa-dari-al-quran-1.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (89, 'Doa Memohon Ampun, Rahmat Dan Kebaikan Lainnya', 'Doa Memohon Ampun Pada Hari Pembalasan', 'رَبِّ اغْفِرْ لِي خَطِيئَتِي يَوْمَ الدِّينِ', 'Robbigh-fir lii khothii-atii yaumad-diin.', 'Ya Rabbi, ampunilah kesalahanku pada hari Pembalasan.', 'HR. Muslim.
+Ungkapan tersebut diucapkan Nabi Shallallahu ‘alaihi wa sallam kala ditanya Aisyah, “Ibnu Jud’an, pada masa jahiliah ia menyambung tali kekerabatan, memberi makan orang miskin, apakah itu bermanfaat baginya?” Lalu Nabi Shallallahu ‘alaihi wa sallam menjawab, “Tidak wahai Aisyah! Sesungguhnya ia sama sekali tidak pernah mengatakan: (doa di atas).”
+
+Artinya ia tidak percaya dengan hari kebangkitan. Dan orang yang tidak mengimaninya, maka ia kafir, amalnya tidak bermanfaat baginya (di akhirat).
+
+Doa yang disebutkan Nabi Shallallahu ‘alaihi wa sallam ini menunjukkan urgensi berdoa dengan tersebut. Pun telah datang dari Ibrahim Khalilur-Rahman ucapan beliau, “Dan yang amat kuinginkan akan mengampuni kesalahanku pada hari kiamat.” (Asy-Syu’ara/26: 82).
+
+Bila kekasih Allah saja sangat mengharap agar diampuni kesalahannya pada hari Kiamat, maka kitapun sangat lebih dituntut untuk memohonnya dengan sangat. Sebab orang yang diampuni Allah, artinya ia telah selamat dari setiap mara bahaya, dan tercapailah apa yang didambakannya pada hari yang sangat mencekam tersebut.
+
+Penyebutan hari pembalasan (yaumuddin) dalam doa ini untuk menghadirkan permintaan agung, pada hari di mana hamba ketika itu sangat membutuhkan ampunan Rabb-nya. Yaumuddin adalah yaumul jaza’ (hari pembalasan) dan hari perhitungan amal. Dan di antara nama Allah adalah Ad-Dayyaan, yaitu Yang menghisab dan membalas sekalian hamba. Allah Azza wa Jalla akan memutuskan perkara mereka dengan timbangan keadilan dan kebenaran pada hari pembalasan. Maka dari itu sudah seharusnya bagi hamba untuk memperhatikan doa ini.
+
+Syarh ad-Du’a min al-Kitab wa as-Sunnah, doa no 145.
+
+
+Sumber: https://almanhaj.or.id/11462-doa-meminta-ampun-pada-hari-pembalasan.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (90, 'Doa Memohon Ampun, Rahmat Dan Kebaikan Lainnya', 'Doa Memohon Ampun, Rahmat, Dan Ditetapkan Kebaikan Di Dunia Dan Akhirat (Doa Nabi Musa)', 'أَنتَ وَلِيُّنَا، فَاغْفِرْ لَنَا، وَارْحَمْنَا، وَأَنتَ خَيْرُ الْغَافِرِينَ، وَاكْتُبْ لَنَا فِي هَـٰذِهِ الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ، إِنَّا هُدْنَا إِلَيْكَ', 'Anta waliyyunaa, fagh-fir lanaa, war hamnaa, wa anta khoirul ghoofiriin, waktub lanaa fii haadzihid-dunyaa hasanatan wa fil aakhiroh, innaa hudnaa ilaik.', 'Engkaulah Yang memimpin kami, maka ampunilah kami, dan berilah kami rahmat, dan Engkaulah Pemberi ampun yang sebaik-baiknya. Dan tetapkanlah untuk kami kebajikan di dunia ini dan di akhirat, sesungguhnya kami kembali (bertaubat) kepada Engkau. (QS. Al-A''raf [7]: 155-156).', 'Sumber: https://almanhaj.or.id/7219-para-nabi-pun-bertaubat-menyoal-mashumnya-para-nabi.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (91, 'Doa Berlindung Dari Syirik', 'Doa Berlindung Dari Syirik', 'اَللَّهُمَّ إِنِّيْ أَعُوْذُ بِكَ أَنْ أُشْرِكَ بِكَ وَأَنَا أَعْلَمُ، وَأَسْتَغْفِرُكَ لِمَا لاَ أَعْلَمُ', 'Allaahumma innii a''uudzu bika an usyrika bika wa anaa a''lam, wa astagh-firuka limaa laa a''lam.', 'Ya Allah, aku berlindung kepada-Mu dari menyekutukan-Mu sedangkan aku mengetahuinya, dan aku memohon ampun terhadap apa yang tidak aku ketahui.', 'HR. Ahmad dan imam yang lain 4/403, lihat Shahihul Jami'' 3/233, dan Shahihut Targhrib wat Tarhib oleh Al-Albani 1/19.
+
+Sumber: Hisnul Muslim.', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (92, 'Doa Berlindung Dari Empat Hal', 'Doa Berlindung Dari Empat Hal', 'اَللَّهُمَّ إِنِّي أَعُوْذُبِكَ مِنْ عِلْمٍ لَا يَنْفَعُ، وَمِنْ قَلْبٍ لَا يَخْشَعُ، وَمِنْ نَفْسٍ لَا تَشْبَعُ، وَمِنْ دَعْوَةٍ لَا يُسْتَجَابُ لَهَا', 'Allaahumma innii a''uudzu bika min ''ilmin laa yanfa'', wa min qolbin laa yakhsya'', wa min nafsin laa tasyba'', wa min da''watin laa yustajaabulahaa.', 'Ya Allah, sesungguhnya aku berlindung kepada-Mu dari ilmu yang tidak bermanfaat, hati yang tidak khusyuk, jiwa yang tidak merasa kenyang (puas), dan dari doa yang tidak dikabulkan.', 'HR. Muslim no. 2722 dari Zaid bin Arqam.', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (93, 'Doa Berlindung Dari Kecelakaan Dan Kematian Yang Mengerikan', 'Doa Berlindung Dari Kecelakaan Dan Kematian Yang Mengerikan', 'اَللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ التَّرَدِّي، وَالْهَدْمِ، وَالْغَرَقِ، وَالْحَرِيقِ، وَأَعُوذُ بِكَ أَنْ يَتَخَبَّطَنِي الشَّيْطَانُ عِنْدَ الْمَوْتِ، وَأَعُوذُ بِكَ أَنْ أَمُوتَ فِي سَبِيلِكَ مُدْبِرًا، وَأَعُوذُ بِكَ أَنْ أَمُوتَ لَدِيغًا', 'Allaahumma innii a''uudzu bika minat-taroddii, wal hadmi, wal ghoroqi, wal hariiqi, wa a''uudzu bika an yatakhobbathonisy-syaithoonu ''indal mauti, wa a''uudzu bika an amuuta fii sabiilika mudbiron, wa a''uudzu bika an amuuta ladiighon.', 'Ya Allah, sesungguhnya aku berlindung kepada-Mu dari kebinasaan (terjatuh), kehancuran (tertimpa sesuatu), tenggelam, kebakaran, dan aku berlindung kepada-Mu dari disesatkan setan pada saat mati, dan aku berlindung kepada-Mu dari mati dalam keadaan berpaling dari jalan-Mu, dan aku berlindung kepada-Mu dari mati dalam keadaan tersengat.', 'HR. An-Nasa’i no. 5531. Al-Hafizh Abu Thahir mengatakan bahwa sanad hadits ini shahih.
+Arti beberapa kalimat dalam doa tersebut:
+
+At-taroddi: jatuh dari tempat yang tinggi ke tempat yang rendah.
+Al-hadm: tertimpa bangunan.
+Al-ghoroq: tenggelam dalam air.
+Al-hariq: terbakar api.
+An yatakhobbathonisy-syaithoonu ''indal mauti: dikuasai oleh setan ketika akan meninggal dunia, sehingga setan menghalanginya untuk bertaubat.
+Al-ladiigo: mati dalam keadaan terkena racun dari kalajengking dan ular.
+Kenapa sampai kita berdoa meminta perlindungan dari hal-hal di atas padahal yang disebutkan dalam doa menyebabkan seseorang mendapatkan kesyahidan sebagaimana disebutkan dalam hadits?
+
+Imam Ath-Thibi rahimahullah menjelaskan bahwa hal-hal yang disebutkan asalnya adalah musibah. Adapun mengharapkan kesyahidan dari musibah tersebut, perlu dipahami bahwa memang setiap musibah sampai pun duri yang menusuk akan mendapatkan pahala.
+
+Kata Imam Ath-Thibi, antara syahid di medan perang dengan syahid karena musibah di atas sangat berbeda. Karena syahid di medan perang itu diharap-harap. Sedangkan syahid dengan jatuh dari tempat tinggi, terbakar dan tenggelam, itu tidak dicari-cari. Kalau seseorang berusaha bunuh diri dengan cara-cara tadi, malah dihukumi berdosa.
+
+Penjelasan di atas diambil dari Muro’ah Al-Mafatih, dinukil dari ahlalhdeeth.com.
+
+Moga Allah mematikan kita dalam keadaan husnul khotimah.
+
+
+Sumber: https://rumaysho.com/15114-doa-agar-tidak-mati-mengerikan.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (94, 'Doa Berlindung Dari Kecelakaan Dan Kematian Yang Mengerikan', 'Doa Agar Tidak Disesatkan Setan Menjelang Kematian', 'أَعُوذُ بِكَ أَنْ يَتَخَبَّطَنِي الشَّيْطَانُ عِنْدَ الْمَوْتِ', 'A''uudzu bika an yatakhobbathonisy-syaithoonu ''indal maut.', 'Aku berlindung kepada-Mu agar tidak disesatkan setan ketika kematian.', 'HR. Ahmad 8667, Abu Daud 1554 dan dishahihkan al-Albani.
+Keterangan:
+
+Setan Mendatangi Manusia Ketika Sakaratul Maut
+
+Itulah detik-detik yang paling menentukan nasib manusia di akhirat. Karena semua amal dinilai berdasarkan ujungnya. Di saat itulah, setan tidak akan menyia-nyiakan kesempatan. Bisa jadi, dia akan mendatangi manusia ketika kematian. Karena itu, salah satu doa Nabi shallallahu ‘alaihi wa sallam, beliau memohon perlindungan kepada Allah, agar tidak disesatkan setan ketika kematian.
+
+Dalam salah satu doanya, Nabi shallallahu ‘alaihi wa sallam mengucapkan: (doa di atas).
+
+Al-Khathabi menjelaskan hadis di atas, dengan menyebutkan beberapa bentuk gangguan setan ketika mendekati kematian, “Nabi shallallahu ‘alaihi wa sallam berlindung dari disesatkan setan ketika kematian. Bentuknya adalah setan mengganggunya ketika dia hendak meninggal dunia. Lalu setan menyesatkannya, sehingga menghalangi dia untuk bertaubat, atau menutupi dirinya sehingga tidak mau memperbaiki urusannya atau memohon maaf dari kedzaliman yang pernah dia lakukan. Atau membuat dia merasa putus asa dari rahmat Allah. Atau membuat dia benci dengan kematian dan merasa sedih meninggalkan hartanya, sehingga dia tidak ridha dengan keputusan Allah berupa kematian, dan menuju akhirat. Sehingga dia akhiri hidupnya dengan keburukan, lalu dia bertemu Allah dalam kondisi dia murka kepada-Nya.”
+
+Kemudian, al-Khithabi menegaskan, “Diriwayatkan bahwa tidak ada kesempatan yang lebih diperhatikan setan untuk menyesatkan manusia, selain ketika kematiannya. Dia akan mengundang rekan-rekannya, ‘Kumpul di sini, jika kalian tidak bisa menyesatkannya pada hari ini, kalian tidak lagi bisa menggodanya selamanya.’” (Aunul Ma’bud, 4/287).
+
+
+Sumber: https://konsultasisyariah.com/26531-setan-menggoda-manusia-ketika-sakaratul-maut.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (95, 'Doa Memohon Ilmu', 'Doa Memohon Ilmu 1', 'رَبِّ زِدْنِي عِلْمًا', 'Robbi zidnii ''ilman.', 'Wahai Rabb-ku, tambahkanlah ilmu kepadaku. (QS. Thaha [20]: 114).', 'Allah Ta''ala memerintahkan Nabi-Nya Shallallahu ''alaihi wa sallam agar meminta tambahan ilmu.
+Al-Hafidz Ibnu Hajar rahimahullah berkata, "Ayat ini adalah dalil yang tegas tentang keutamaan ilmu. Sebab tidaklah Allah Ta''ala pernah memerintahkan Nabi-Nya Shallallahu ''alaihi wa sallam untuk meminta tambahan terhadap sesuatu, selain ilmu…" (Fathul Baari, 1/187).', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (96, 'Doa Memohon Ilmu', 'Doa Memohon Ilmu 2', 'اَللَّهُمَّ انْفَعْنِيْ بِمَا عَلَّمْتَنِيْ، وَعَلِّمْنِيْ مَا يَنْفَعُنِيْ، وَزِدْنِيْ عِلْماً', 'Allaahumman-fa''nii bimaa ''allamtanii, wa ''allimnii maa yanfa''unii, wa zidnii ''ilman.', 'Ya Allah, berilah aku manfaat dengan apa yang telah Engkau ajarkan kepadaku, ajarilah aku apa yang bermanfaat bagiku, dan tambahkanlah ilmu kepadaku.', 'HR. Ibnu Majah no. 251 dan 3833. Shahih. Tahqiq al-Albani.
+
+Sumber: http://www.salamdakwah.com/baca-artikel/memohon-ilmu-yang-bermanfaat-1.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (97, 'Doa Memohon Ilmu', 'Doa Memohon Ilmu Yang Bermanfaat Dan Berlindung Dari Ilmu Yang Tidak Bermanfaat', 'اَللَّهُمَّ إِنِّيْ أَسْأَلُكَ عِلْمًا نَافِعًا، وَأَعُوْذُ بِكَ مِنْ عِلْمٍ لَا يَنْفَعُ', 'Allaahumma innii as-aluka ''ilman naafi''an, wa a''uudzu bika min ''ilmin laa yanfa''.', 'Ya Allah, aku memohon kepada-Mu ilmu yang bermanfaat, dan berlindung kepada-Mu dari ilmu yang tidak bermanfaat.', 'HR. Ibnu Hibban. Hadis hasan sahih. Lihat at-Ta’liqaat al-Hisaan, al-Albani No 82.
+
+Sumber: http://www.salamdakwah.com/baca-artikel/memohon-ilmu-yang-bermanfaat-1.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (98, 'Doa Memohon Ilmu', 'Doa Agar Paham Tentang Agama', 'اَللَّهُمَّ فَقِّهْنِيْ فِى الدِّيْنِ', 'Allaahumma faqqihnii fid-diin.', 'Ya Allah, pahamkanlah aku tentang agama (Islam).', 'HR. Al-Bukhari no. 143, Fathul Barri I/244, dan Muslim no. 2477. Hadits Shahih.
+
+Sumber: https://muslimah.or.id/9591-wanita-dan-majelis-ilmu.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (99, 'Doa Memohon Kebaikan', 'Doa Agar Diri Dan Keluarga Tetap Mendirikan Shalat (Doa Nabi Ibrahim)', 'رَبِّ اجْعَلْنِي مُقِيمَ الصَّلاَةِ وَمِنْ ذُرِّيَّتِي رَبَّنَا وَتَقَبَّلْ دُعَاءِ', 'Robbij''alnii muqiimash-sholaati wa min dzurriyyatii, robbanaa wa taqobbal du''aa''.', 'Ya Rabb-ku, jadikanlah aku dan anak cucuku orang-orang yang tetap mendirikan shalat, ya Tuhan kami, perkenankanlah doaku.', '(QS. Ibrahim [14]: 40).', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (100, 'Doa Memohon Kebaikan', 'Doa Agar Menjadi Hamba Yang Bersyukur Dan Agar Bisa Beramal Shaleh (Doa Nabi Sulaiman)', 'رَبِّ أَوْزِعْنِي أَنْ أَشْكُرَ نِعْمَتَكَ الَّتِي أَنْعَمْتَ عَلَيَّ وَعَلَى وَالِدَيَّ وَأَنْ أَعْمَلَ صَالِحًا تَرْضَاهُ وَأَدْخِلْنِي بِرَحْمَتِكَ فِي عِبَادِكَ الصَّالِحِينَ', 'Robbi auzi''nii an asykuro ni''matakallatii an''amta ''alayya wa ''alaa waalidayya wa an a''mala shoolihan tardhoohu, wa ad-khilnii birohmatika fii ''ibaadikash-shoolihiin.', 'Ya Rabbku, tunjukilah aku untuk mensyukuri nikmat-Mu yang telah Engkau berikan kepadaku dan kepada ibu bapakku, dan supaya aku dapat berbuat amal shaleh yang Engkau ridhai. Masukkanlah aku dengan rahmat-Mu ke dalam golongan hamba-hamba-Mu yang shaleh. (QS. An-Naml [27]: 19).', 'Sumber: https://www.facebook.com/photo.php?fbid=287408304641699&set=a.128972147151983.21826.113035155412349&type=1', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (101, 'Doa Memohon Kebaikan', 'Doa Memohon Petunjuk, Ketakwaan, ''Afaf (Terjaga) Dan Ghina (Merasa Cukup)', 'اَللَّهُمَّ إنِّي أَسْأَلُكَ الهُدَى، وَالتُّقَى، وَالعَفَافَ، وَالغِنَى', 'Allaahumma innii as-alukal hudaa, wat-tuqoo, wal ''afaaf, wal ghinaa.', 'Ya Allah, sesungguhnya aku mohon kepada-Mu petunjuk, ketakwaan, diberikan sifat ''afaf dan ghina.', 'HR. Muslim no. 2721.
+Dari Ibnu Mas''ud radhiyallahu ''anhu, beliau berkata, "Nabi shallallahu ''alaihi wa sallam biasa membaca doa: (doa di atas).', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (102, 'Doa Memohon Kebaikan', 'Doa Memohon Ketakwaan dan Jiwa yang Suci', 'اَللَّهُمَّ آتِ نَفْسِيْ تَقْوَاهَا، وَزَكِّهَا، أَنْتَ خَيْرُ مَنْ زَكَّاهَا، أَنْتَ وَلِيُّهَا وَمَوْلَاهَا', 'Allaahumma aati nafsii taqwaahaa wazakkihaa, anta khairu man zakkaahaa, anta waliyyuhaa wa maulaahaa.', 'Ya Allah, anugerahkanlah kepadaku ketakwaaan jiwa dan sucikanlah ia, karena Engkaulah sebaik-baik Rabb yang mensucikannya, Engkau pelindung dan Pemeliharanya.', 'HR. Muslim.
+
+Sumber: https://www.facebook.com/photo.php?fbid=563403433708850&set=a.128398600542671.21609.113035155412349&type=1', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (103, 'Doa Memohon Kebaikan', 'Doa Agar Dilapangkan hati dan Dimudahkan Urusan dan Ucapan (Doa Nabu Musa)', 'رَبِّ اشْرَحْ لِي صَدْرِي وَيَسِّرْ لِي أَمْرِي وَاحْلُلْ عُقْدَةً مِنْ لِسَانِي يَفْقَهُوا قَوْلِي', 'Robbisy-roh lii shodrii, wa yassir lii amrii, wah lul ''uqdatan min lisaanii, yafqohuu qoulii.', 'Ya Rabbku, lapangkanlah untukku dadaku, mudahkanlah untukku urusanku, dan lepaskanlah kekakuan dari lidahku, supaya mereka mengerti perkataanku. (QS. Thaha [20]: 25-28).', 'Doa ini adalah doa yang amat manfaat. Doa ini berisi hal meminta kemudahan pada Allah dan agar dimudahkan dalam ucapan serta dimudahkan untuk memahamkan orang lain ketika ingin berdakwah.
+Doa ini dari Nabi Musa ''alaihis salam. Namun doa ini bisa diamalkan pula oleh kita sebagaimana ditunjukkan oleh para ulama dalam berbagai kitab doa kumpulan mereka.', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (104, 'Doa Memohon Kebaikan', 'Doa Memperbaiki Urusan Agama dan Dunia', 'اَللَّهُمَّ أَصْلِحْ لِى دِينِىَ الَّذِى هُوَ عِصْمَةُ أَمْرِى، وَأَصْلِحْ لِى دُنْيَاىَ الَّتِى فِيهَا مَعَاشِى، وَأَصْلِحْ لِى آخِرَتِى الَّتِى فِيهَا مَعَادِى، وَاجْعَلِ الْحَيَاةَ زِيَادَةً لِى فِى كُلِّ خَيْرٍ، وَاجْعَلِ الْمَوْتَ رَاحَةً لِى مِنْ كُلِّ شَرٍّ', 'Allaahumma ashlih lii diiniyal-ladzii huwa ''ishmatu amrii, wa ashlih lii dunyaayallatii fiihaa ma''aasyii, wa ashlih lii aakhirotillatii fiihaa ma''aadii, waj''alil hayaata ziyaadatan lii fii kulli khoirin, waj''alil mauta roohatan lii min kulli syarrin.', 'Ya Allah, perbaikilah agamaku sebagai benteng urusanku, perbaikilah duniaku yang menjadi tempat kehidupanku, perbaikilah akhiratku yang menjadi tempat kembaliku. Dan jadikanlah kehidupan ini mempunyai nilai tambah bagiku dalam segala kebaikan, dan jadikanlah kematianku sebagai kebebasanku dari segala kejahatan.', 'HR. Muslim no. 2720.
+Dari Abu Hurairah dia berkata, Rasulullah shallallahu ''alaihi wa sallam pernah berdoa sebagai berikut: (doa di atas).
+
+An Nawawi membawakan hadits ini dalam bab “Berlindung dari sesuatu yang telah diamalkan dan apa-apa yang belum diamalkan”.', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (105, 'Doa Memohon Kebaikan', 'Doa Melihat Hilal ( Bulan Tanggal Satu)', 'اَللَّهُ أَكْبَرُ، اَللَّهُمَّ أَهِلَّهُ عَلَيْنَا بِالأَمْنِ وَالإِيْمَانِ، وَالسَّلَامَةِ وَالإِسْلَامِ، وَالتَّوْفِيقِ لِمَا تُحِبُّ وَتَرْضَى، رَبُّنَا وَرَبُّكَ اللَّهُ', 'Allaahu akbar, allaahumma ahillahu ''alainaa bil amni wal iimaan, was-salaamati wal islaam, wat-taufiiqi limaa tuhibbu wa tardhoo, robbunaa wa robbukallaah.', 'Allah Maha Besar, Ya Allah, munculkanlah hilal itu kepada kami dengan membawa keamanan dan keimanan, keselamatan dan islam, dan membawa taufiq kepada apa yang Engkau cintai dan Engkau ridhai. Rabb kami dan Rabb kamu (wahai bulan) adalah Allah.', 'HR. Ahmad dalam musnadnya 888, Ad-Darimi dalam sunannya 1729, At-Thabrani dalam Mu''jam al-Kabir 13330. Hadits ini digolongkan hadits shahih li ghairi oleh Al-Albani dalam As-Shahihah no. 1816, dan dinilai shahih oleh Syu''aib Al-Arnauth dalam Ta''liq Musnad Ahmad 3/171.', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (106, 'Doa Memohon Kebaikan', 'Doa Melihat Permulaan Buah', 'اَللَّهُمَّ بَارِكْ لَنَا فِيْ ثَمَرِنَا، وَبَارِكْ لَنَا فِيْ مَدِيْنَتِنَا، وَبَارِكْ لَنَا فِيْ صَاعِنَا، وَبَارِكْ لَنَا فِيْ مُدِّنَا', 'Allaahumma baarik lanaa fii tsamarinaa, wa baarik lanaa fii madiinatinaa, wa baarik lanaa fii shoo''inaa, wa baarik lanaa fii muddinaa.', 'Ya Allah, berilah berkah buah-buahan kami, berilah berkah kota kami, berilah berkah takaran kami (sehingga di antara kami tidak sering mengurangi timbangan) dan berilah berkah mud kami.', 'HR. Muslim 2/1000.
+
+Sumber: Hisnul Muslim.', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (107, 'Doa Memohon Kebaikan', 'Doa Memohon Hisab yang Mudah', 'اَللَّهُمَّ حَاسِبْنِى حِسَابًا يَسِيرًا', 'Allaahumma haasibnii hisaaban yasiiron.', 'Ya Allah, hisablah aku dengan hisab yang mudah.', 'HR. Ahmad 6/48. Syaikh Syu''aib Al Arnauth mengatakan bahwa hadits ini shahih selain perkataan: Saya telah mendengar Nabi shallallahu ''alaihi wa sallam pada sebagian shalatnya membaca: (doa di atas). Ini adalah tambahan di mana Muhammad bin Ishaq bersendirian dalam meriwayatkannya.
+Hadits selengkapnya:
+Dari Aisyah, ia berkata, saya telah mendengar Nabi shallallahu ''alaihi wa sallam pada sebagian shalatnya membaca: (doa di atas). Ketika beliau berpaling saya bekata, "Wahai Nabi Allah, apa yang dimaksud dengan hisab yang mudah?" Beliau bersabda, "Seseorang yang Allah melihat kitabnya lalu memaafkannya. Karena orang yang diperdebatkan hisabnya pada hari itu, pasti celaka wahai Aisyah. Dan setiap musibah yang menimpa orang beriman Allah akan menghapus (dosanya) karenanya, bahkan sampai duri yang menusuknya."
+
+Yang dimaksud dengan doa tersebut diterangkan dalam hadits di atas. Maksud "hisab yang mudah" adalah saat di mana dosa-dosa seorang mukmin di hadapkan pada Allah, lalu ia pun mengakui dosa-dosanya itu. Kemudian setelah itu Allah mengampuni dosa-dosanya setelah ia bersendirian dengan Allah dan tidak ada seorang pun yang melihatnya ketika itu.
+
+Dari Shafwan bin Muhriz bahwa seorang laki-laki pernah bertanya kepada Ibnu Umar, "Bagaimana Anda mendengar sabda Rasulullah shallallahu ''alaihi wasallam tentang An Najwa (bisikan di hari kiamat)?" Ibnu Umar menjawab, "Yaitu salah seorang dari kalian akan mendekat kepada Rabb-nya. Kemudian Dia meletakkan naungan-Nya di atasnya. Kemudian Dia berfirman, ''Apakah kamu telah berbuat ini dan ini?'' Hamba itu menjawab, ''Ya, benar.'' Dia berfirman lagi, ''Apakah kamu telah melakukan ini dan ini?'' Hamba itu menjawab, ''Ya, benar.'' Dia pun mengulang-ulang pertanyannya, kemudian berfirman, ''Sesungguhnya Aku telah menutupi dosa-dosa tadi (merahasiakannya) di dunia dan pada hari ini aku telah mengampuninya bagimu.''" (HR. Bukhari no. 6070).
+
+Inilah yang dimaksudkan dengan hisab yang mudah di mana dosa-dosa seorang hamba yang beriman itu dimaafkan.
+
+
+Sumber: http://rumaysho.com/amalan/ya-allah-hisablah-aku-dengan-hisab-yang-mudah-1511', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (108, 'Doa Memohon Kebaikan', 'Doa Agar Ucapan Terjaga Saat Marah maupun Ridha', 'اَللَّهُمَّ إِنِّى أَسْأَلُكَ كَلِمَةَ الْحَقِّ فِي الْغَضَبِ وَالرِّضَى', 'Allaahumma innii as-aluka kalimatal haqqi fil ghodhobi war-ridhoo.', 'Ya Allah, aku memohon kepada-Mu perkataan yang benar pada saat marah dan ridha.', 'HR. Ahmad IV/264.
+Agar tak ada dusta, ketidakadilan dan kata-kata kotor saat emosi memuncak.
+
+
+Sumber: BBG Al-Ilmu (BlackBerry Group)', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (109, 'Doa Memohon Kebaikan', 'Doa Memohon Melihat Wajah Allah Swt.', 'اَللَّهُمَّ إِنِّيْ أَسْأَلُكَ لَذَّةَ النَّظَرِ إِلَى وَجْهِكَ، وَالشَّوْقَ إِلَى لِقَائِكَ فِي غَيْرِ ضَرَّاءَ مُضِرَّةٍ وَلَا فِتْنَةٍ مُضِلَّةٍ', 'Allaahumma innii as-aluka ladz-dzatan-nazhori ilaa wajhika, wasy-syauqo ilaa liqoo-ika fii ghoiri dhorroo-a mudhirrotin wa laa fitnatin mudhillah.', 'Ya Allah, Aku mohon kepada-Mu kenikmatan memandang wajah-Mu (di Surga), rindu bertemu dengan-Mu tanpa penderitaan yang membahayakan dan fitnah yang menyesatkan.', 'HR. Nasai 1305 dan dishahihkan al-Albani.
+
+Sumber: https://konsultasisyariah.com/21758-kumpulan-doa-nabi-shallallahu-alaihi-wa-sallam.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (110, 'Doa Memohon Kebaikan', 'Doa Agar Mencintai dan Dicintai Allah', 'اَللَّهُمَّ إِنِّى أَسْأَلُكَ حُبَّكَ، وَحُبَّ مَنْ يُحِبُّكَ، وَحُبَّ عَمَلٍ يُقَرِّبُ إِلَى حُبِّكَ.', 'Allaahumma innii as-aluka hubbaka, wa hubba man yuhibbuka, wa hubba ''amalin yuqorribu ilaa hubbika.', 'Ya Allah, aku memohon agar dapat mencintai-Mu, mencintai orang-orang yang mencintai-Mu, dan mencintai amal yang dapat mendekatkan diriku kepada cinta-Mu.', 'HR. Tirmidzi no. 3235 dan Ahmad 5: 243, dan dishahihkan al-Albani.
+
+Sumber: https://konsultasisyariah.com/21758-kumpulan-doa-nabi-shallallahu-alaihi-wa-sallam.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (111, 'Doa Memohon Kebaikan', 'Doa Memohon Banyak Kebaikan', 'اَللَّهُمَّ بِعِلْمِكَ الْغَيْبِ وَقُدْرَتِكَ عَلَى الْخَلْقِ، أَحْيِنِي مَا عَلِمْتَ الْحَيَاةَ خَيْرًا لِي، وَتَوَفَّنِي إِذَا عَلِمْتَ الْوَفَاةَ خَيْرًا لِي
+اَللَّهُمَّ وَأَسْأَلُكَ خَشْيَتَكَ فِي الْغَيْبِ وَالشَّهَادَةِ، وَأَسْأَلُكَ كَلِمَةَ الْحَقِّ فِي الرِّضَا وَالْغَضَبِ، وَأَسْأَلُكَ الْقَصْدَ فِي الْفَقْرِ وَالْغِنَى
+وَأَسْأَلُكَ نَعِيمًا لَا يَنْفَدُ، وَأَسْأَلُكَ قُرَّةَ عَيْنٍ لَا تَنْقَطِعُ، وَأَسْأَلُكَ الرِّضَا بَعْدَ الْقَضَاءِ، وَأَسْأَلُكَ بَرْدَ الْعَيْشِ بَعْدَ الْمَوْتِ
+وَأَسْأَلُكَ لَذَّةَ النَّظَرِ إِلَى وَجْهِكَ، وَالشَّوْقَ إِلَى لِقَائِكَ فِي غَيْرِ ضَرَّاءٍ مُضِرَّةٍ وَلَا فِتْنَةٍ مُضِلَّةٍ
+اَللَّهُمَّ زَيِّنَّا بِزِينَةِ الْإِيمَانِ، وَاجْعَلْنَا هُدَاةً مُهْتَدِينَ', 'Allaahumma bi''ilmikal ghoibi wa qudrotika ''alal kholqi, ahyinii maa ''alimtal hayaata khoiran lii, wa tawaffanii idzaa ''alimtal wafaata khoiran lii,
+Allaahumma wa as-aluka khosy-yataka fil ghoibi wasy-syahaadati, wa as-aluka kalimatal haqqi fir-ridhoo wal ghodhobi, wa as-alukal qoshda fil faqri wal ghinaa,
+Wa as-luka na''iiman laa yanfadu, wa as-aluka qurrata ''ainin laa tanqoti''u, wa as-alukar-ridhoo ba''dal qodhoo-i, wa as-aluka bardal ''aisyi ba''dal mauti,
+Wa as-aluka ladz-dzatan-nazhori ilaa wajhika, wasy-syauqo ilaa liqoo-ika fii ghoiri dhorroo-in mudhirrotin wa laa fitnatin mudhillatin,
+Allaahumma zayyinnaa biziinatil iimaani, waj''alnaa hudaatan muhtadiin.', 'Ya Allah, dengan pengetahuan-Mu terhadap yang ghaib dan kekuasaan-Mu atas semua makhluk, hidupkanlah aku selama Engkau tahu kehidupan itu lebih baik bagiku, dan matikanlah aku jika Engkau tahu kematian itu lebih baik bagiku,
+Ya Allah, sesungguhnya aku memohon rasa takut kepada-Mu di saat sendiri maupun dalam keadaan terang-terangan, aku memohon perkataan yang benar dalam keadaan baik maupun marah, aku memohon kesederhanaan dalam keadaan fakir maupun kaya,
+Dan aku memohon kenikmatan yang tak akan habis, aku memohon penyejuk hati yang tak pernah berakhir, aku memohon keridhoan atas ketetapan-Mu, aku memohon ketentraman setelah kematian,
+Dan aku memohon kenikmatan memandang wajah-Mu, dan kerinduan bertemu dengan-Mu, bukan dalam kesusahan yang membinasakan dan cobaan yang menyesatkan,
+Ya Allah, hiasilah kami dengan hiasan iman, dan jadikanlah kami termasuk orang-orang yang memberi dan diberi petunjuk.', 'HR. An Nasaa-i no. 1305 dari Sahabat Amar bin Yasir dan dishahihkan Al Albani dalam al-Kalimuth Thayyib no. 105.
+
+Sumber: BBM Ibnu Mukhtar (PIN 2666B091)', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (112, 'Doa Memohon Kebaikan', 'Doa Agar Diterima Amal Ibadah dan taubat (Doa Nabi Ibrahim)', 'رَبَّنَا تَقَبَّلْ مِنَّا إِنَّكَ أَنْتَ السَّمِيعُ الْعَلِيمُ، وَتُبْ عَلَيْنَا إِنَّكَ أَنْتَ التَّوَّابُ الرَّحِيمُ', 'Robbanaa taqobbal minnaa, innaka antas-sami''ul ''aliim. Wa tub ''alainaa, innaka antat-tawwaabur-rohiim.', 'Ya Tuhan kami, terimalah daripada kami (amalan kami), sesungguhnya Engkaulah Yang Maha Mendengar lagi Maha Mengetahui. Dan terimalah taubat kami. Sesungguhnya Engkaulah Yang Maha Penerima taubat lagi Maha Penyayang. (QS. Al Baqarah [2]: 127 dan 128).', 'Sumber: https://muslim.or.id/26031-doa-doa-dari-al-quran-2.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (113, 'Doa Memohon Kebaikan', 'Doa Agar Tergolong Orang Beriman (Doa Nabi Ibrahim)', 'رَبِّ هَبْ لِي حُكْمًا وَأَلْحِقْنِي بِالصَّالِحِينَ، وَاجْعَلْ لِي لِسَانَ صِدْقٍ فِي الْآخِرِينَ، وَاجْعَلْنِي مِنْ وَرَثَةِ جَنَّةِ النَّعِيمِ', 'Robbi hab lii hukman, wa alhiqnii bish-shoolihiin. Waj''al lii lisaana shidqin fil aakhiriin. Waj''alnii min waro-tsati jannatin-na''iim.', 'Ya Tuhanku, berikanlah kepadaku hikmah, dan masukkanlah aku ke dalam golongan orang-orang yang saleh. Dan jadikanlah aku buah tutur yang baik bagi orang-orang (yang datang) kemudian. Dan jadikanlah aku termasuk orang-orang yang mempusakai surga yang penuh kenikmatan. (QS. Asy Syu’ara [26]: 83-85).', 'Sumber: https://muslim.or.id/26012-doa-doa-dari-al-quran-1.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (114, 'Doa Memohon Kebaikan', 'Doa Agar Bertawakal Hanya Kepada Allah', 'حَسْبِيَ اللَّهُ لَا إِلَـٰهَ إِلَّا هُوَ عَلَيْهِ تَوَكَّلْتُ وَهُوَ رَبُّ الْعَرْشِ الْعَظِيمِ', 'Hasbiyallaah, laa ilaaha illaa huu, ''alaihi tawakkaltu, wa huwa robbul ''arsyil ''azhiim.', 'Cukuplah Allah bagiku, tidak ada sesembahan yang berhak disembah selain Dia. Hanya kepada-Nya aku bertawakal, dan Dia adalah Tuhan yang memiliki ‘Arsy yang agung. (QS. At Taubah [9]: 129).', 'Sumber: https://muslim.or.id/26031-doa-doa-dari-al-quran-2.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (115, 'Doa Memohon Kebaikan', 'Doa Agar Disempurnakan Cahayanya dan Memohon Ampun', 'رَبَّنَا أَتْمِمْ لَنَا نُورَنَا وَاغْفِرْ لَنَا إِنَّكَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ', 'Robbanaa atmim lanaa nuuronaa, wagh-fir lanaa, innaka ''alaa kulli syai-in qodiir.', 'Ya Rabb kami, sempurnakanlah bagi kami cahaya kami dan ampunilah kami; Sesungguhnya Engkau Maha Kuasa atas segala sesuatu. (QS. At Tahrim [66]: 8).', 'Sumber: https://muslim.or.id/26031-doa-doa-dari-al-quran-2.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (116, 'Doa Memohon Kebaikan', 'Doa Memohon Rahmat dan Petunjuk', 'رَبَّنَا آتِنَا مِنْ لَدُنْكَ رَحْمَةً وَهَيِّئْ لَنَا مِنْ أَمْرِنَا رَشَدًا', 'Robbanaa aatinaa min ladunka rohmatan, wa hayyi'' lanaa min amrinaa rosyadaa.', 'Wahai Tuhan kami, berikanlah rahmat kepada kami dari sisi-Mu, dan sempurnakanlah bagi kami petunjuk yang lurus dalam urusan kami. (QS. Al Kahfi [18]: 10).', 'Sumber: https://muslim.or.id/26031-doa-doa-dari-al-quran-2.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (117, 'Doa Memohon Kebaikan', 'Doa Agar Diwafatkan Dalam Keadaan Islam dan Tergolong Orang Saleh (Doa Nabi Yusuf)', 'أَنتَ وَلِيِّي فِي الدُّنْيَا وَالْآخِرَةِ تَوَفَّنِي مُسْلِمًا وَأَلْحِقْنِي بِالصَّالِحِينَ', 'Anta waliyyii fid-dunyaa wal aakhiroh, tawaffanii musliman, wa alhiqnii bish-shoolihiin.', 'Engkaulah Pelindungku di dunia dan di akhirat, wafatkanlah aku dalam keadaan Islam dan gabungkanlah aku dengan orang-orang yang saleh. (QS. Yusuf [12]: 101).', 'Sumber: https://www.facebook.com/doa.dzikir.shahih.harian/photos/a.443228542443876.1073741825.145491612217572/611879738912088/?type=1', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (118, 'Doa Memohon Kebaikan', 'Doa Memohon Petunjuk dan Kebenaran', 'اَللَّهُمَّ إِنِّيْ أَسْأَلُكَ الْهُدَى وَالسَّدَادَ', 'Allaahumma innii as-alukal hudaa was-sadaad.', 'Ya Allah, aku memohon kepada-Mu petunjuk dan kebenaran.', 'HR. Muslim no. 2725.
+Dari ‘Ali, ia berkata bahwa Rasulullah shallallahu ‘alaihi wa sallam mengatakan kepadanya, “Ucapkanlah: (doa di atas).”
+
+Faedah hadits:', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (119, 'Doa Memohon Kebaikan', 'Doa Memohon Kesabaran dan Agar Diwafatkan Dalam Keadaan Muslim', 'رَبَّنَا أَفْرِغْ عَلَيْنَا صَبْرًا وَتَوَفَّنَا مُسْلِمِينَ', 'Robbanaa afrigh ''alainaa shobron, wa tawaffanaa muslimiin.', 'Ya Tuhan kami, limpahkanlah kesabaran kepada kami, dan wafatkanlah kami dalam keadaan berserah diri (kepada-Mu).', '(QS. Al A''raf [7]: 126).', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (120, 'Doa Memohon Kebaikan', 'Doa Memohon Dihidupkan Jika Itu Baik, dan Dimatikan Jika Itu Baik', 'اَللَّهُمَّ أَحْيِنِي مَا كَانَتِ الحَيَاةُ خَيْرًا لِي، وَتَوَفَّنِي إِذَا كَانَتِ الوَفَاةُ خَيْرًا لِي', 'Allaahumma ahyinii maa kaanatil hayaatu khoiron lii, wa tawaffanii idzaa kaanatil wafaatu khoiron lii.', 'Ya Allah, hidupkanlah aku jika kehidupan itu baik untukku, dan matikanlah aku jika kematian itu baik untukku.', 'HR. Bukhari no. 6351, 5671 dan Muslim no. 2680.
+Diriwayatkan dari sahabat Anas bin Malik radhiyallahu ‘anhu, Rasulullah shallallahu ‘alaihi wa sallam bersabda, “Janganlah salah seorang di antara kalian berangan-angan untuk mati karena musibah yang menimpanya. Kalau memang harus berangan-angan, hendaknya dia mengatakan: (doa di atas).”
+
+Dalam hadits di atas, Rasulullah shallallahu ‘alaihi wa sallam melarang seseorang berangan-angan agar mati. Dalam riwayat dari sahabat Abu Hurairah radhiyallahu ‘anhu disebutkan bahwa Rasulullah shallallahu ‘alaihi wa sallam bersabda, “Janganlah seseorang mengharapkan kematian dan janganlah berdoa meminta mati sebelum datang waktunya.” (HR. Muslim no. 2682).
+
+Dalam hadits di atas terkandung larangan bagi setiap muslim untuk berangan-angan mati (dalam pikiran) atau berdoa (dengan diucapkan) meminta kematian karena musibah yang dia alami, baik berupa kemiskinan, kehilangan sesuatu yang berharga, penyakit tertentu yang parah, luka secara fisik, atau musibah-musibah lainnya.
+
+Alasan Pelarangan:
+
+Perbuatan tersebut menunjukkan keluh kesah terhadap musibah yang menimpa, tidak ridha dengan takdir Allah Ta’ala dan menentang takdir yang telah Allah Ta’ala tetapkan.
+Yang menjadi kewajiban bagi seorang muslim adalah bersabar dalam menghadapi musibah. Kewajiban sabar ini berdasarkan ijma’ ulama. Yang lebih utama dari sabar adalah bersikap ridha terhadap musibah atau takdir dari Allah Ta’ala tersebut. Ridha terhadap musibah hukumnya sunnah, tidak sampai derajat wajib, menurut pendapat yang paling kuat.
+
+Berdoa meminta kematian tidaklah mendatangkan maslahat, namun di dalamnya justru terdapat mafsadah (keburukan), yaitu meminta hilangnya nikmat kehidupan dan berbagai turunannya yang bermanfaat.
+Hal ini sebagaimana sabda Rasulullah shallallahu ‘alaihi wa sallam, “Janganlah seseorang mengharapkan kematian dan janganlah meminta mati sebelum datang waktunya. Karena orang mati itu amalnya akan terputus, sedangkan umur seorang mukmin tidaklah bertambah melainkan akan menambah kebaikan.” (HR. Muslim no. 2682).
+
+Rasulullah shallallahu ‘alaihi wa sallam juga bersabda, “Janganlah salah seorang di antara kalian mengharapkan kematian. Jika dia orang baik, semoga saja bisa menambah amal kebaikannya. Dan jika dia orang yang buruk (akhlaknya), semoga bisa menjadikannya bertaubat.” (HR. Bukhari no. 5673).
+
+
+Sumber: https://muslim.or.id/43190-hukum-berdoa-mengharapkan-kematian.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (121, 'Doa Memohon Kebaikan', 'Doa Memohon Keteguhan, Petunjuk Sekaligus Sebagai pembeli Petunjuk', 'اَللَّهُمَّ ثَبِّتْنِي، وَاجْعَلْنِي هَادِيًا مَهْدِيًّا', 'Allaahumma tsabbitnii, waj''alnii haadiyan mahdiyyan.', 'Ya Allah, teguhkanlah aku. Dan jadikanlah aku sebagai pemberi petunjuk sekaligus mendapat petunjuk.', 'HR. Bukhari, Muslim.
+Asal doa ini adalah bahwa suatu ketika Rasulullah Shallallahu ‘alaihi wa sallam bersabda kepada Jarir Bin Abdillah al-Bajali Radhiyallahu anhu, “Wahai Jarir! Buat aku nyaman dari Dzul Khalashah (dengan melenyapkannya)”. Yaitu sebuah bangunan (terdapat berhala di sana) milik Khats’am yang biasa disebut dengan Ka’bah Yamaniyah. Maka Jarir pun segera bertolak bersama 150 ksatria berkuda. Dan Jarir saat itu mengeluhkan kepada Nabi Shallallahu ‘alaihi wa sallam tentang dirinya yang tidak bisa duduk mantap di atas pelana kudanya. Lalu Nabi Shallallahu ‘alaihi wa sallam menepuk dada Jarir, dan mendoakannya, “Ya Allah, teguhkanlah ia, dan jadikanlah ia pemberi petunjuk sekaligus mendapat petunjuk.” (Lihat Shahih al-Bukhaari kitab al-Jihad wa as-Siyar; Bab Harq ad-Duur wa an-Nakhiil no 3020; juga no 4356; Muslim kitab Fadhaa’il ash-Shahaabah Bab min Fadhaa’il Jarir Bin Abdillah no 2475 dan 2476).
+
+Dalam doa ini terkandung permohonan agar diberi ketegaran dan kekokohan dalam segala hal, baik tegar secara fisik maupun mental, baik dalam urusan dunia maupun akhirat. Permohonan agar diberi kekokohan tersebut sifatnya umum dan menyeluruh, seperti yang ditunjukkan dalam ungkapan tersebut yang tidak menyebutkan obyeknya (maf’ul bih). Artinya tegar dalam segala hal. Tegarnya hati sekaligus fisik dalam menghadapi musuh, tegar menghadapi fitnah, syahwat, syubhat, tegar saat menjemput kematian agar tidak disesatkan syetan, tegar di alam Barzakh, juga tegar di hari akhir di atas Shirat. Ini adalah termasuk jawaami’ul kalim dari Nabi Shallallahu ‘alaihi wa sallam; ungkapan dengan lafazh singkat, namun sarat arti dan dalam cakupannya.
+
+Doa ini juga memuat permohonan agar Allah Azza wa Jalla memberikan kepadanya petunjuk (petunjuk taufiq), sekaligus agar ia memberi petunjuk kepada orang lain, yaitu dengan menunjukkan kebaikan kepada orang lain. Ini adalah nikmat Allah Azza wa Jalla yang begitu luhur bagi hamba, yaitu agar Allah Azza wa Jalla mengokohkannya di atas agama ini dan memberinya petunjuk-Nya, kemudian agar Allah Azza wa Jalla menganugerahkan kepadanya taufik untuk berdakwah menyeru manusia pada yang makruf dan mencegah yang mungkar.
+
+Lihat Syarh ad-Du’aa’ Min al-Kitab wa as-Sunnah, doa no 131.
+
+
+Sumber: https://almanhaj.or.id/11433-doa-agar-tegar-dan-menerangi-manusia-dengan-kebaikan.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (122, 'Doa Memohon Kebaikan', 'Doa Memohon Keimanan, Keyakinan, dan Pemahaman', 'اَللَّهُمَّ زِدْنَا إِيْمَانًا، وَيَقِيْنًا، وَفِقْهًا', 'Allaahumma zidnaa iimaanan, wa yaqiinan, wa fiqhan.', 'Ya Allah, tambahkan kepada kami keimanan, keyakinan dan pemahaman (yang benar).', 'HR. Abdullah bin Imam Ahmad dalam As-Sunnah (I/368, No. 797) dan Al-Laalikai dalam Syirah Ushul I’tiqod Ahlis Sunnah waljama’ah (No. 1704). Al-Hafizh Ibnu Hajar menyatakan sanadnya shahih dalam Fathul Barri (I/48).
+
+Sumber: https://muslimah.or.id/9591-wanita-dan-majelis-ilmu.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (123, 'Doa Memohon Kebaikan', 'Doa Memohon Keteguhan Di Atas Agama Islam', 'يَا وَلِيَّ الْإِسْلَامِ وَأَهْلِهِ، مَسِّكْنِي الْإِسْلَامَ، حَتَّى أَلْقَاكَ عَلَيْهِ', 'Yaa waliyyal islaami wa ahlih, massiknil islaam, hattaa alqooka ''alaih.', 'Wahai Dzat yang melindungi Islam dan pemeluknya, kokohkanlah kami di atas Islam, sampai kami menemui-Mu dengan membawanya.', 'HR. ath-Thabrani.
+
+Sumber: https://yufidia.com/5027-doa-memohon-keteguhan-di-atas-islam.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (124, 'Doa Memohon Kebaikan', 'Doa Memohon Iman Yang Tidak Lepas, Nikmat yang Tidak Habis, dan Menyertai Nabi Muhammad di Surga', 'اَللَّهُمَّ إِنِّي أَسْأَلُكَ إِيْمَانًا لَا يَرْتَدُّ، وَنَعِيْمًا لَا يَنْفَدُ، وَمُرَافَقَةَ مُحَمَّدٍ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ فِي أَعْلَى جَنَّةِ الْخُلْدِ', 'Allaahumma innii as-aluka iimaanan laa yartadd, wa na''iiman laa yanfad, wa muroofaqota muhammadin shollallaahu ''alaihi wa sallama fii a''laa jannatil khuld.', 'Ya Allah, sesungguhnya aku memohon kepada-Mu iman yang tidak akan lepas, nikmat yang tidak akan habis, dan menyertai Muhammad shallallahu ‘alaihi wa sallam di surga yang paling tinggi selamanya.', 'Sumber: https://rumaysho.com/23644-20-doa-dan-dzikir-saat-wabah-corona-melanda.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (125, 'Doa Memohon Kebaikan', 'Doa Memohon Qona''ah (Merasa Cukup)', 'اَللَّهُمَّ قَنِّعْنِيْ بِمَا رَزَقْتَنِيْ، وَبَارِكْ لِيْ فِيهِ، وَاخْلُفْ عَلَى كُلِّ غَائِبَةٍ لِيْ بِخَيْرٍ', 'Allaahumma qonni''nii bimaa rozaqtanii, wa baarik lii fiihi, wakh-luf ''alaa kulli ghoo-ibatin lii bi-khoirin.', 'Ya Allah, jadikanlah aku qona''ah (merasa cukup) terhadap apa yang Engkau rizkikan kepadaku, berkahilah aku di dalamnya, dan gantilah untukku semua yang hilang dariku dengan yang lebih baik.', 'HR. Al Hakim. Hadits shohih.
+
+Sumber: https://bbg-alilmu.com/wp-content/uploads/2015/06/qona-ah.jpg', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (126, 'Doa Memohon Kebaikan', 'Doa Agar Dibimbing Ke Jalan yang Benar (Doa Nabi Musa)', 'عَسَىٰ رَبِّي أَن يَهْدِيَنِي سَوَاءَ السَّبِيلِ', 'Asaa robbii an yahdiyanii sawaa-as-sabiil.', 'Mudah-mudahan Tuhanku memimpinku ke jalan yang benar.', '(QS. Al Qashash [28]: 22).', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (127, 'Doa Memohon Kebaikan', 'Doa Ketika Sangat Butuh Sesuatu Ataupun Pertolongan Dari Allah (Doa Nabi Musa)', 'رَبِّ إِنِّي لِمَا أَنْزَلْتَ إِلَيَّ مِنْ خَيْرٍ فَقِيرٌ', 'Robbi innii limaa anzalta ilayya min khoirin faqiir.', 'Ya Tuhanku, sesungguhnya aku sangat memerlukan sesuatu kebaikan yang Engkau turunkan kepadaku. (QS. Al Qashash [28]: 24).', 'Anda bisa perhatikan surat al-Qashas, Allah menceritakan Musa dari ayat 3 hingga ayat 43. Doa ini diucapkan Musa ketika beliau berada di kondisi serba susah. Diliputi rasa cemas dan ketakutan. Bagi orang awam, keadaan itu mungkin sudah dianggap puncak ujian, seolah tidak ada lagi harapan untuk hidup.', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (128, 'Doa Keluar Dan Masuk Rumah', 'Doa Keluar Rumah', 'بِسْمِ اللَّهِ، تَوَكَّلْتُ عَلَى اللَّهِ، لاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللَّهِ', 'Bismillaah, tawakkaltu ''alallaah, laa haula wa laa quwwata illaa billaah.', 'Dengan nama Allah, aku bertawakkal kepada Allah, tiada daya dan kekuatan kecuali dengan pertolongan Allah.', 'HR. Abu Daud 5095, Turmudzi 3426 dan dishahihkan al-Albani.
+Keutamaan:
+Dalam hadis dari Anas bin Malik radhiyallahu ‘anhu, Rasulullah shallallahu ‘alaihi wa sallam menjelaskan keutamaan doa ini, “Apabila seseorang keluar dari rumahnya kemudian dia membaca: (doa di atas), maka disampaikan kepadanya, ‘Kamu diberi petunjuk, kamu dicukupi kebutuhannya, dan kamu dilindungi.’ Seketika itu setan-setanpun menjauh darinya. Lalu salah satu setan berkata kepada temannya, ‘Bagaimana mungkin kalian bisa mengganggu orang yang telah diberi petunjuk, dicukupi, dan dilindungi.’”
+
+Keterangan:
+Makna “disampaikan kepadanya”: yang menyampaikan adalah Malaikat. Malaikat itu mengatakan kepada orang yang membaca doa ini ketika keluar rumah, ‘Wahai hamba Allah, kamu telah diberi petunjuk, dicukupi, dan dilindungi.’ (Tuhfatul Ahwadzi, Syarh Sunan Turmudzi, 9/271).
+
+
+Sumber: https://konsultasisyariah.com/22104-doa-agar-dijamin-aman-ketika-keluar-rumah.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (129, 'Doa Keluar Dan Masuk Rumah', 'Doa Masuk Rumah 1 (Bismillah)', 'بِسْمِ اللَّهِ', 'Bismillaah.', 'Dengan nama Allah.', 'HR. Muslim 2018.
+Hadis selengkapnya:
+Ada hadis yang menganjurkan agar kita menyebut nama Allah saat masuk rumah. Tujuannya adalah agar setan dari luar tidak turut masuk rumah bersama kita. Dalam hadis dari Jabir bin ''Abdillah radhiyallahu ''anhuma, Rasulullah shallallahu ''alaihi wa sallam bersabda, “Jika seseorang memasuki rumahnya lalu dia menyebut nama Allah saat masuk rumah, begitu pula saat dia makan, maka setan pun berkata (kepada teman-temannya), ‘Kalian tidak ada tempat untuk bermalam dan tidak ada jatah makan.’ Ketika dia masuk rumahnya tanpa menyebut nama Allah, setan-pun mengatakan (kepada teman-temannya), ‘Saat ini kalian mendapatkan tempat untuk bermalam.’ Dan ketika dia lupa menyebut nama Allah saat makan, maka setanpun berkata, ‘Kalian mendapat tempat bermalam dan jatah makan malam.’”
+
+Hadis ini secara umum menunjukkan anjuran untuk berdzikir, menyebut nama Allah ketika masuk rumah dan ketika hendak makan.
+
+
+Sumber: https://konsultasisyariah.com/28306-baca-doa-ini-agar-setan-tidak-masuk-rumah-anda.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (130, 'Doa Keluar Dan Masuk Rumah', 'Doa Masuk Rumah 2 (Salam)', 'اَلسَّلَامُ عَلَيْكُمْ', 'As-salaamu ''alaikum.', 'Semoga keselamatan atas kalian.', 'Dari Anas bin Malik –radhiyallahu ‘anhu-, ia berkata bahwa Rasulullah shallallahu ‘alaihi wa sallam berkata padanya, “Wahai anakku, jika engkau memasuki rumah dan menemui keluargamu, ucapkanlah salam biar datang berkah padamu dan juga pada keluargamu.” (HR. Tirmidzi no. 2698. Al Hafizh Abu Thohir mengatakan bahwa sanad hadits ini dho’if. Namun Syaikh Al Albani merujuk pendapatnya dan menshahihkan hadits ini dalam Shohih Al Kalim 47).
+Juga terdapat perintah dalam ayat Al Qur’an, “Maka apabila kamu memasuki (suatu rumah dari) rumah-rumah (ini) hendaklah kamu memberi salam kepada (penghuninya yang berarti memberi salam) kepada dirimu sendiri, salam yang ditetapkan dari sisi Allah, yang diberi berkat lagi baik.” (An-Nur [24]: 61).
+
+Jabir bin ‘Abdillah radhiyallahu ‘anhu berkata, “Jika engkau masuk rumah dan menemui keluargamu, maka ucapkanlah salam pada mereka sebagai salam penghormatan di sisi Allah dan juga untuk mendapatkan berkah yang baik.” (Diriwayatkan dalam Al Adabul Mufrod no. 1095).
+
+Jika diberi salam, maka hendaklah dibalas sebagaimana perintah Allah, “Apabila kamu diberi penghormatan dengan sesuatu penghormatan, maka balaslah penghormatan itu dengan yang lebih baik dari padanya, atau balaslah penghormatan itu (dengan yang serupa).” (An-Nisa’ [4]: 86).
+
+Sebagian ulama mengatakan, jika ada yang memberi salam, maka balaslah dengan yang lebih sempurna atau balaslah dengan yang semisal. Membalas dengan lebih sempurna dihukumi sunnah, sedangkan membalas dengan yang semisal dihukumi wajib (Shahih Al Adab Al Mufrod, 3: 219). Misalnya, ketika memasuki rumah diucapkan salam “assalamu ‘alaikum wa rahmatullah,” yang lebih sempurna adalah menjawab dengan “assalamu ‘alaikum wa rahmatullah wa barakatuh.” Yang semisal adalah membalas dengan ucapan “assalamu ‘alaikum wa rahmatullah.”
+
+Syaikh Muhammad bin Sholeh Al ‘Utsaimin berkata, “Jika engkau memasuki suatu rumah, maka ucapkanlah salam pada orang yang ada di dalam baik pada keluarga, teman, atau selain itu. Ini termasuk sunnah. Wallahul muwaffiq.” (Syarh Riyadhis Sholihin, 4: 414).
+
+Diriwayatkan oleh Abu Umamah Al-Bahili, dari Rasulullah shallallahu ‘alaihi wa sallam, “Ada tiga orang yang mendapat jaminan dari Allah, (di antaranya) seseorang yang masuk rumahnya dengan mengucapkan salam, maka dia mendapatkan jaminan dari Allah.” (HR. Abu Dawud no. 2494, dikatakan oleh Asy-Syaikh Al-Albani dalam Shahih Sunan Abi Dawud: shahih).
+
+
+Sumber: https://rumaysho.com/6006-doa-masuk-rumah.html dan https://asysyariah.com/menyebarkan-salam', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (131, 'Doa Keluar Dan Masuk Rumah', 'Doa Masuk Rumah Ketika Tidak Ada Orang', 'اَلسَّلَامُ عَلَيْنَا وَعَلَى عِبَادِ اللَّهِ الصَّالِحِيْنَ', 'As-salaamu ''alainaa wa ''alaa ''ibaadillaahish-shoolihiin.', 'Semoga keselamatan atas kami dan hamba-hamba Allah yang shalih.', 'HR. Bukhari dalam Adabul Mufrod 806/1055. Sanad hadits ini hasan sebagaimana dikatakan oleh Al Hafizh Ibnu Hajar dalam Al Fath, 11: 17.
+Mengucapkan salam pada rumah yang tidak berpenghuni atau tidak ada seorangpun di rumah tersebut tidaklah wajib, namun disunnahkan.
+
+Ibnu ‘Umar radhiyallahu ‘anhuma berkata, “Jika seseorang masuk rumah yang tidak didiami, maka ucapkanlah: (doa di atas).”
+
+Hal di atas diucapkan ketika rumah kosong. Namun jika ada keluarga atau pembantu di dalamnya, maka ucapkanlah “Assalamu ‘alaikum”. Namun jika memasuki masjid, maka ucapkanlah “Assalamu ‘alainaa wa ‘alaa ‘ibadillahish sholihiin”. Sedangkan Ibnu ‘Umar menganggap salam yang terakhir ini diucapkan ketika memasuki rumah kosong.
+
+Imam Nawawi rahimahullah dalam kitab Al Adzkar berkata, “Disunnahkan bila seseorang memasuki rumah sendiri untuk mengucapkan salam meskipun tidak ada penghuninya. Yaitu ucapkanlah: (doa di atas). Begitu pula ketika memasuki masjid, rumah orang lain yang kosong, disunnahkan pula mengucapkan salam “Assalamu ‘alainaa wa ‘alaa ‘ibadillahish sholihiin. Assalamu ‘alaikum ahlal bait wa rahmatullah wa barakatuh”. (Al Adzkar, hal. 468-469).
+
+Maksud kalimat “Assalamu ‘alainaa” menunjukkan seharusnya do’a dimulai untuk diri sendiri dulu baru orang lain.
+
+Sedangkan kalimat “wa ‘ala ‘ibadillahish sholihiin”, yaitu salam pada hamba yang sholeh, maksud sholeh adalah orang yang menjalani kewajiban, hak Allah dan juga hak hamba. (Syarh Shahih Al Adabil Mufrod, 3: 186).
+
+
+Sumber: https://rumaysho.com/6018-mengucapkan-salam-pada-rumah-kosong.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (132, 'Bacaan Terkait Adzan', 'Bacaan Setelah Adzan 1 (Bersaksi) - Lafal 1', 'أَشْهَدُ أَنْ لَا إِلَـٰهَ إِلَّا اللَّهُ، وَحْدَهُ لَا شَرِيْكَ لَهُ، وَأَنَّ مُحَمَّدًا عَبْدُهُ وَرَسُوْلُهُ، رَضِيْتُ بِاللَّهِ رَبًّا، وَبِمُحَمَّدٍ رَسُوْلًا، وَبِالْإِسْلَامِ دِيْنًا', 'Asyhadu al-laa ilaaha illallaah, wahdahu laa syariika lah, wa anna muhammadan ''abduhu wa rosuuluh, rodhiitu billaahi robbaa, wa bi muhammadin rosuulaa, wa bil islaami diinaa.', 'Aku bersaksi bahwa tidak ada sesembahan yang berhak disembah kecuali Allah, Yang Maha Esa, tidak ada sekutu bagi-Nya, dan bahwa Muhammad adalah hamba dan utusan-Nya. Aku ridha Allah sebagai Rabbku, Muhammad sebagai Rasulku dan Islam sebagai agamaku.', 'HR. Muslim no. 386.
+Dari Sa''ad bin Abi Waqqash, Rasulullah shallallahu ''alaihi wa sallam bersabda, “Siapa yang mengucapkan setelah mendengar azan: (bacaan di atas), maka dosanya akan diampuni.”
+
+
+Sumber: https://rumaysho.com/10008-5-amalan-ketika-mendengar-azan.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (133, 'Bacaan Terkait Adzan', 'Bacaan Setelah Adzan 1 (Bersaksi) - Lafal 2', 'وَأَنَا أَشْهَدُ أَنْ لَا إِلَـٰهَ إِلَّا اللَّهُ، وَحْدَهُ لَا شَرِيْكَ لَهُ، وَأَنَّ مُحَمَّدًا عَبْدُهُ وَرَسُوْلُهُ، رَضِيْتُ بِاللَّهِ رَبًّا، وَبِمُحَمَّدٍ رَسُوْلًا، وَبِالْإِسْلَامِ دِيْنًا', 'Wa anaa asyhadu al-laa ilaaha illallaah, wahdahu laa syariika lah, wa anna muhammadan ''abduhu wa rosuuluh, rodhiitu billaahi robbaa, wa bi muhammadin rosuulaa, wa bil islaami diinaa.', 'Aku juga bersaksi bahwa tidak ada sesembahan yang berhak disembah kecuali Allah semata, tidak ada sekutu bagi-Nya, dan bahwa Muhammad adalah hamba dan utusan-Nya. Aku ridha Allah sebagai Rabbku, Muhammad sebagai Rasulku dan Islam sebagai agamaku.', 'HR. Muslim no. 386.
+Dari Sa''ad bin Abi Waqqash, Rasulullah shallallahu ''alaihi wa sallam bersabda, “Siapa yang mengucapkan setelah mendengar azan: (bacaan di atas), maka dosanya akan diampuni.”
+
+
+Sumber: https://rumaysho.com/10008-5-amalan-ketika-mendengar-azan.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (134, 'Bacaan Terkait Adzan', 'Bacaan Setelah Adzan 2 (Memohonkan Wasilah)', 'اَللَّهُمَّ رَبَّ هَـٰذِهِ الدَّعْوَةِ التَّامَّةِ، وَالصَّلاَةِ الْقَائِمَةِ، آتِ مُحَمَّدًا الْوَسِيْلَةَ وَالْفَضِيْلَةَ، وَابْعَثْهُ مَقَامًا مَحْمُوْدًا الَّذِيْ وَعَدْتَهُ', 'Allaahumma robba haadzihid-da''watit-taammah, wash-sholaatil qoo-imah, aati muhammadanil wasiilata wal fadhiilah, wab''ats-hu maqooman mahmuudanil-ladzii wa ''adtah.', 'Ya Allah, Tuhan Pemilik panggilan yang sempurna (adzan) ini dan shalat (wajib) yang didirikan. Berilah kepada Muhammad Al-Wasilah (derajat di Surga, yang tidak akan diberikan selain kepada Nabi) dan fadhilah. Dan bangkitkanlah beliau sehingga bisa menempati maqam (kedudukan) terpuji yang telah Engkau janjikan.', 'HR. Al-Bukhari 1/152.
+Keterangan:
+Cara membacanya adalah “…muhammadanil wasiilata…” dan “…mahmuudanil-ladzii…”, yaitu ada tambahan nun wiqoyah (dibaca “ni”).
+
+Dari Jabir bin Abdillah, Rasulullah shallallahu ''alaihi wa sallam bersabda, “Barangsiapa mengucapkan setelah mendengar adzan: (doa di atas), maka dia akan mendapatkan syafa''atku kelak.” (HR. Bukhari no. 614).
+
+
+Sumber: Hisnul Muslim dan https://rumaysho.com/10008-5-amalan-ketika-mendengar-azan.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (135, 'Doa Terkait Makan', 'Doa Sebelum Makan', 'بِسْمِ اللَّهِ', 'Bismillaah.', 'Dengan nama Allah.', 'Hadits Tentang Membaca “Bismillah”
+Dari ‘Umar bin Abi Salamah, ia berkata, “Waktu aku masih kecil dan berada di bawah asuhan Rasulullah shallallahu ‘alaihi wa sallam, tanganku berseliweran di nampan saat makan. Maka Rasulullah shallallahu ‘alaihi wa sallam bersabda, “Wahai ghulam (anakku), sebutlah nama Allah (bacalah “BISMILLAH”), makanlah dengan tangan kananmu dan makanlah makanan yang ada di hadapanmu.” Maka seperti itulah gaya makanku setelah itu. (HR. Bukhari no. 5376 dan Muslim no. 2022).
+An Nawawi rahimahullah membawakan hadits di atas dalam kitabnya Al Adzkar pada Bab “Tasmiyah ketika makan dan minum” (Al Adzkar, Yahya bin Syarf An Nawawi, hal. 217, Darul Hadits Al Qohiroh, cetakan 1424 H). Ibnu ‘Allan Asy Syafi’i rahimahullah mengatakan ketika menjelaskan perkataan An Nawawi, “Sebagaimana dikatakan oleh Ibnu Hajar dalam Syarh Al ‘Ubab pada bab rukun-rukun shalat, jika disebut tasmiyah, maka yang dimaksud adalah ucapan “bismillah”. Sedangkan jika disebut basmalah, maka yang dimaksud adalah ucapan “bismillahir-rohmaanir-rohiim” (Al Futuhaat Ar Robbaniyah ‘ala Adzkar An Nawawiyah, Ibnu ‘Allan, 5/120, Darul Kutub Al ‘Ilmiyyah, cetakan pertama, 1424 H).
+
+Dari ‘Aisyah radhiyallahu ‘anha, Rasulullah shallallahu ‘alaihi wa sallam bersabda, “Apabila salah seorang di antara kalian makan, maka hendaknya ia menyebut nama Allah Ta’ala. Jika ia lupa untuk menyebut nama Allah Ta’ala di awal, hendaklah ia mengucapkan ‘Bismillaahi awwalahu wa aakhirohu (dengan nama Allah pada awal dan akhirnya)’.” (HR. Abu Daud no. 3767 dan At Tirmidzi no. 1858. At Tirmidzi mengatakan hadits tersebut hasan shahih. Syaikh Al Albani mengatakan bahwa hadits tersebut shahih).
+
+Dari Hudzaifah, ia berkata, “Jika kami bersama Rasulullah shallallahu ‘alaihi wa sallam menghadiri jamuan makanan, maka tidak ada seorang pun di antara kami yang meletakkan tangannya hingga Rasulullah shallallahu ‘alaihi wa sallam memulainya. Dan kami pernah bersama beliau menghadiri jamuan makan, lalu seorang Arab badui datang yang seolah-oleh ia terdorong, lalu ia meletakkan tangannya pada makanan, namun Rasulullah shallallahu ‘alaihi wasallam memegang tangannya. Kemudian seorang budak wanita datang sepertinya ia terdorong hendak meletakkan tangannya pada makanan, namun beliau memegang tangannya dan berkata, “Sungguh, setan menghalalkan makanan yang tidak disebutkan nama Allah padanya. Setan datang bersama orang badui ini, dengannya setan ingin menghalalkan makanan tersebut, maka aku pegang tangannya. Dan setan tersebut juga datang bersama budak wanita ini, dengannya ia ingin menghalalkan makanan tersebut, maka aku pegang tangannya. Demi Dzat yang jiwaku ada di tangan-Nya, sesungguhnya tangan setan tersebut ada di tanganku bersama tangan mereka berdua.” (HR. Abu Daud no. 3766. Syaikh Al Albani mengatakan bahwa hadits tersebut shahih).
+
+Dari Wahsyi bin Harb dari ayahnya dari kakeknya bahwa para sahabat Nabi shallallahu ‘alaihi wa sallam berkata, “Wahai Rasulullah, sesungguhnya kami makan dan tidak merasa kenyang?” Beliau bersabda, “Kemungkinan kalian makan sendiri-sendiri.” Mereka menjawab, “Ya.” Beliau bersabda, “Hendaklah kalian makan secara bersama-sama, dan sebutlah nama Allah, maka kalian akan diberi berkah padanya.” (HR. Abu Daud no. 3764. Syaikh Al Albani mengatakan bahwa hadits tersebut hasan).
+
+Dari seseorang yang mengabdi pada Nabi shallallahu ‘alaihi wa sallam, ia berkata bahwa ia mendengar Nabi shallallahu ‘alaihi wa sallam ketika makanan mendekatinya, beliau mengucapkan “bismillah”. (Disebutkan oleh Syaikhul Islam Ibnu Taimiyah dalam Al Kalimuth Thoyyib no. 190. Syaikh Al Albani mengatakan bahwa sanad hadits ini hasan).
+Jika kita melihat dari hadits-hadits yang ada, membaca “bismillah” ketika hendak makan diperintahkan oleh Nabi shallallahu ‘alaihi wa sallam dan juga menjadi kebiasaan beliau. Maka sudah sepatutnya umat Islam yang selalu ingin meneladani beliau, mengikutinya dalam hal ini.
+
+Cukup Dengan Ucapan “Bismillah”
+
+Ibnu Hajar Al Asqolani rahimahullah mengatakan, “Yang dimaksud dengan tasmiyah ketika makan adalah bacaan “bismillah”, ini disebut di awal ketika makan. Dalil yang paling tegas tentang maksud bacaan tasmiyah adalah hadits yang diriwayatkan oleh Abu Daud dan Tirmidzi dari jalan Ummu Kultsum dari ‘Aisyah, marfu’ (sebagai sabda Nabi shallallahu ‘alaihi wa sallam), “Apabila salah seorang di antara kalian makan, maka hendaknya ia ucapkan “bismillah”. Jika ia lupa untuk menyebutnya, hendaklah ia mengucapkan: Bismillaahi fii awwalihi wa aakhirihi (dengan nama Allah pada awal dan akhirnya)”. Hadits ini memiliki penguat dari hadits Umayyah bin Makhsyi yang dikeluarkan oleh Abu Daud dan An Nasai (Lihat Fathul Bari, Ibnu Hajar Al Asqolani, 9/521, Darul Ma’rifah, Beirut, 1379).
+
+Kesimpulan: Jika kita perhatikan dari dalil-dalil yang ada (di antaranya hadits ‘Aisyah radhiyallahu ‘anha di atas), ucapan yang tepat sebelum makan cukup dengan “bismillah”, bukan “bismillahir-rohmanir-rohiim”.
+
+Membaca “Bismillah” Ketika Minum
+
+Dari Abu Hurairah radhiyallahu ‘anhu, ia berkata, “Rasulullah shallallahu ‘alaihi wa sallam biasa minum dengan tiga nafas. Jika wadah minuman didekatkan ke mulut beliau, beliau menyebut nama Allah Ta’ala. Jika selesai satu nafas, beliau bertahmid (memuji) Allah Ta’ala. Beliau lakukan seperti ini tiga kali.” (Shahih, As Silsilah Ash Shohihah no. 1277).
+
+Maksud hadits di atas adalah ketika minum hendaklah dengan tiga kali nafas. Pada nafas pertama, sebelum minum ucapkanlah “bismillah”. Selesai satu nafas, ucapkanlah “alhamdulillah”. Nafas kedua dan ketiga pun dilakukan seperti itu. Inilah yang disunnahkan ketika minum.
+
+
+Sumber: https://rumaysho.com/1114-sebelum-makan-bacalah-bismillah.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (136, 'Doa Terkait Makan', 'Bila Lupa Membaca Doa Sebelum Makan', 'بِسْمِ اللَّهِ أَوَّلَهُ وَآخِرَهُ', 'Bismillaahi awwalahu wa aakhirohu.', 'Dengan nama Allah pada awal dan akhirnya.', 'HR. Abu Daud no. 3767 dan At Tirmidzi no. 1858. At Tirmidzi mengatakan hadits tersebut hasan shahih. Syaikh Al Albani mengatakan bahwa hadits tersebut shahih.
+Dari ‘Aisyah radhiyallahu ‘anha, Rasulullah shallallahu ‘alaihi wa sallam bersabda, “Apabila salah seorang di antara kalian makan, maka hendaknya ia menyebut nama Allah Ta’ala. Jika ia lupa untuk menyebut nama Allah Ta’ala di awal, hendaklah ia mengucapkan: (doa di atas).”
+
+Imam Nawawi rahimahullah berkata, “Jika seseorang meninggalkan membaca “bismillah” di awal karena sengaja, lupa, dipaksa, tidak mampu mengucapkannya karena suatu alasan, lalu ia bisa mengucapkan di tengah-tengah makannya, maka ia dianjurkan mengucapkan: (doa di atas). (Al Adzkar, hal. 427, terbitan Dar Ibnu Khuzaimah).
+
+Dari Umayyah bin Mihshon -seorang sahabat Nabi shallallahu ‘alaihi wa sallam-, ia berkata, “Rasulullah shallallahu ‘alaihi wa sallam pernah duduk dan saat itu ada seseorang yang makan tanpa membaca bismillah hingga makanannya tersisa satu suapan. Ketika ia mengangkat suapan tersebut ke mulutnya, ia mengucapkan: (doa di atas). Nabi shallallahu ‘alaihi wa sallam pun tertawa dan beliau bersabda, “Setan terus makan bersamanya hingga. Ketika ia menyebut nama Allah (bismillah), setan memuntahkan apa yang ada di perutnya.” (HR. Abu Daud no. 3768, Ahmad 4: 336 dan An Nasai dalam Al Kubro 10113. Al Hafizh Abu Thohir mengatakan bahwa sanad hadits ini hasan. Al Hakim menshahihkan hadits ini dan disetujui oleh Adz Dzahabi. Al Mutsanna bin ‘Abdurrahman mengatakan hadits ini hasan dan memiliki berbagai penguat. Lihat Majma’ Az Zawaid, 5: 22).
+
+Hadits terakhir di atas menunjukkan bahwa setan itu berserikat pada makanan yang tidak disebut nama Allah (membaca: bismillah) saat dimakan. Lalu jika seseorang mengingat Allah (mengucap bismillah) di tengah-tengah makan walau makanan tersisa sedikit, maka diharamkan pada setan apa yang telah dimakan sebelumnya. Juga hadits di atas menunjukkan bahwa setan bisa muntah. Lihat Bahjatun Nazhirin karya Syaikh Salim bin ‘Ied Al Hilaly, 2: 48.
+
+
+Sumber: https://rumaysho.com/3712-lupa-membaca-bismillah-di-awal-makan.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (137, 'Doa Terkait Makan', 'Doa Bila Diberi Rezeki Berupa Makanan', 'اَللَّهُمَّ بَارِكْ لَنَا فِيْهِ، وَأَطْعِمْنَا خَيْرًا مِنْهُ', 'Allaahumma baarik lanaa fiihi, wa ath''imnaa khoiron minhu.', 'Ya Allah, berkahilah kami dengan makanan ini, dan berilah kami makan yang lebih baik darinya.', 'HR. Tirmidzi no. 3455, Abu Daud no. 3730, Ibnu Majah no. 3322. At Tirmidzi dan Syaikh Al Albani mengatakan bahwa hadits ini hasan.
+Dari Ibnu ‘Abbas radhiyallahu ‘anhuma, Rasulullah shallallahu ‘alaihi wa sallam bersabda, “Barang siapa yang Allah beri makan hendaknya ia berdoa: (doa di atas). Barang siapa yang Allah beri minum susu maka hendaknya ia berdoa: “Allaahumma baarik lanaa fiihi, wa zidnaa minhu” (Ya Allah, berkahilah kami padanya, dan tambahkanlah kepada kami darinya). Rasulullah shallallahu wa ‘alaihi wa sallam bersabda, “Tidak ada sesuatu yang bisa menggantikan makan dan minum selain susu.”
+
+
+Sumber: https://rumaysho.com/1114-sebelum-makan-bacalah-bismillah.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (138, 'Doa Terkait Makan', 'Doa Minum Susu', 'اَللَّهُمَّ بَارِكْ لَنَا فِيْهِ، وَزِدْنَا مِنْهُ', 'Allaahumma baarik lanaa fiihi, wa zidnaa minhu.', 'Ya Allah, berkahilah kami padanya, dan tambahkanlah kepada kami darinya.', 'HR. Tirmidzi no. 3455, Abu Daud no. 3730, Ibnu Majah no. 3322. At Tirmidzi dan Syaikh Al Albani mengatakan bahwa hadits ini hasan.
+Dari Ibnu ‘Abbas radhiyallahu ‘anhuma, Rasulullah shallallahu ‘alaihi wa sallam bersabda, “Barang siapa yang Allah beri makan hendaknya ia berdoa: “Allaahumma baarik lanaa fiihi, wa ath''imnaa khoiron minhu” (Ya Allah, berkahilah kami dengan makanan ini, dan berilah kami makan yang lebih baik darinya). Barang siapa yang Allah beri minum susu maka hendaknya ia berdoa: (doa di atas). Rasulullah shallallahu wa ‘alaihi wa sallam bersabda, “Tidak ada sesuatu yang bisa menggantikan makan dan minum selain susu.”
+
+
+Sumber: https://rumaysho.com/1114-sebelum-makan-bacalah-bismillah.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (139, 'Doa Terkait Makan', 'Doa Setelah Makan', 'اَلْحَمْدُ لِلَّهِ الَّذِيْ أَطْعَمَنِيْ هَـٰذَا وَرَزَقَنِيْهِ، مِنْ غَيْرِ حَوْلٍ مِنِّيْ وَلاَ قُوَّةٍ', 'Alhamdulillaahil-ladzii ath''amanii haadzaa wa rozaqoniihi, min ghoiri haulin minnii wa laa quwwah.', 'Segala puji bagi Allah yang telah memberiku makanan ini, dan memberi rezeki kepadaku, tanpa daya dan kekuatan dariku.', 'HR. Abu Daud no. 4043, Tirmidzi no. 3458, Ibnu Majah no. 3285 dan Ahmad 3: 439. Imam Tirmidzi, Ibnu Hajar dan ulama lainnya menghasankan hadits ini sebagaimana disetujui oleh Syaikh Salim bin ‘Ied Al Hilali dalam Bahjatun Nazhirin, 2: 50.
+Dari Mu’adz bin Anas, dari ayahnya ia berkata, Rasulullah shallallahu ‘alaihi wa sallam bersabda, “Barang siapa yang makan makanan kemudian mengucapkan: (doa di atas), maka diampuni dosanya yang telah lalu.”
+
+
+Sumber: https://rumaysho.com/6048-do-setelah-makan.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (140, 'Doa Terkait Makan', 'Doa Bila Diberi Makan Oleh Orang Lain', 'اَللَّهُمَّ أَطْعِمْ مَنْ أَطْعَمَنِيْ، وَاسْقِ مَنْ سَقَانِيْ', 'Allaahumma ath''im man ath''amanii, wasqi man saqoonii.', 'Ya Allah, berilah makan kepada orang yang memberi aku makan, dan berilah minum kepada orang yang memberi aku minum.', 'HR. Muslim 2055.
+Hadis selengkapnya:
+Dari Al-Miqdad radhiyallahu ''anhu, beliau mengatakan: Saya datang ke Madinah bersama dua temanku. Sementara pendengaran dan penglihatan kami mulai terganggu karena sangat lapar dan kehausan, kemudian kami mendatangi Nabi shallallahu ''alaihi wa sallam… dst. Dalam hadis tersebut dinyatakan bahwa Nabi shallallahu ''alaihi wa sallam membaca doa: (doa di atas).
+
+Doa di atas (Allaahumma ath''im… dst) berlaku umum, untuk setiap kejadian ketika kita diberi makanan orang lain. Baik ketika sedang puasa maupun di luar waktu puasa.
+
+
+Sumber: http://www.facebook.com/doa.dzikir.shahih.harian/posts/270589506374448', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (141, 'Doa Terkait Puasa', 'Doa Berbuka Puasa', 'ذَهَبَ الظَّمَأُ، وَابْتَلَّتِ الْعُرُوْقُ، وَثَبَتَ اْلأَجْرُ، إِنْ شَاءَ اللَّهُ', 'Dzahabazh-zhoma-u, wabtallatil ''uruuqu, watsabatal ajru, in syaa-allaah.', 'Telah hilang dahaga, dan urat-urat telah basah, dan telah tetap pahala, insya Allah.', 'Doa Terkait Puasa
+Doa Berbuka Puasa 1
+ذَهَبَ الظَّمَأُ، وَابْتَلَّتِ الْعُرُوْقُ، وَثَبَتَ اْلأَجْرُ، إِنْ شَاءَ اللَّهُ
+
+Dzahabazh-zhoma-u, wabtallatil ''uruuqu, watsabatal ajru, in syaa-allaah.
+
+Telah hilang dahaga, dan urat-urat telah basah, dan telah tetap pahala, insya Allah.
+
+HR. Abu Daud 2357, Ad-Daruquthni dalam sunannya 2279, Al-Bazzar dalam Al-Musnad 5395 dan Al-Baihaqi dalam As-Shugra 1390. Hadis ini dinilai hasan oleh Al-Albani.
+Hadis selengkapnya:
+Dari Ibnu Umar radhiyallahu ''anhuma, beliau mengatakan: Rasulullah shallallahu ''alaihi wa sallam, apabila beliau berbuka, beliau membaca: (doa di atas).
+
+Kapan doa ini diucapkan?
+Umumnya doa terkait perbuatan tertentu, dibaca sebelum melakukan perbuatan tersebut. Doa makan dibaca sebelum makan, doa masuk kamar mandi dibaca sebelum masuk kamar mandi, dst. Nah, apakah ketentuan ini juga berlaku untuk doa di atas? Dilihat dari arti doa di atas, dzahir menunjukkan bahwa doa ini dibaca setelah orang yang berpuasa itu berbuka. Syaikh Ibnu Utsaimin menegaskan: Hanya saja, terdapat doa dari Nabi shallallahu ''alaihi wa sallam, jika doa ini shahih, bahwa doa ini dibaca setelah berbuka. Yaitu doa: (doa di atas). Doa ini tidak dibaca kecuali setelah selesai berbuka. (Al-Liqa As-Syahri, no. 8, dinukil dari Islamqa.com). Keterangan yang sama juga disampaikan dalam Fatawa Syabakah Islamiyah, no. 7428.
+
+Karena itu, urutan yang tepat untuk doa ketika berbuka adalah:
+
+Membaca basmalah sebelum makan kurma atau minum (berbuka).
+Mulai berbuka.
+Membaca doa berbuka: (doa di atas).
+
+Sumber: http://www.facebook.com/doa.dzikir.shahih.harian/posts/268514896581909', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (142, 'Doa Terkait Puasa', 'Doa Berbuka Puasa Di Tempat Orang Lain', 'أَفْطَرَ عِنْدَكُمُ الصَّائِمُوْنَ، وَأَكَلَ طَعَامَكُمُ اْلأَبْرَارُ، وَصَلَّتْ عَلَيْكُمُ الْمَلاَئِكَةُ', 'Afthoro ''indakumush-shoo-imuun, wa akala tho''aamakumul abroor, wa shollat ''alaikumul malaa-ikah.', 'Orang-orang yang berpuasa berbuka di tempatmu, orang-orang yang baik memakan makananmu, dan para malaikat mendoakan agar kamu mendapat rahmat.', 'HR. Abu Dawud 3/367, Ibnu Majah 1/556 dan An-Nasa''i dalam ''Amalul Yaum wal Lailah no. 296-298. Al-Albani menyatakan hadits tersebut shahih dalam Shahih Abi Dawud 2/730.
+Ketika kita tidak berbuka di rumah, seperti berbuka di masjid atau di tempat orang lain, dan kita diberi hidangan berbuka oleh saudara muslim yang lain, maka kita dianjurkan mendoakan mereka, sebagai wujud rasa terima kasih kita kepadanya.
+
+
+Sumber: Hisnul Muslim dan http://www.facebook.com/doa.dzikir.shahih.harian/posts/270896109677121', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (143, 'Doa Terkait Ramadhan', 'Doa Malam Lailatul Qadar', 'اَللَّهُمَّ إِنَّكَ عَفُوٌّ، تُحِبُّ العَفْوَ فَاعْفُ عَنِّي', 'Allaahumma innaka ''afuwwun, tuhibbul ''afwa fa''fu ''annii.', 'Ya Allah, sesungguhnya Engkau Maha Pemaaf, menyukai permintaan maaf, maka maafkanlah aku.', 'HR. Ahmad 25384, At-Turmudzi 3513, Ibn Majah 3850, An-Nasai dalam Amal Al-yaum wa lailah, dan Al-Baihaqi dalam Syua''bul Iman 3426. Hadis ini dinilai shahih oleh Al-Albani.
+Hadits selengkapnya:
+Dari A''isyah radhiyallahu ''anha, beliau bertanya kepada Nabi shallallahu ''alaihi wa sallam: Wahai Rasulullah, jika aku menjumpai satu malam merupakan lailatul qadar, apa yang harus aku ucapkan di malam itu? Beliau menjawab: Ucapkanlah: (doa di atas).
+
+Adakah tambahan "kariim"?
+Kita sering mendengar orang membaca doa yang mirip dengan ini, namun dengan tambahan:
+
+allaahumma innaka ''afuwwun kariim, tuhibbu…
+
+Benarkah tambahan ini?
+Disebutkan dalam Silsilah Ahadits As-Shahihah: Dalam sunan Turmudzi, setelah ''afuwun, terdapat tambahan "kariimun"! Tambahan ini sama sekali tidak terdapat dalam referensi cetakan lama, tidak juga dalam cetakan lain yang menukil darinya. Kelihatannya, ini adalah tambahan dari sebagian pentranskrip atau penerbit. Tambahan ini tidak ada dalam cetakan Al-Hindiyah untuk Sunan Turmudzi yang ada syarahnya (Tuhfatul Ahwadzi) karya Mubarokfuri dan tidak pula dalam cetakan lainnya. Diantara yang menguatkan hal itu, bahwa Imam An-Nasai meriwayatkan doa ini dengan jalur sanad sebagaimana yang ada dalam sunan Turmudzi, keduanya berasal dari gurunya: Quthaibah bin Said dengan sanadnya dan tidak ada tambahan tersebut. (Silsilah Ahadits As-Shahihah, catatan untuk hadis no. 3337).
+
+Kesimpulannya bahwa tambahan "kariim" tidak ada dalam hadis. Kemungkinan, itu adalah tambahan proses transkrip atau dari penerbit.
+
+Allahu a''lam.
+
+
+Sumber: http://www.facebook.com/doa.dzikir.shahih.harian/posts/273965022703563', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (144, 'Ucapan Terkait Hari Raya.', 'Lafal Takbir Hari Raya 1 (Dari Ibnu Mas''ud)', 'اَللَّهُ أَكْبَرُ، اَللَّهُ أَكْبَرُ، (اَللَّهُ أَكْبَرُ،) لَا إِلَـٰهَ إِلَّا اللَّهُ، وَاللَّهُ أَكْبَرُ، اَللَّهُ أَكْبَرُ ولِلَّهِ الْحَمْدُ', 'Allaahu Akbar, Allaahu Akbar, (Allaahu Akbar,) Laa ilaaha illallaahu, wallaahu Akbar, Allaahu Akbar wa lillaahil hamd.', 'Diriwayatkan oleh Ibnu Abi Syaibah 2/168 dengan isnad yang shahih.
+Keterangan: Lafal "Allaahu Akbar" pada takbir Ibnu Mas''ud boleh dibaca 2x atau 3x. Semuanya diriwayatkan Ibnu Abi Syaibah dalam Al Mushannaf.
+
+
+Sumber: http://muslim.or.id/fiqh-dan-muamalah/takbiran-hari-raya.html dan http://ibnuabbaskendari.wordpress.com/2010/11/16/takbir-idul-fitri-dan-idul-adha', '', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (145, 'Ucapan Terkait Hari Raya.', 'Ucapan Selamat Hari Raya', 'تَقَبَّلَ اللَّهُ مِنَّا وَمِنْكُمْ', 'Taqabbalallaahu minnaa wa minkum.', 'Semoga Allah menerima amal kami dan amal kalian.', 'Ucapan Terkait Hari Raya
+Ucapan Selamat Hari Raya
+تَقَبَّلَ اللَّهُ مِنَّا وَمِنْكُمْ
+
+Taqabbalallaahu minnaa wa minkum.
+
+Semoga Allah menerima amal kami dan amal kalian.
+
+Al-Hafiz Ibnu Hajar mengatakan, "Dari Jubair bin Nufair, beliau mengatakan, Dahulu, apabila para sahabat Nabi shallallahu ''alaihi wa sallam saling bertemu pada hari raya, mereka saling mengucapkan: (ucapan di atas)." (Sanadnya hasan. Fathul Bari, 2:446).
+Ibnu Aqil menyebutkan beberapa riwayat. Di antaranya dari Muhammad bin Ziyad, beliau mengatakan, "Saya pernah bersama Abu Umamah Al-Bahili radhiallahu ''anhu dan beberapa sahabat lainnya. Setelah pulang dari shalat id, mereka saling memberikan ucapan: (ucapan di atas)." (Al-Mughni, 2:250. As-Suyuthi mengatakan, "Sanadnya hasan.").
+
+Imam Malik ditanya tentang ucapan seseorang kepada temannya di hari raya: (ucapan di atas), atau "Ghafarallaahu lana wa laka." Beliau menjawab, "Saya tidak mengenalnya dan tidak mengingkarinya." (At-Taj wal Iklil, 2:301).
+
+Ibnu Habib menjelaskan maksud ucapan Imam Malik, "Maksud beliau, saya tidak menganggapnya sebagai sunnah dan saya tidak mengingkari orang yang mengucapkannya, karena ucapan itu isinya baik, mengandung doa…" (Al-Fawakih Ad-Dawani, 3:244).
+
+Syekh Asy-Syabibi mengatakan, "Bahkan, wajib mengucapkan ucapan selamat ketika hari raya, jika tidak mengucapkan kalimat ini menyebabkan permusuhan dan terputusnya hubungan sesama…" (Al-Fawakih Ad-Dawani, 3:244).
+
+Ibnu Habib mengatakan, "Yang semisal dengan ini adalah ucapan sebagian orang ketika id, ''Iid Mubaarak'' (Id yang diberkahi), ''Ahyaakum'' (Semoga Allah memberi keselamatan bagimu), dan semisalnya. Tidak diragukan, bahwa ini semua diperbolehkan." (Al-Fawakih Ad-Dawani, 3:244).
+
+Syaikhul Islam mengatakan, sebagai jawaban atas pertanyaan yang ditujukan kepada beliau, "Ucapan selamat di hari raya antara satu sama lain setelah shalat id (seperti: (ucapan di atas) atau ''ahalallaahu ''alaika'' dan semacamnya) maka ucapan ini diriwayatkan dari beberapa sahabat bahwa mereka melakukannya. Sebagian ulama, seperti Imam Ahmad dan yang lainnya, juga memberi keringanan…" (Majmu'' Fatawa, 5:430).
+
+Imam Ahmad rahimahullah berkata, "Tidak mengapa hukumnya bila seseorang mengucapkan kepada saudaranya saat Idul Fitri: (ucapan di atas)." Demikian yang dinukil Ibnu Qudamah dalam Al-Mughni.
+
+Syaikhul Islam Ibnu Taimiyyah rahimahullah pernah ditanya, "Apa hukum mengucapkan selamat di hari raya sebagaimana banyak diucapkan oleh orang-orang? Seperti ''Indaka Mubarak (semoga engkau memperoleh barakah di hari Idul Fitri) dan ucapan yang senada. Apakah hal ini memiliki dasar hukum syariat ataukah tidak? Jika memiliki dasar hukum syariat bagaimana seharusnya ucapan yang benar?"
+
+Beliau rahimahullah menjawab, "Adapun hukum tahniah (ucapan selamat) di hari raya yang diucapkan satu dengan yang lainnya ketika selesai shalat ied seperti ''Taqabbalallaahu minnaa wa minkum, wa ahalahullaahu ''alaik'' (Semoga Allah menerima (amalan) dari kami dan darimu sekalian dan semoga Allah menyempurnakannya atasmu), dan yang semisalnya, telah diriwayatkan dari sebagian sahabat bahwasanya mereka melakukannya dan para imam memberi keringanan perbuatan ini seperti Imam Ahmad dan yang lainnya. Akan tetapi Imam Ahmad berkata, "Aku tidak akan memulai mengucapkan selamat kepada siapa pun. Namun jika ada orang yang memberi selamat kepadaku akan kujawab. Karena menjawab tahiyyah (penghormatan) adalah wajib. Adapun memulai mengucapkan selamat kepada orang lain maka bukanlah bagian dari sunnah yang dianjurkan dan bukan pula sesuatu yang dilarang dalam syariat. Barangsiapa yang melakukannya maka ia memiliki qudwah (teladan) dan orang yang meninggalkan pun juga memiliki qudwah (teladan). Wallahu a''lam. (Al-Fatawa Al-Kubra, 2/228).
+
+Syaikh Ibnu Ustaimin ditanya, "Apa hukum tahniah (ucapan selamat) di hari raya? Apakah ada bentuk ucapan tertentu?" Beliau rahimahullah menjawab, "Hukum tahniah (ucapan selamat) di hari raya adalah boleh dan tidak ada bentuk ucapan tertentu yang dikhususkan. Karena (hukum asal-pen) setiap adat kebiasaan yang dilakukan orang itu boleh selama bukan perbuatan dosa."
+
+Dalam kesempatan lain beliau rahimahullah juga ditanya, "Apa hukum berjabat tangan, berpelukan dan saling mengucapkan selamat hari raya ketika selesai shalat ied?" Beliau rahimahullah menjawab, "Hukum semua perbuatan ini tidaklah mengapa. Karena orang yang melakukanya tidak bermaksud untuk beribadah dan mendekatkan diri kepada Allah ''Azza wa Jalla. Melainkan hanya sekedar melakukan adat dan tradisi, saling memuliakan dan menghormati. Karena selama adat tersebut tidak bertentangan dengan syariat maka hukumnya boleh." (Majmu''Fatawa Ibni Utsaimin, 16/ 208-210).
+
+
+Sumber: http://www.konsultasisyariah.com/ucapan-selamat-idul-fitri dan http://muslimah.or.id/fikih/ucapan-selamat-di-hari-raya.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (146, 'Ucapan Terkait Hari Raya.', 'Doa Menyembelih Hewan Kurban', 'بِسْمِ اللَّهِ وَاللَّهُ أَكْبَرُ (اللَّهُمَّ مِنْكَ وَلَكَ) اَللَّهُمَّ تَقَبَّلْ مِنِّيْ', 'Bismillaah, wallaahu akbar. Allaahumma minka wa laka. Allaahumma taqabbal minnii.', 'Dengan nama Allah (aku menyembelih), Allah Maha Besar. Ya Allah, (ternak ini) dariMu (nikmat yang Engkau berikan, dan kami sembelih) untukMu. Ya Allah, terimalah kurban ini dariku.', 'HR. Muslim 3/1557, Al-Baihaqi 9/287, sedangkan kalimat di antara dua kurung, menurut riwayat Al-Baihaqi 9/287. Sedangkan yang terakhir, kami ambilkan dari riwayat Muslim.
+
+Sumber: Hisnul Muslim.', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (147, 'Doa Berlindung Dari Keburukan', 'Doa Menolak Firasat Buruk/Sial', 'اَللَّهُمَّ لاَ طَيْرَ إِلاَّ طَيْرُكَ، وَلاَ خَيْرَ إِلاَّ خَيْرُكَ، وَلاَ إِلَـٰهَ غَيْرُكَ', 'Allaahumma laa thoiro illaa thoiruk, wa laa khoiro illaa khoiruk, wa laa ilaaha ghoiruk.', 'Ya Allah, tidak ada kesialan kecuali kesialan yang Engkau tentukan, dan tidak ada kebaikan kecuali kebaikanMu, serta tidak ada sesembahan yang berhak disembah kecuali Engkau.', 'HR. Ahmad 2/220, Ibnus Sunni no. 292, dan lihat Al-Ahadits Ash-Shahihah, no. 1065.
+
+Sumber: Hisnul Muslim.', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (148, 'Doa Berlindung Dari Keburukan', 'Doa Berlindung Dari Hilangnya Nikmat, Berubahnya Kesehatan/Keselamatan, Siksa Dan Murka Allah', 'اَللَّهُمَّ إِنِّيْ أَعُوْذُ بِكَ مِنْ زَوَالِ نِعْمَتِكَ، وَتَحَوُّلِ عَافِيَتِكَ، وَفُجَاءَةِ نِقْمَتِكَ، وَجَمِيْعِ سَخَطِكَ', 'Allaahumma innii a''uudzu bika min zawaali ni''matik, wa tahawwuli ''aafiyatik, wa fujaa-ati niqmatik, wa jamii''i sakhathik.', 'Ya Allah, sesungguhnya aku berlindung kepada-Mu dari hilangnya nikmat yang telah Engkau berikan, dari berubahnya kesehatan yang telah Engkau anugerahkan, dari siksa-Mu yang datang secara tiba-tiba, dan dari segala kemurkaan-Mu.', 'HR. Muslim no. 2739.
+Dari ‘Abdullah bin ‘Umar, dia berkata, “Di antara doa Rasulullah shallallahu ‘alaihi wa sallam adalah: (doa di atas).”', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (149, 'Doa Berlindung Dari Keburukan', 'Doa Berlindung Dari Beratnya Cobaan, Kesengsaraan Yang Hebat, Keburukan Takdir Dan Kegembiraan Musuh', 'اَللَّهُمَّ إِنِّي أَعُوْذُ بِكَ مِنْ جَهْدِ البَلاَءِ، وَدَرَكِ الشَقَاءِ، وَسُوءِ القَضَاءِ، وَشَمَاتَةِ الأَعْدَاءِ', 'Allaahumma innii a''uudzu bika min jahdil balaa'', wa darokisy-syaqoo'', wa suu-il qodhoo'', wa syamaatatil a''daa''.', 'Ya Allah, sesungguhnya aku berlindung kepada-Mu dari beratnya cobaan, kesengsaraan yang hebat, keburukan takdir dan kegembiraan musuh atas musibah yang menimpaku.', 'HR. Al-Bukhari no. 6347 dan Muslim no. 2707. Muttafaqun ‘alaih.', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (150, 'Doa Berlindung Dari Keburukan', 'Doa Berlindung Dari Sifat Lemah, Malas, Pengecut Dan Pikun', 'اَللَّهُمَّ إِنِّى أَعُوذُ بِكَ مِنَ الْعَجْزِ، وَالْكَسَلِ، وَالْجُبْنِ، وَالْهَرَمِ', 'Allaahumma innii a''uudzu bika minal ''ajzi, wal kasali, wal jubni, wal haromi.', 'Ya Allah, aku berlindung kepada-Mu dari kelemahan, rasa malas, pengecut/rasa takut dan pikun.', 'HR. Muslim no. 2706.
+
+Sumber: https://www.facebook.com/permalink.php?story_fbid=431129640269564&id=113035155412349', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (151, 'Doa Berlindung Dari Keburukan', 'Doa Berlindung Dari Sifat Malas, Pengecut/Lemahnya Hati, Pikun/Usia Tua Dan Kikir', 'اَللَّهُمَّ إِنِّى أَعُوذُ بِكَ مِنَ الْكَسَلِ، وَأَعُوذُ بِكَ مِنَ الْجُبْنِ، وَأَعُوذُ بِكَ مِنَ الْهَرَمِ، وَأَعُوذُ بِكَ مِنَ الْبُخْلِ', 'Allaahumma innii a''uudzu bika minal kasali, wa a''uudzu bika minal jubni, wa a''uudzu bika minal haromi, wa a''uudzu bika minal bukhli.', 'Ya Allah, aku meminta perlindungan pada-Mu dari rasa malas, aku meminta perlindungan pada-Mu dari lemahnya hati, aku meminta perlindungan pada-Mu dari usia tua (yang sulit untuk beramal) dan aku meminta perlindungan pada-Mu dari sifat kikir (pelit).', 'HR. Bukhari. Bukhari: 83-Kitab Ad Da''awaat, 41-Bab Meminta Perlindungan dari Umur yang Sulit Untuk Beramal.
+Anas bin Malik radhiyallahu ''anhu berkata, Rasulullah shallallahu ''alaihi wa sallam biasa meminta perlindungan melalui doa: (doa di atas).
+
+
+Sumber: BBG Al-Ilmu (BlackBerry Group)', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (152, 'Doa Berlindung Dari Keburukan', 'Doa Berlindung Dari Sifat Lemah, Malas, Pengecut, Pikun, Kikir, Siksa Kubur Dan Fitnah Kehidupan Dan Kematian', 'اَللَّهُمَّ إِنِّى أَعُوذُ بِكَ مِنَ الْعَجْزِ، وَالْكَسَلِ، وَالْجُبْنِ، وَالْهَرَمِ، وَالْبُخْلِ، وَأَعُوذُ بِكَ مِنْ عَذَابِ الْقَبْرِ، وَمِنْ فِتْنَةِ الْمَحْيَا وَالْمَمَاتِ', 'Allaahumma innii a''uudzu bika minal ''ajzi, wal kasali, wal jubni, wal haromi, wal bukhli, wa a''uudzu bika min ''adzaabil qobri, wa min fitnatil mahyaa wal mamaati.', 'Ya Allah, aku berlindung kepada-Mu dari kelemahan, rasa malas, pengecut/rasa takut, pikun/kejelekan di waktu tua, dan sifat kikir. Dan aku juga berlindung kepada-Mu dari siksa kubur serta fitnah/bencana kehidupan dan kematian.', 'HR. Bukhari no. 6367 dan Muslim no. 2706.
+Anas bin Malik radhiyallahu ''anhu berkata bahwa Rasulullah shallallahu ''alaihi wa sallam biasa membaca doa: (doa di atas).', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (153, 'Doa Berlindung Dari Keburukan', 'Doa Berlindung Dari Sifat Malas, Pikun, Dosa, Hutang, Fitnah Dan Azab Kubur, Fitnah Dan Azab Neraka, Fitnah Kekayaan Dan Kemiskinan Dan Fitnah Dajjal', 'اَللَّهُمَّ إِنِّيْ أَعُوْذُ بِكَ مِنَ الْكَسَلِ وَالْهَرَمِ، وَالْمَأْثَمِ وَالْمَغْرَمِ، وَمِنْ فِتْنَةِ الْقَبْرِ وَعَذَابِ الْقَبْرِ، وَمِنْ فِتْنَةِ النَّارِ وَعَذَابِ النَّارِ، وَمِنْ شَرِّ فِتْنَةِ الْغِنَى، وَأَعُوْذُ بِكَ مِنْ فِتْنَةِ الْفَقْرِ، وَأَعُوْذُ بِكَ مِنْ فِتْنَةِ الْمَسِيْحِ الدَّجَّالِ', 'Allaahumma innii a''uudzu bika minal kasali wal haromi, wal ma''tsami wal maghromi, wa min fitnatil qobri wa ''adzaabil qobri, wa min fitnatin-naari wa ''adzaabin-naari, wa min syarri fitnatil ghinaa, wa a''uudzu bika min fitnatil faqri, wa a''uudzu bika min fitnatil masiihid-dajjaal.', 'Ya Allah, aku berlindung kepada-Mu dari kemalasan dan pikun/usia jompo, perbuatan dosa dan hutang, fitnah kubur dan azab kubur, fitnah neraka dan azab neraka, keburukan fitnah kekayaan, aku berlindung kepada-Mu dari fitnah kemiskinan dan aku berlindung kepada-Mu dari fitnah Al-Masih Dajjal.', 'HR. Bukhari 6368.
+
+Sumber: https://konsultasisyariah.com/21758-kumpulan-doa-nabi-shallallahu-alaihi-wa-sallam.html', '["harta","hutang"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (154, 'Doa Berlindung Dari Keburukan', 'Doa Berlindung Dari Sifat Pengecut, Pikun, Fitnah Dunia Dan Azab Kubur', 'اَللَّهُمَّ إِنِّيْ أَعُوْذُ بِكَ مِنَ الْجُبْنِ، وَأَعُوْذُ بِكَ أَنْ أُرَدَّ إِلَى أَرْذَلِ الْعُمُرِ، وَأَعُوْذُ بِكَ مِنْ فِتْنَةِ الدُّنْيَا، وَأَعُوْذُ بِكَ مِنْ عَذَابِ الْقَبْرِ', 'Allaahumma innii a''uudzu bika minal jubni, wa a''uudzu bika an urodda ilaa ar-dzalil ''umuri, wa a''uudzu bika min fitnatid-dunyaa, wa a''uudzu bika min ''adzaabil qobr.', 'Ya Allah, aku berlindung kepada-Mu dari sifat pengecut, aku berlindung kepada-Mu kepada serendah-rendahnya usia (pikun), aku berlindung kepada-Mu dari fitnah dunia, dan aku berlindung berlindung kepada-Mu dari adzab kubur.', 'HR. Bukhari 2822.
+
+Sumber: https://konsultasisyariah.com/21758-kumpulan-doa-nabi-shallallahu-alaihi-wa-sallam.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (155, 'Doa Berlindung Dari Keburukan', 'Doa Berlindung Dari Keburukan Amal', 'اَللَّهُمَّ إِنِّيْ أَعُوْذُ بِكَ مِنْ شَرِّ مَا عَمِلْتُ، وَشَرِّ مَا لَمْ أَعْمَلْ', 'Allaahumma innii a''uudzu bika min syarri maa ''amiltu, wa syarri maa lam a''mal.', 'Ya Allah, aku berlindung kepada-Mu dari keburukan yang telah aku perbuat dan keburukan yang belum aku perbuat.', 'HR. Muslim 2716.
+
+Sumber: https://konsultasisyariah.com/21758-kumpulan-doa-nabi-shallallahu-alaihi-wa-sallam.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (156, 'Doa Berlindung Dari Keburukan', 'Doa Agar Musibah Tidak Menimpa Agama Dan Agar Dunia Bukan Sebagai Tujuan', 'وَلَا تَجْعَلْ مُصِيْبَتَنَا فِي دِيْنِنَا، وَلَا تَجْعَلِ الدُّنْيَا أَكْبَرَ هَمِّنَا، وَلَا مَبْلَغَ عِلْمِنَا', 'Wa laa taj''al mushiibatanaa fii diininaa, wa laa taj''alid-dunyaa akbaro hamminaa, wa laa mablagho ''ilminaa.', '(Ya Allah) Janganlah Engkau jadikan musibah pada kami menimpa agama kami. Janganlah Engkau jadikan dunia (harta dan kemewahan) sebagai cita-cita terbesar kami, jangan juga sebagai tujuan utama dari ilmu kami.', 'Doa Berlindung Dari Keburukan
+Doa Agar Musibah Tidak Menimpa Agama Dan Agar Dunia Bukan Sebagai Tujuan
+وَلَا تَجْعَلْ مُصِيْبَتَنَا فِي دِيْنِنَا، وَلَا تَجْعَلِ الدُّنْيَا أَكْبَرَ هَمِّنَا، وَلَا مَبْلَغَ عِلْمِنَا
+
+Wa laa taj''al mushiibatanaa fii diininaa, wa laa taj''alid-dunyaa akbaro hamminaa, wa laa mablagho ''ilminaa.
+
+(Ya Allah) Janganlah Engkau jadikan musibah pada kami menimpa agama kami. Janganlah Engkau jadikan dunia (harta dan kemewahan) sebagai cita-cita terbesar kami, jangan juga sebagai tujuan utama dari ilmu kami.
+
+HR. At-Tirmidzi V/528 no.3502, An-Nasa''I dalam As-Sunan Al-Kubro VI/106, Al-Hakim I/528 dan Ibnu As-Sunny dalam Amalul Yaum wa Al-Lailah no.445. Derajat hadits tersebut hasan (baik), sebagaimana dinyatakan oleh syaikh Al-Albani di dalam Shohih Sunan At-Tirmidzi III/168 no.2783 dan Shohih Al-Jami’ I/400.
+Keterangan:
+Makna “Janganlah Engkau jadikan musibah pada kami menimpa agama kami”: janganlah Engkau menimpakan kepada kami suatu musibah yang menyebabkan berkurang atau hilangnya agama dan keimanan kami, seperti musibah berbuat kemurtadan, kemusyrikan dan kekufuran, atau memiliki keyakinan yang sesat dan batil, atau melalaikan kewajiban dan bermalas-malasan dalam menjalankan ketaatan, melakukan hal-hal yang haram, atau berkuasanya orang-orang kafir dan munafik atas kaum muslimin dsb.
+
+Demikianlah maksud doa Nabi di atas, karena musibah dalam urusan agama merupakan sebesar-besarnya musibah yang menimpa seorang hamba di dunia, dan hal ini akan menyebabkan kesengsaraan dan kebinasaannya di akhirat kelak.
+
+
+Sumber: https://abufawaz.wordpress.com/2013/02/01/musibah-terbesar-adalah-musibah-yang-menimpa-agama-seorang-hamba', '["musibah","kabar"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (157, 'Doa Berlindung Dari Keburukan', 'Doa Berlindung Dari Keburukan Anggota Badan', 'اَللَّهُمَّ إِنِّى أَعُوذُ بِكَ مِنْ شَرِّ سَمْعِى، وَمِنْ شَرِّ بَصَرِى، وَمِنْ شَرِّ لِسَانِى، وَمِنْ شَرِّ قَلْبِى، وَمِنْ شَرِّ مَنِيِّى', 'Allaahumma innii a''uudzu bika min syarri sam''ii, wa min syarri bashorii, wa min syarri lisaanii, wa min syarri qolbii, wa min syarri maniyyii.', 'Ya Allah, aku berlindung kepada-Mu dari kejelekan pada pendengaranku, kejelekan pada penglihatanku, kejelekan pada lisanku, kejelekan pada hatiku, dan kejelekan pada mani atau kemaluanku.', 'HR. An-Nasa’i no. 5446, Abu Daud no. 1551, Tirmidzi no. 3492. Al-Hafizh Abu Thahir mengatakan bahwa sanad hadits ini hasan.', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (158, 'Doa Berlindung Dari Keburukan', 'Doa Berlindung Dari Kesusahan, Kesedihan, Lemah, Malas, Kikir, Penakut, Lilitan Hutang Dan Penindasan Orang', 'اَللَّهُمَّ إِنِّيْ أَعُوْذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ، وَالْعَجْزِ وَالْكَسَلِ، وَالْبُخْلِ وَالْجُبْنِ، وَضَلَعِ الدَّيْنِ وَغَلَبَةِ الرِّجَالِ', 'Allaahumma innii a''uudzu bika minal hammi wal hazani, wal ''ajzi wal kasali, wal bukhli wal jubni, wa dhola''id-daini wa gholabatir-rijaal.', 'Ya Allah, aku berlindung kepada-Mu dari kesusahan dan kesedihan, lemah dan malas, kikir dan penakut, lilitan hutang dan penindasan orang.', 'HR. Al-Bukhari 7/158. Rasulullah Shallallahu''alaihi wasallam senantiasa membaca doa ini, lihat kitab Fathul Baari 11/173.
+
+Sumber: Hisnul Muslim.', '["sedih","sulit"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (159, 'Doa Berlindung Dari Keburukan', 'Doa Berlindung Dari Kesusahan, Kesedihan, Lemah, Malas, Penakut, Kikir, Lilitan Hutang Dan Penguasaan Orang', 'اَللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْهَمِّ وَالْحُزْنِ، وَأَعُوْذُ بِكَ مِنَ الْعَجْزِ وَالْكَسَلِ، وَأَعُوْذُ بِكَ مِنَ الْجُبْنِ وَالْبُخْلِ، وَأَعُوذُ بِكَ مِنْ غَلَبَةِ الدَّيْنِ وَقَهْرِ الرِّجَالِ', 'Allaahumma innii a''uudzu bika minal hammi wal huzni, wa a''uudzu bika minal ''ajzi wal kasali, wa a''uudzu bika minal jubni wal bukhli, wa a''uudzu bika min gholabatid-daini wa qohrir-rijaal.', 'Ya Allah, aku berlindung kepada-Mu dari kesusahan/kegelisahan dan kesedihan, aku berlindung kepada-Mu dari lemah/ketidakmampuan dan kemalasan, aku berlindung kepada-Mu dari sifat penakut dan kikir/pelit, dan aku berlindung kepada-Mu dari lilitan hutang dan penguasaan (kesewenang-wenangan) orang.', 'HR Abu Dawud 4/353.
+
+Sumber: https://www.facebook.com/doa.dzikir.shahih.harian/videos/719535888146472', '["sedih","sulit"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (160, 'Doa Berlindung Dari Keburukan', 'Doa Berlindung Dari Fitnah Dan Azab Neraka, Dan Keburukan Kekayaan Dan Kemiskinan', 'اَللَّهُمَّ إِنِّى أَعُوذُ بِكَ مِنْ فِتْنَةِ النَّارِ وَعَذَابِ النَّارِ، وَمِنْ شَرِّ الْغِنَى وَالْفَقْرِ', 'Allaahumma innii a''uudzu bika min fitnatin-naar wa ''adzaabin-naar, wa min syarril ghinaa wal faqr.', 'Ya Allah, aku berlindung kepadaMu dari fitnah neraka dan adzab neraka, dan dari keburukan kekayaan dan kefakiran.', 'HR. Abu Daud no. 1543. Syaikh Al Albani mengatakan bahwa hadits ini shahih.
+
+Sumber: https://rumaysho.com/1105-doa-berlindung-dari-keburukan-kaya-dan-miskin.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (161, 'Doa Berlindung Dari Keburukan', 'Doa Ketika Dihadang Atau Diancam Orang Jahat', 'اَللَّهُمَّ اكْفِنِيْهِمْ بِمَا شِئْتَ', 'Allaahummak-finiihim bima syi''ta.', 'Ya Allah, cukupkanlah aku dari kejahatan mereka dengan cara yang Engkau kehendaki.', 'HR. Muslim 3005.
+Keterangan:
+Dalam hadis yang diriwayatkan oleh Muslim, Rasulullah shallallahu ‘alaihi wa sallam menceritakan tentang kisah ashabul ukhdud dan perjalanan pemuda soleh bersama raja yang zalim. Dalam kisah itu, sang pemuda soleh ini berkali-kali diancam oleh raja agar meninggalkan ajaran islam dan hendak dibunuh oleh sang raja dengan beraneka macam cara, namun semuanya gagal.
+
+Yang pertama, raja menyuruh prajuritnya untuk membawa pemuda ini ke puncak gunung. Setelah sampai di puncak, lemparkan dia jika tidak mau keluar dari Islam. Sesampainya di puncak gunung, pemuda soleh ini berdoa: (doa di atas). Gunung itupun berguncang, hingga para prajurit itu berjatuhan. Sang pemuda selamat dan dia mendatangi raja sendirian.
+
+Kemudian sang raja menyuruh beberapa prajuritnya untuk membawa anak ini di atas perahu dan dibawa ke tangah lautan. Jika sampai di tengah, ceburkan dia ke laut. Setelah sampai di tengah laut, sang pemuda ini berdoa dengan doa yang sama: (doa di atas). Perahu itupun terbalik dan semua tenggelam, namun Allah selamatkan pemuda ini.
+
+Diantara pelajaran yang bisa kita ambil dari hadis di atas adalah doa ketika kita dihadang orang jahat atau mendapat ancaman dari orang yang hendak bertindak jahat kepada kita.
+
+
+Sumber: https://konsultasisyariah.com/22286-doa-ketika-dihadang-perampok.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (162, 'Doa Berlindung Dari Keburukan', 'Doa Berlindung Dari Setan, Binatang Berbisa dan ''Ain (Pandangan Mata Jahat)', 'أَعُوْذُ بِكَلِمَاتِ اللَّهِ التَّامَّةِ، مِنْ كُلِّ شَيْطَانٍ وَهَامَّةٍ، وَمِنْ كُلِّ عَيْنٍ لَامَّةٍ', 'A''uudzu bikalimaatillaahit-taammah, min kulli syaithoonin wa haammah, wa min kulli ''ainin laammah.', 'Aku berlindung dengan kalimat-kalimat Allah yang sempurna, dari segala setan dan binatang berbisa, dan dari pandangan mata jahat.', 'HR. Bukhari no. 3371.
+Dari ‘Aisyah radhiyallahu ‘anha, bahwa Rasulullah shallallahu ‘alaihi wa sallam bersabda, “Berlindunglah kalian kepada Allah dari ‘ain, karena sesungguhnya ‘ain itu haq (benar).” (HR. Ibnu Majah no. 3508 dan Al Hakim no. IV/215, Lihat Silsilah Al Ahaadits Ash Shahiihah no. 737).
+
+
+Sumber: http://bbg-alilmu.com/archives/35100', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (163, 'Doa Berlindung Dari Keburukan', 'Doa Berlindung Dari Keburukan Tetangga, Istri, Anak, Harta Dan Teman Dekat', 'اَللَّهُمَّ إِنِّيْ أَعُوْذُ بِكَ مِنْ جَارِ السُّوْءِ، وَمِنْ زَوْجٍ تُشَيِّبُنِيْ قَبْلَ المَشِيْبِ، وَمِنْ وَلَدٍ يَكُوْنُ عَلَيَّ رَبًّا، وَمِنْ مَالٍ يَكُوْنُ عَلَيَّ عَذَابًا، وَمِنْ خَلِيْلٍ مَاكِرٍ عَيْنُهُ تَرَانِيْ، وَقَلْبُهُ يَرْعَانِيْ، إِنْ رَأَى حَسَنَةً دَفَنَهَا، وَإِذَا رَأَى سَيِّئَةً أَذَاعَهَا', 'Allaahumma innii a''uudzu bika min jaaris-suu'', wa min zaujin tusyayyibunii qoblal masyiib, wa min waladin yakuunu ''alayya robban, wa min maalin yakuunu ''alayya adzaaban, wa min kholiilin maakirin, ''ainuhu taroonii, wa qolbuhu yar''aanii, in ro''aa hasanatan dafanahaa, wa idzaa ro''aa sayyi''atan adzaa''ahaa.', 'Ya Allah, aku berlindung kepada-Mu dari tetangga yang buruk, dan dari istri yang membuatku beruban sebelum waktunya, dan dari anak yang menguasaiku, dan dari harta yang menjadi azab atasku, dan dari teman dekat pembuat makar, matanya melihatku sedang hatinya mengawasiku, jika ia melihat kebaikan pada diriku maka ia menyembunyikannya, dan jika ia melihat keburukan maka ia menyebarkannya.', 'HR. Ath-Thabrani dari Abu Hurairah radhiyallahu''anhu, Ash-Shahihah: 3137.
+Dari Abu Hurairah radhiyallahu''anhu, ia berkata, dahulu diantara doa yang dibaca Rasulullah shallallahu''alaihi wa sallam adalah: (doa di atas).
+
+
+Sumber: https://www.facebook.com/permalink.php?story_fbid=514443478604846&id=113035155412349', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (164, 'Doa Berlindung Dari Keburukan', 'Doa Berlindung Dari Hari, Malam, Waktu, Teman dan Tetangga Yang Buruk', 'اَللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ يَوْمِ السُّوءِ، وَمِنْ لَيْلَةِ السُّوءِ، وَمِنْ سَاعَةِ السُّوءِ، وَمِنْ صَاحِبِ السُّوءِ، وَمِنْ جَارِ السُّوءِ فِي دَارِ الْمُقَامَةِ', 'Allaahumma innii a''uudzu bika min yaumis-suu'', wa min lailatis-suu'', wa min saa''atis-suu'', wa min shoohibis-suu'', wa min jaaris-suu-i fii daaril muqoomah.', 'Ya Allah, sesungguhnya aku berlindung kepada-Mu dari hari yang buruk, malam yang buruk, waktu yang buruk, teman yang buruk, dan tetangga yang buruk di tempat tinggal tetapku.', 'HR. Ath-Thabrani 14227. Silsilah al-Ahaadiits ash-Shahiihah no. 1443.
+
+Sumber: https://bbg-alilmu.com/archives/11747', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (165, 'Doa Berlindung Dari Keburukan', 'Doa Berlindung Dari Lapar Dan Khianat', 'اَللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْجُوعِ، فَإِنَّهُ بِئْسَ الضَّجِيعُ، وَأَعُوذُ بِكَ مِنَ الْخِيَانَةِ، فَإِنَّهَا بِئْسَتِ الْبِطَانَةُ', 'Allaahumma innii a-uudzu bika minal juu''i, fa-innahu bi''sadh-dhojii''u, wa a-uudzu bika minal khiyaanati, fa-innahaa bi''satil bithoonah.', 'Ya Allah, sesungguhnya aku berlindung kepada-Mu dari lapar, karena ia adalah seburuk-buruk teman yang menyertai. Dan aku berlindung kepada-Mu dari khianat, karena ia adalah teman karib yang paling buruk.', 'HR. Abu Daud, An-Nasa’i, Ibnu Majah.
+Doa ini memuat permintaan perlindungan dari lapar yang merupakan teman berbaring (selalu menyertai) yang paling buruk. Yaitu rasa lapar yang membuat seseorang tidak mampu menunaikan kewajibannya, dan mengharuskannya bergantung pada orang lain. Dan ini pun terkait erat dengan kefakiran yang sangat, sehingga Nabi Shallallahu ‘alaihi wa salam meminta perlindungan dari fitnah kefakiran. Yaitu kefakiran yang tak ada kebaikan di dalamnya, tidak pula rasa wara’, sehingga membuat orang jatuh dalam hal yang mencoreng agama dan muru’ah (kehormatannya). Dan berbagai dampak buruk akan menimpanya, bahkan bisa sampai menggadaikan agama.
+
+Nabi Shallallahu ‘alaihi wa salam berdoa, meminta perlindungan dari lapar, karena dampaknya sangat buruk dan kentara terhadap kekuatan seseorang, baik kekuatan fisik maupun batin. Artinya bahwa kelaparan tersebut menghalangi seseorang untuk menunaikan berbagai amal ibadah. Sebab kelaparan melemahkan badan dan mengganggu pikiran, sehingga membangkitkan pikiran-pikiran busuk dan merusak. Amaliah ibadah menjadi rusak dan terbengkalai. Dan salah satu pemicunya adalah kosongnya lambung dari makanan. Badan dan pikirannya menjadi tidak stabil.
+
+Hadits ini dijadikan sebagai dalil dari suatu pendapat yang mengatakan bahwa rasa lapar semata (murni karena lapar, tidak ada tendensi karena Allah) tidak terkandung unsur pahala di dalamnya.
+
+Sedangkan khianat adalah lawan dari amanah. Dan ini sifatnya umum, mencakup hak-hak Allah seperti shalat, puasa, sedekah, zakat, dan lainnya, juga mencakup hak-hak anak manusia di antara mereka. Allah Azza wa Jalla berfirman, “Hai orang-orang yang beriman, janganlah kamu mengkhianati Allah dan Rasul (Muhammad) dan (juga) janganlah kamu mengkhianati amanat-amanat yang dipercayakan kepadamu, sedang kamu mengetahui.” [Al-Anfal/8: 27].
+
+Doa ini memuat permintaan perlindungan dari khianat, baik khianat terhadap hak Allah Azza wa Jalla, maupun terkait sesama hak hamba. Karena ia adalah seburuk-buruk sifat dan perilaku batin seseorang, bahkan ia adalah salah satu pertanda kemunafikan.
+
+Lihat Aunul Ma’buud 4/406, Syuruuh Sunan Ibni Majah 1246.
+
+
+Sumber: https://almanhaj.or.id/9771-doa-meminta-perlindungan-dari-kelaparan-dan-khianat.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (166, 'Doa Berlindung Dari Keburukan', 'Doa Bila Khawatir Hal Buruk Menimpa', 'حَسْبُنَا اللَّهُ وَنِعْمَ الْوَكِيلُ، عَلَى اللَّهِ تَوَكَّلْنَا', 'Hasbunallaahu wa ni''mal wakiil, ''alallaahi tawakkalnaa.', 'Cukuplah Allah menjadi Penolong kami, dan Allah adalah sebaik-baik Pelindung. Hanya kepada Allah kami bertawakal.', 'HR. At-Turmudzi.
+Ucapan hasbalah yaitu Hasbunallah adalah dzikir agung yang mengandung makna tawakkal kepada Allah, bersandar kepada-Nya, dan meminta pertolongan, bantuan dan taufik dari-Nya.
+
+Dan di antara tempat diucapkannya dzikir ini adalah saat merasa khawatir hal buruk terjadi, atau khawatir terjadinya hal yang genting. Ini seperti dalam sebuah hadits:
+
+Dari Abu Sa’id al-Khudri Radhiyallahu anhu berkata, Rasulullah Shallallahu ‘alaihi wa sallam telah bersabda, “Bagaimana mungkin aku merasakan nyaman, sedangkan Peniup sangkakala telah memasukkan (pangkal) sangkakala ke mulutnya, ia mencari-cari dengar turunnya izin (dari Allah) kapankah ia diperintahkan untuk meniup sangkakala sehingga ia akan meniupnya.” Seakan hal itu terasa berat atas diri para sahabat Rasulullah Shallallahu ‘alaihi wa sallam. Maka Rasulullah Shallallahu ‘alaihi wa sallam pun berkata kepada mereka, “Ucapkanlah: (dzikir di atas).”
+
+Dalam Uddatul Hishnil Hashiin dan syarahnya Tuhfat Adz-Dzaakiriin dikatakan, bila menurut perkiraannya akan turun bencana (bala) atau perkara genting akan menimpa, maka hendaknya ia mengucapkan dzikir tersebut. Bala atau bencana yang dimaksudkan adalah bencana apapun, meskipun kecil. Juga diucapkan kala ada perkara gawat dan genting yang terjadi, yang membuat orang yang mendengarnya menjadi takut dan gemetar, seperti halnya perkara yang diceritakan oleh Rasulullah di atas kepada para sahabat.
+
+Maka, bila ada sesuatu yang terasa berat atas diri seseorang, hendaknya ia mengucapkan doa tersebut. Karena Allah yang akan mencukupi dan menjaga kita dari apa yang akan menimpa. Dialah sebaik-baik tempat bersandar.
+
+
+Sumber: https://almanhaj.or.id/9745-doa-saat-khawatir-hal-buruk-menimpa.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (167, 'Doa Berlindung Dari Keburukan', 'Doa Berlindung Dari Kefakiran, Kekufuran, Kefasikan, Kedurhakaan, Kemunafikan, Sum''ah Dan Riya''', 'اَللَّهُمَّ إِنِّى أَعُوْذُ بِكَ مِنَ الْفَقْرِ، وَالْكُفْرِ، وَالْفُسُوْقِ، وَالشِّقَاقِ، وَالنِّفَاقِ، وَالسُّمْعَةِ، وَالرِّيَاءِ', 'Allaahumma innii a''uudzu bika minal faqri, wal kufri, wal fusuuqi, wasy-syiqooqi, wan-nifaaqi, was-sum''ati, war-riyaa-i.', 'Ya Allah, aku berlindung kepada-Mu dari kefakiran, kekufuran, kefasikan, kedurhakaan, kemunafikan, sum''ah dan riya''.', 'HR. al-Hakim (1944) dan dishahihkan al-Albani.
+
+Sumber: https://konsultasisyariah.com/29265-doa-perlindungan-dari-kekufuran-munafik.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (168, 'Doa Berlindung Dari Keburukan', 'Doa Berlindung Dari Kekufuran, Kefakiran Dan Azab Kubur', 'اَللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْكُفْرِ وَالْفَقْرِ، اَللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ عَذَابِ الْقَبْرِ، لَا إِلَـٰهَ إِلَّا أَنْتَ', 'Allaahumma innii a''uudzu bika minal kufri wal faqri, allaahumma innii a''uudzu bika min ''adzaabil qobri, laa ilaaha illaa anta.', 'Ya Allah, aku berlindung kepada-Mu dari kekufuran dan kefakiran. Ya Allah, aku berlindung kepada-Mu dari adzab kubur. Tidak ada sesembahan yang berhak disembah kecuali Engkau.', 'HR. Abu Daud 5092, Nasai 5482 dan dihasankan al-Albani.
+
+Sumber: https://konsultasisyariah.com/29265-doa-perlindungan-dari-kekufuran-munafik.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (169, 'Doa Berlindung Dari Keburukan', 'Doa Berlindung Dari Penyakit Kulit/Belang, Gila, Kusta Dan Penyakit Berbahaya Lainnya', 'اَللَّهُمَّ إِنِّي أَعُوْذُ بِكَ مِنَ الْبَرَصِ، وَالْجُنُوْنِ، وَالْجُذَامِ، وَمِنْ سَيِّئِ الْأَسْقَامِ', 'Allaahumma innii a''uudzu bika minal baroshi, wal junuuni, wal judzaami, wa min sayyi-il asqoom.', 'Ya Allah, aku berlindung kepada-Mu dari penyakit kulit/belang, gila, kusta, dan dari segala penyakit yang buruk/mengerikan lainnya.', 'HR. Abu Dawud 1554.
+Keterangan:
+
+Al-barosh: penyakit yang sudah makruf, yaitu ada warna putih pada jasad yang akhirnya merubah bentuk dan penampilan.
+Al-junun: hilangnya akal.
+Al-judzam: penyakit kusta atau lepra.
+Sayyi-il asqom: penyakit jelek.
+Faedah hadits:
+
+Rasulullah shallallahu ‘alaihi wa sallam meminta perlindungan dari penyakit yang jelek untuk mengajarkan kita bersabar, supaya tidak banyak mengeluh, yang akhirnya membuat kita luput dari pahala.
+Penyakit-penyakit yang disebutkan di sini punya dampak jelek pada penampilan dan fisik, sehingga bisa membuat orang lain menjauh.
+Rasulullah shallallahu ‘alaihi wa sallam tidak meminta perlindungan dari semua penyakit karena sakit sendiri dapat membersihkan dosa asalkan mau bersabar. Setiap orang bisa saja tertimpa sakit. Namun ujian yang paling berat adalah yang dihadapi oleh para nabi lalu orang di bawahnya lagi.
+
+Sumber: https://yufidia.com/4860-doa-mohon-dilindungi-dari-penyakit-berbahaya.html dan https://rumaysho.com/21766-doa-meminta-perlindungan-dari-penyakit-kulit-gila-dan-berbagai-penyakit-jelek.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (170, 'Doa Berlindung Dari Keburukan', 'Doa Berlindung Dari Kefakiran, Kekurangan, Kehinaan, Dan Dari Menzalimi Atau Dizalimi', 'اَللَّهُمَّ إِنِّيْ أَعُوْذُ بِكَ مِنَ الْفَقْرِ، وَالْقِلَّةِ، وَالذِّلَّةِ، وَأَعُوْذُ بِكَ مِنْ أَنْ أَظْلِمَ أَوْ أُظْلَمَ', 'Allaahumma innii a''uudzu bika minal faqri, wal qillati, wadz-dzillati, wa a''uudzu bika min an azhlima au uzhlama.', 'Ya Allah, aku berlindung kepada-Mu dari kefakiran, kekurangan dan kehinaan. Dan aku berlindung kepada-Mu dari menzalimi atau dizalimi orang lain.', 'HR. An-Nasaa-i, Shahiih An-Nasaa-i III no. 5046.
+
+Sumber: https://bbg-alilmu.com/archives/10722', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (171, 'Doa Berlindung Dari Keburukan', 'Doa Berlindung Dari Fitnah Dan Siksa Neraka, Fitnah Dan Siksa Kubur, Fitnah Kekayaan Dan Kefakiran, Dan Fitnah Dajjal', 'اَللَّهُمَّ إِنِّيْ أَعُوْذُ بِكَ مِنْ فِتْنَةِ النَّارِ وَمِنْ عَذَابِ النَّارِ،
+وَأَعُوْذُ بِكَ مِنْ فِتْنَةِ الْقَبْرِ،
+وَأَعُوْذُ بِكَ مِنْ عَذَابِ الْقَبْرِ،
+وَأَعُوْذُ بِكَ مِنْ فِتْنَةِ الْغِنَى،
+وَأَعُوْذُ بِكَ مِنْ فِتْنَةِ الْفَقْرِ،
+وَأَعُوْذُ بِكَ مِنْ فِتْنَةِ الْمَسِيْحِ الدَّجَّالِ', 'Allaahumma innii a''uudzu bika min fitnatin-naari wa min ''adzaabin-naari,
+wa a''uudzu bika min fitnatil qobri,
+wa a''uudzu bika min ''adzaabil qobri,
+wa a''uudzu bika min fitnatil ghinaa,
+wa a''uudzu bika min fitnatil faqri,
+wa a''uudzu bika min fitnatil masiihid-dajjaal.', 'Ya Allah, sungguh aku berlindung kepada-Mu dari fitnah neraka dan siksa neraka,
+aku berlindung kepada-Mu dari fitnah kubur,
+aku berlindung kepada-Mu dari siksa kubur,
+aku berlindung kepada-Mu dari fitnah kekayaan (harta),
+aku berlindung kepada-Mu dari fitnah kefakiran,
+dan aku berlindung kepada-Mu dari fitnah Al-Masih Ad-Dajjal.', 'HR. Bukhari.
+
+Sumber: https://yufidia.com/5876-doa-berlindung-dari-fitnah-harta.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (172, 'Doa Memohon Kebaikan Dan Berlindung Dari Keburukan', 'Doa Sapu Jagad', 'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً، وَفِي الْآخِرَةِ حَسَنَةً، وَقِنَا عَذَابَ النَّارِ', 'Robbanaa aatinaa fid-dunyaa hasanah, wa fil aakhiroti hasanah, wa qinaa ''adzaaban-naar.', 'Ya Tuhan kami, berilah kami kebaikan di dunia, dan kebaikan di akhirat, dan peliharalah kami dari siksa neraka. (Al-Baqarah [2]: 201).', 'Doa di atas sama dengan doa dalam hadits berikut:
+Dari Anas radhiyallahu ‘anhu, ia berkata bahwa doa yang paling sering dibaca oleh Nabi shallallahu ‘alaihi wa sallam adalah, “Allaahumma aatinaa fid-dunyaa hasanah, wa fil aakhiroti hasanah, wa qinaa ''adzaaban-naar. (Artinya: Ya Allah, karuniakan kepada kami kebaikan di dunia, dan kebaikan di akhirat, dan selamatkanlah kami dari siksa neraka).” (Muttafaqun ‘alaih) [HR. Bukhari, 8:187-188; Muslim, no. 2690].
+
+Penjelasan Hadits:
+Imam Muslim menambahkan dalam riwayatnya, “Jika Anas radhiyallahu ‘anhu hendak berdoa, ia pasti berdoa dengan doa tersebut. Jika ia hendak berdoa dengan doa yang lain, ia pun menyisipkan doa tersebut di dalamnya.” (HR. Muslim, no. 2690).
+
+Ibnu Hajar rahimahullah menyebutkan, “Tidaklah seorang nabi maupun orang saleh berdoa melainkan mereka menggunakan doa ini.” (Fath Al-Bari, 2:322).
+
+Ibnu Katsir rahimahullah menyatakan, “Doa sapu jagad ini berisi permintaan kebaikan di dunia seluruhnya dan dihindarkan dari seluruh kejelekan. Yang dimaksud kebaikan dunia adalah nikmat kesehatan, rumah yang lapang, istri yang penuh dengan kebaikan, rezeki yang luas, ilmu yang bermanfaat, amal saleh, kendaraan yang menyenangkan, pujian yang baik, serta kebaikan-kebaikan lainnya dengan berbagai ungkapan dari pakar tafsir. Apa yang disebutkan oleh para ulama pakar tafsir semuanya tidaklah saling bertentangan. Karena seluruh kebaikan dunia tercakup dalam doa tersebut.
+
+Adapun kebaikan di akhirat yang diminta dalam doa ini tentu saja lebih tinggi dari kebaikan di dunia yaitu dimasukkannya ke dalam surga, dibebaskan dari rasa khawatir (takut), diberi kemudahan dalam hisab (perhitungan amalan) di akhirat, serta berbagai kebaikan akhirat lainnya.
+
+Adapun permintaan diselamatkan dari siksa neraka mengandung permintaan agar kita dibebaskan dari berbagai sebab yang menjerumuskan ke dalam neraka, yaitu dengan dijauhkan dari berbagai perbuatan yang haram dan dosa, dan diberi petunjuk untuk meninggalkan hal-hal syubhat (yang masih samar/abu-abu) dan hal-hal yang haram.” (Tafsir Al-Qur’an Al-‘Azhim, 2:122).
+
+Imam Nawawi rahimahullah berkata mengenai pengertian doa tersebut, “Pendapat yang lebih tepat mengenai tafsiran ‘kebaikan di dunia’ adalah ibadah dan ‘afiyah (kesehatan). Adapun ‘kebaikan di akhirat’ adalah surga dan ampunan Allah. Ada juga ulama yang mengatakan bahwa kebaikan di situ bersifat umum untuk seluruh kebaikan di dunia dan akhirat.” (Syarh Shahih Muslim, 17:13).
+
+Faedah Hadits:
+
+Dianjurkan memperbanyak doa ini karena doanya yang singkat dengan lafazh yang sedikit, namun sudah berisi permintaan kebaikan dunia dan akhirat.
+Doa dari Rasulullah shallallahu ‘alaihi wa sallam kebanyakannya memakai doa ini dan ini diambil dari ayat, doa ini kandungannya padat mencakup doa seluruhnya, yaitu di dalamnya terdapat permintaan nikmat dunia, nikmat akhirat, dan diselamatkan dari siksa neraka.
+Para sahabat radhiyallahu ‘anhum semangat menjaga sunnah Nabi shallallahu ‘alaihi wa sallam dan menerapkannya.
+
+Sumber: https://rumaysho.com/19550-doa-sapu-jagat-paling-sering-dibaca-nabi.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (173, 'Doa Memohon Kebaikan Dan Berlindung Dari Keburukan', 'Doa Agar Setiap Urusan Berakhir Baik', 'اَللَّهمَّ أَحْسِنْ عَاقِبَتَنَا فِي الأُمُورِ كُلِّهَا، وَأَجِرْنَا مِنْ خِزْيِ الدُّنْيَا وَعَذَابِ الآخِرَةِ', 'Allaahumma ahsin ''aaqibatanaa fil umuuri kullihaa, wa ajirnaa min khizyid-dunyaa wa ''adzaabil aakhiroh.', 'Ya Allah, jadikanlah baik akhir setiap urusan kami, dan lindungi kami dari bencana dunia dan azab akhirat.', 'HR. Ahmad 4/181. Kata Syaikh Syu''aib Al Arnauth, periwayat hadits ini tsiqoh kecuali Ayyub bin Maysaroh. Telah meriwayatkannya dua orang dan Ibnu Hibban menyebutkannya dalam ats tsiqoot. Sedangkan Busr bin Arthoh terdapat perselisihan akan shahihnya.
+Penjelasan:
+Makna "jadikan baik akhir setiap urusan kami": jadikanlah setiap urusan kami itu baik dan thoyib. Karena setiap amalan tergantung pada akhirnya. Maka jadikanlah setiap amalan kami itu baik, diridhoi oleh-Mu, tetapkanlah kami terus dalam keadaan baik sehingga kami kembali pada-Mu dalam keadaan yang paling baik.
+
+Makna "lindungi kami dari bencana dunia": yaitu dari musibah, berbagai tipu daya, kejelekan dan kehinaan di dalamnya.
+
+Makna "azab akhirat": yaitu dari seluruh siksa di akhirat karena kalimatnya adalah umum (sebab adanya idhofah pada isim jenis), artinya mencakup seluruh siksaan yang ada di akhirat.
+
+Doa ini mengandung permintaan agar diberi keselamatan, juga rasa aman dari segala sisi. Karena barangsiapa yang terselamatkan dari kehinaan dunia dan siksa di akhirat, maka ia telah mendapatkan kebaikan besar di dunia negeri. Jika terselamatkan, berarti ia selamat dari segala kejelekan. Doa ini benar-benar adalah doa yang jawami''ul kalim (ringkas, syarat makna, mencakup berbagai hal).
+
+
+Sumber: https://www.facebook.com/doa.dzikir.shahih.harian/photos/pb.145491612217572.-2207520000.1437500130./659391974160864 dan http://rumaysho.com/belajar-islam/amalan/3284-doa-agar-baik-dalam-amalan-akhir.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (174, 'Doa Memohon Kebaikan Dan Berlindung Dari Keburukan', 'Doa Memohon Kesabaran, Teguh Pendirian Dan Pertolongan Terhadap Orang Kafir', 'رَبَّنَا أَفْرِغْ عَلَيْنَا صَبْرًا وَثَبِّتْ أَقْدَامَنَا وَانْصُرْنَا عَلَى الْقَوْمِ الْكَافِرِينَ', 'Robbanaa afrigh ''alainaa shobron, wa tsabbit aqdaamanaa, wan-shurnaa ''alal qoumil kaafiriin.', 'Ya Rabb kami, limpahkanlah kesabaran atas diri kami, dan teguhkanlah pendirian kami, dan tolonglah kami terhadap orang-orang kafir. (Al Baqarah [2]: 250).', 'Sumber: http://rumaysho.com/amalan/kiat-agar-semangat-tidak-kendor-dalam-belajar-islam-3315', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (175, 'Doa Memohon Kebaikan Dan Berlindung Dari Keburukan', 'Doa Berlindung Dari Kesesatan Dan Memohon Rahmat', 'رَبَّنَا لَا تُزِغْ قُلُوبَنَا بَعْدَ إِذْ هَدَيْتَنَا وَهَبْ لَنَا مِنْ لَدُنْكَ رَحْمَةً إِنَّكَ أَنْتَ الْوَهَّابُ', 'Robbanaa laa tuzigh quluubanaa ba''da idz hadaitanaa, wa hab lanaa mil-ladunka rohmah, innaka antal wahhaab.', 'Ya Rabb kami, janganlah Engkau jadikan hati kami condong kepada kesesatan sesudah Engkau beri petunjuk kepada kami, dan karuniakanlah kepada kami rahmat dari sisi Engkau, karena sesungguhnya Engkau-lah Maha Pemberi (karunia). (Ali Imran [3]: 8).', 'Sumber: http://rumaysho.com/amalan/kiat-agar-semangat-tidak-kendor-dalam-belajar-islam-3315', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (176, 'Doa Memohon Kebaikan Dan Berlindung Dari Keburukan', 'Doa Agar Mudah Melakukan Kebaikan, Meninggalkan Kemungkaran, Mencintai Orang Miskin Dan Berlindung Dari Fitnah', 'اَللَّهُمَّ إِنِّى أَسْأَلُكَ فِعْلَ الْخَيْرَاتِ، وَتَرْكَ الْمُنْكَرَاتِ، وَحُبَّ الْمَسَاكِينِ، وَإِذَا أَرَدْتَ بِعِبَادِكَ فِتْنَةً، فَاقْبِضْنِى إِلَيْكَ غَيْرَ مَفْتُونٍ', 'Allaahumma innii as-aluka fi''lal khoiroot, wa tarkal munkaroot, wa hubbal masaakiin. Wa idzaa arod-ta bi''ibaadika fitnatan, faq-bidh-nii ilaika ghoiro maftuun.', 'Ya Allah, aku memohon kepada-Mu taufiq agar bisa mengamalkan semua kebaikan, meninggalkan semua kemungkaran dan bisa mencintai orang miskin. Jika Engkau menghendaki bagi hamba-hamba-Mu ujian (fitnah), maka wafatkanlah aku tanpa terkena fitnah itu.', 'HR. Ahmad 22109, Turmudzi 3541, dan dishahihkan al-Albani.
+Keutamaan Doa:
+Doa ini diajarkan oleh Allah kepada Nabi-Nya shallallahu ‘alaihi wa sallam, agar dibaca ketika shalat. Ini menunjukkan nilai keistimewaan doa ini. Hingga Allah perintahkan Nabi-Nya untuk membacanya dalam shalat.
+
+Dalam hadis dari Ibnu Abbas radhiyallahu ‘anhuma, Rasulullah shallallahu ‘alaihi wa sallam menceritakan mimpi beliau. Dalam mimpi itu, beliau bertemu Allah. Salah satu yang diajarkan, “Wahai Muhammad, jika kamu shalat, bacalah doa: (doa di atas).”
+
+Disamping itu, Nabi shallallahu ‘alaihi wa sallam secara khusus memerintahkan untuk mempelajari dan memahami kandungan makna doa ini. Dalam riwayat Turmudzi terdapat tambahan, pernyataan Nabi shallallahu ‘alaihi wa sallam, “Kalimat ini benar, karena itu hafalkan dan pelajari kandungannya.” (HR. Turmudzi 3543).
+
+
+Sumber: https://konsultasisyariah.com/25877-doa-perlindungan-dari-fitnah.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (177, 'Doa Memohon Kebaikan Dan Berlindung Dari Keburukan', 'Doa Agar Mudah Melakukan Kebaikan, Meninggalkan Kemungkaran, Mencintai Orang Miskin, Memohon Ampun Dan Rahmat Dan Berlindung Dari Fitnah', 'اَللَّهُمَّ إِنِّى أَسْأَلُكَ فِعْلَ الْخَيْرَاتِ، وَتَرْكَ الْمُنْكَرَاتِ، وَحُبَّ الْمَسَاكِينِ، وَأَنْ تَغْفِرَ لِى وَتَرْحَمَنِى، وَإِذَا أَرَدْتَ فِتْنَةَ قَوْمٍ فَتَوَفَّنِى غَيْرَ مَفْتُونٍ', 'Allaahumma innii as-aluka fi''lal khoiroot, wa tarkal munkaroot, wa hubbal masaakiin. Wa an tagh-firolii wa tarhamanii. Wa idzaa arod-ta fitnata qoumin, fatawaffanii ghoiro maftuun.', 'Ya Allah, aku memohon kepada-Mu agar mudah melakukan kebaikan, meninggalkan kemungkaran dan mencintai orang miskin. Ampunilah aku dan rahmatilah aku. Jika Engkau ingin menimpakan ujian (fitnah) pada suatu kaum, maka wafatkanlah aku dalam keadaan tidak tenggelam dalam ujian itu.', 'HR. Tirmidzi no. 3235 dan Ahmad 5: 243, dan dishahihkan al-Albani.
+
+Sumber: https://konsultasisyariah.com/21758-kumpulan-doa-nabi-shallallahu-alaihi-wa-sallam.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (178, 'Doa Memohon Kebaikan Dan Berlindung Dari Keburukan', 'Doa Meminta Segala Sesuatu Yang Pernah Diminta Nabi', 'اَللَّهُمَّ إِنِّي أَسْأَلُكَ مِنَ الْخَيْرِ كُلِّهِ عَاجِلِهِ وَآجِلِهِ، مَا عَلِمْتُ مِنْهُ وَمَا لَمْ أَعْلَمْ
+وَأَعُوذُ بِكَ مِنَ الشَّرِّ كُلِّهِ عَاجِلِهِ وَآجِلِهِ، مَا عَلِمْتُ مِنْهُ وَمَا لَمْ أَعْلَمْ
+اَللَّهُمَّ إِنِّي أَسْأَلُكَ مِنْ خَيْرِ مَا سَأَلَكَ عَبْدُكَ وَنَبِيُّكَ، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا عَاذَ بِهِ عَبْدُكَ وَنَبِيُّكَ
+اَللَّهُمَّ إِنِّي أَسْأَلُكَ الْجَنَّةَ وَمَا قَرَّبَ إِلَيْهَا مِنْ قَوْلٍ أَوْ عَمَلٍ، وَأَعُوذُ بِكَ مِنَ النَّارِ وَمَا قَرَّبَ إِلَيْهَا مِنْ قَوْلٍ أَوْ عَمَلٍ
+وَأَسْأَلُكَ أَنْ تَجْعَلَ كُلَّ قَضَاءٍ قَضَيْتَهُ لِي خَيْرًا', 'Allaahumma innii as-aluka minal khoiri kullihi ''aajilihi wa aajilihi, maa ''alimtu minhu wa maa lam a''lam,
+Wa a''uudzu bika minasy-syarri kullihi ''aajilihi wa aajilihi, maa ''alimtu minhu wa maa lam a''lam,
+Allaahumma innii as-aluka min khoiri maa sa-alaka ''abduka wa nabiyyuka, wa a''uudzu bika min syarri maa ''aadza bihi ''abduka wa nabiyyuka,
+Allaahumma innii as-alukal jannata wa maa qorroba ilaihaa min qoulin au ''amal, wa a''uudzu bika minan-naari wa maa qorroba ilaihaa min qoulin au ''amal,
+Wa as-aluka an taj''ala kulla qodhoo-in qodhoitahu lii khoiron.', 'Ya Allah, aku memohon kepada-Mu segala kebaikan yang segera (dunia) dan yang tertunda (akhirat), yang aku ketahui dan yang tidak aku ketahui,
+Dan aku berlindung kepada-Mu dari segala keburukan yang segera (dunia) dan yang tertunda (akhirat), yang aku ketahui dan yang tidak aku ketahui,
+Ya Allah, aku memohon kepada-Mu kebaikan semua doa yang pernah diminta oleh hamba dan nabi-Mu, dan aku berlindung kepada-Mu dari keburukan yang hamba dan nabi-Mu pernah berlindung darinya,
+Ya Allah, aku memohon kepada-Mu surga dan segala hal yang mendekatkan kepadanya, dari perkataan maupun perbuatan. Dan aku berlindung kepada-Mu dari neraka dan dari segala hal yang mendekatkan kepadanya, dari perkataan maupun perbuatan,
+Dan aku memohon kepada-Mu agar Engkau jadikan setiap yang Engkau takdirkan bagiku adalah baik.', 'HR. Ahmad 25019, Ibnu Majah 3846 dan dishahihkan Syuaib al-Arnauth.
+
+Sumber: https://konsultasisyariah.com/21758-kumpulan-doa-nabi-shallallahu-alaihi-wa-sallam.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (179, 'Doa Memohon Kebaikan Dan Berlindung Dari Keburukan', 'Doa Berlindung Dari Memohon Yang Tidak Diketahui, Serta Memohon Ampun Dan Rahmat (Doa Nabi Nuh)', 'رَبِّ إِنِّي أَعُوذُ بِكَ أَنْ أَسْأَلَكَ مَا لَيْسَ لِي بِهِ عِلْمٌ وَإِلَّا تَغْفِرْ لِي وَتَرْحَمْنِي أَكُنْ مِنَ الْخَاسِرِينَ', 'Robbi innii a''uudzu bika an as-alaka maa laisa lii bihi ''ilmun, wa illaa tagh-fir lii, wa tarhamnii, akun minal khoosiriin.', 'Ya Tuhanku, sesungguhnya aku berlindung kepada Engkau dari memohon kepada Engkau sesuatu yang aku tiada mengetahui (hakekat)nya. Dan sekiranya Engkau tidak memberi ampun kepadaku, dan (tidak) menaruh belas kasihan kepadaku, niscaya aku akan termasuk orang-orang yang merugi. (Hud [11]: 47).', 'Sumber: https://muslim.or.id/26012-doa-doa-dari-al-quran-1.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (180, 'Doa Memohon Kebaikan Dan Berlindung Dari Keburukan', 'Doa Memohon Agar Tidak Dihukum Dan Dibebani Yang Berat, Serta Memohon Maaf, Ampun, Rahmat Dan Pertolongan Terhadap Orang Kafir', 'رَبَّنَا لَا تُؤَاخِذْنَا إِنْ نَسِينَا أَوْ أَخْطَأْنَا رَبَّنَا وَلَا تَحْمِلْ عَلَيْنَا إِصْرًا كَمَا حَمَلْتَهُ عَلَى الَّذِينَ مِنْ قَبْلِنَا رَبَّنَا وَلَا تُحَمِّلْنَا مَا لَا طَاقَةَ لَنَا بِهِ وَاعْفُ عَنَّا وَاغْفِرْ لَنَا وَارْحَمْنَا أَنْتَ مَوْلَانَا فَانْصُرْنَا عَلَى الْقَوْمِ الْكَافِرِينَ', 'Robbanaa laa tu-aakhidz-naa in nasiinaa au akh-tho''na, robbanaa wa laa tahmil ''alainaa ish-ron kamaa hamaltahu ''alalladziina min qoblinaa, robbanaa wa laa tuhammilnaa maa laa thooqota lanaa bih, wa''fu ''annaa, wagh-fir lanaa, warhamnaa, anta maulaanaa, fan-shurnaa ''alal qoumil kaafiriin.', 'Ya Tuhan kami, janganlah Engkau hukum kami jika kami lupa atau kami tersalah. Ya Tuhan kami, janganlah Engkau bebankan kepada kami beban yang berat sebagaimana Engkau bebankan kepada orang-orang sebelum kami. Ya Tuhan kami, janganlah Engkau pikulkan kepada kami apa yang tak sanggup kami memikulnya. Beri maaflah kami; ampunilah kami; dan rahmatilah kami. Engkaulah Penolong kami, maka tolonglah kami terhadap kaum yang kafir. (Al Baqarah [2]: 286).', 'Sumber: https://muslim.or.id/26012-doa-doa-dari-al-quran-1.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (181, 'Doa Memohon Kebaikan Dan Berlindung Dari Keburukan', 'Doa Memohon Keamanan Negeri Dan Berlindung Dari Syirik (Doa Nabi Ibrahim)', 'رَبِّ اجْعَلْ هَـٰذَا الْبَلَدَ آمِنًا وَاجْنُبْنِي وَبَنِيَّ أَنْ نَعْبُدَ الْأَصْنَامَ', 'Robbij''al haadzal balada aaminaa, wajnubnii wa baniyya an na''budal ash-naam.', 'Ya Tuhanku, jadikanlah negeri ini (Mekah), negeri yang aman, dan jauhkanlah aku beserta anak cucuku daripada menyembah berhala-berhala. (Ibrahim [14]: 35).', 'Sumber: https://muslim.or.id/26031-doa-doa-dari-al-quran-2.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (182, 'Doa Memohon Kebaikan Dan Berlindung Dari Keburukan', 'Doa Agar Kaum Muslimin Disatukan Hatinya, Diberi Petunjuk Dan Keselamatan, Dijauhkan Dari Perbuatan Keji, Diberkahi Diri Dan Keluarga, Diterima Taubat Dan Dijadikan Hamba Yang Bersyukur', 'اَللَّهُمَّ أَلِّفْ بَيْنَ قُلُوبِنَا، وَأَصْلِحْ ذَاتَ بَيْنِنَا، وَاهْدِنَا سُبُلَ السَّلاَمِ، وَنَجِّنَا مِنَ الظُّلُمَاتِ إِلَى النُّورِ، وَجَنِّبْنَا الْفَوَاحِشَ مَا ظَهَرَ مِنْهَا وَمَا بَطَنَ، وَبَارِكْ لَنَا فِى أَسْمَاعِنَا، وَأَبْصَارِنَا، وَقُلُوبِنَا، وَأَزْوَاجِنَا، وَذُرِّيَّاتِنَا، وَتُبْ عَلَيْنَا، إِنَّكَ أَنْتَ التَّوَّابُ الرَّحِيمُ، وَاجْعَلْنَا شَاكِرِينَ لِنِعْمَتِكَ، مُثْنِينَ بِهَا قَابِلِيهَا، وَأَتِمَّهَا عَلَيْنَا', 'Allaahumma allif baina quluubinaa, wa ashlih dzaata baininaa, wahdinaa subulas-salaam, wa najjinaa minazh-zhulumaati ilan-nuur, wa jannibnal fawaahisya maa zhoharo minhaa wa maa bathon, wa baarik lanaa fii asmaa''inaa, wa ab-shoorinaa, wa quluubinaa, wa azwaajinaa, wa dzurriyyaatinaa, wa tub ''alainaa, innaka antat-tawwaabur-rohiim, waj''alnaa syaakiriina lini''matik, muts-niina bihaa qoobiliihaa, wa atimmahaa ''alainaa.', 'Ya Allah, satukanlah hati kami. Perbaikilah keadaan kami. Tunjukilah kami jalan-jalan keselamatan (menuju surga). Selamatkanlah kami dari kegelapan menuju cahaya. Jauhkanlah kami dari perbuatan keji yang nampak maupun tersembunyi. Berkahilah pendengaran, penglihatan, hati, istri-istri dan keturunan kami. Terimalah taubat kami, sesungguhnya Engkau Maha Pengampun lagi Maha Penyayang. Jadikanlah kami hamba yang bersyukur atas nikmat-Mu, terus memuji-Mu dan menerima nikmat tersebut, dan sempurnakanlah nikmat tersebut pada kami.', 'HR. Abu Daud no. 969, dari ‘Abdullah bin Mas’ud radhiyallahu ‘anhu. Hadits ini juga dikeluarkan oleh Al-Baihaqi dalam Al-Qadha’ wa Al-Qadr dari hadits Abu Daud, asalnya dikeluarkan oleh Tirmidzi. Kesimpulannya, Al-Hafizh Abu Thahir mengatakan bahwa hadits ini shahih.
+
+Sumber: https://rumaysho.com/16229-khutbah-jumat-ya-allah-satukanlah-hati-kami.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (183, 'Bacaan Bila Kagum Terhadap Sesuatu', 'Bacaan Bila Kagum Terhadap Sesuatu 1', 'سُبْحَانَ اللَّهِ', 'Subhaanallaah.', 'Maha Suci Allah.', 'HR. Al-Bukhari dengan Fathul Bari 1/210, 390 dan 414, Muslim 4/1857.
+
+Sumber: Hisnul Muslim.', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (184, 'Bacaan Bila Kagum Terhadap Sesuatu', 'Bacaan Bila Kagum Terhadap Sesuatu 2', 'اَللَّهُ أَكْبَرُ', 'Allaahu akbar.', 'Allah Maha Besar.', 'HR. Al-Bukhari dengan Fathul Bari 8/441, lihat pula Shahih At-Tirmidzi 2/103, 2/235, dan Musnad Ahmad 5/218.
+
+Sumber: Hisnul Muslim.', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (185, 'Bacaan Bila Kagum Terhadap Sesuatu', 'Bacaan Bila Kagum Terhadap Sesuatu 3', 'مَا شَاءَ اللَّهُ', 'Maa syaa-allaah.', 'Atas kehendak Allah semua ini terwujud. (Al-Kahfi [18]: 39).', 'Allah berfirman dalam surat al-Kahfi, “Mengapa kamu tidak mengatakan waktu kamu memasuki kebunmu ''maasyaallaah, laa quwwata illaa billaah'' (sungguh atas kehendak Allah semua ini terwujud, tiada kekuatan kecuali dengan pertolongan Allah).” (Al-Kahfi [18]: 39).
+Ayat ini dijadikan dalil sebagian ulama terkait kapan kita dianjurkan mengucapkan Masya Allah. Dalam ayat ini, orang mukmin menasehatkan kepada temannya pemilik kebun yang kafir, agar ketika masuk kebunnya dia mengucapkan, “maasyaallaah, laa quwwata illaa billaah” sehingga kebunnya tidak tertimpa hal yang tidak diinginkan.
+
+Ketika menjelaskan ayat ini, Imam Ibnu Utsaimin mengatakan, “Selayaknya bagi seseorang, ketika dia merasa kagum dengan hartanya, agar dia mengucapkan, ''maasyaallaah, laa quwwata illaa billaah'' sehingga dia kembalikan segala urusannya kepada Allah, bukan kepada kemampuannya. Dan terdapat riwayat, bahwa orang yang membaca itu ketika merasa heran dengan apa yang dimilikinya, maka dia tidak akan melihat sesuatu yang tidak dia sukai menimpa hartanya.” (Tafsir Surat al-Kahfi, ayat: 39).
+
+
+Sumber: https://konsultasisyariah.com/24593-kapan-kita-mengucapkan-subhanallah-dan-masyaallah.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (186, 'Bacaan Bila Kagum Terhadap Sesuatu', 'Bacaan Bila Perkara Dunia Membuat Takjub', 'بَّيْكَ، إِنَّ الْعَيْشَ عَيْشُ الْآخِرَةِ', 'Labbaik, innal ''aisya ''aisyul aakhiroh.', 'Aku penuhi panggilanmu ya Allah, sungguh kehidupan yang hakiki adalah kehidupan akhirat.', 'HR. Bukhari 2834, Muslim 1805.
+Syaikh Ibnul Utsaimin –rahimahullah– mengatakan: Rasul –shallallahu’alaihi wasallam– dahulu bila melihat suatu perkara dunia yang membuatnya takjub, beliau mengatakan: (ucapan di atas).
+
+Karena bila seseorang melihat suatu perkara dunia yang membuatnya takjub, mungkin saja dia meliriknya, sehingga dia berpaling dari Allah. Oleh karena itu beliau mengatakan “labbaik” sebagai jawaban panggilan Allah azza wajalla, kemudian beliau memantapkan hatinya dengan mengatakan “Sungguh kehidupan yang hakiki adalah kehidupan akhirat“.
+
+Karena kehidupan yang membuatmu takjub ini adalah kehidupan yang pasti sirna, sedang kehidupan yang sebenarnya adalah kehidupan akhirat. Oleh karena itu, termasuk diantara sunnah ketika seseorang melihat sesuatu yang menakjubkan di dunia ini adalah mengucapkan: (ucapan di atas). (Syarah Mumti‘, 3/124).
+
+Imam Syafi’i –rahimahullah– mengatakan: Rasulullah –shallallahu alaihi wasallam– mengucapkannya di momen yang paling membahagiakan dan paling menyusahkan.
+
+(Nihayatul Mathlab, karya Al Juwaini, 4/237-238).
+
+
+Sumber: https://muslim.or.id/21680-sunnah-yang-terlupakan-ucapan-innal-aisya-aisyul-akhirah.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (187, 'Bacaan Bila Kagum Terhadap Sesuatu', 'Bacaan Agar Tidak Terpedaya Kenikmatan Dan Kemewahan Dunia', 'اَللَّهُمَّ لَا عَيْشَ إِلَّا عَيْشُ الْآخِرَةِ', 'Allaahumma laa ''aisya illaa ''aisyul aakhiroh.', 'Ya Allah, tidak ada kehidupan yang hakiki kecuali kehidupan akhirat.', 'HR. Al-Bukhari dan Muslim.
+
+Sumber: https://bbg-alilmu.com/archives/9939', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (188, 'Beberapa Adab Dan Keutamaan', 'Pujian Kepada Allah Sebelum Berdoa', 'اَللَّهُمَّ إِنِّيْ أَسْأَلُكَ بِأَنِّي أَشْهَدُ أَنَّكَ أَنْتَ اللَّهُ، لاَ إِلَـٰهَ إِلاَّ أَنْتَ، اَلأَ حَدُ الصَّمَدُ، اَلَّذِيْ لَمْ يَلِدْ وَلَمْ يُولَدْ، وَلَمْ يَكُن لَّهُ كُفُوًا أَحَدُ', 'Allaahumma innii as-aluka bi annii asyhadu annaka antallaahu, laa ilaaha illaa anta, al ahadush-shomad, alladzii lam yalid wa lam yuulad, wa lam yakul-lahu kufuwan ahad.', 'Ya Allah, aku memohon kepada-Mu dengan bersaksi bahwa sesungguhnya Engkau adalah Allah, tidak ada sesembahan yang berhak disembah kecuali Engkau, yang Maha Esa, tempat bergantung segala sesuatu, yang tidak beranak dan tidak pula diperanakkan, dan tidak ada seorangpun setara dengan-Mu.', 'HR. Abu Dawud, An-Nasa-i dan At-Tirmidzi. Syaikh Al-Albani rahimahullah berkata, “shahih”.
+Rasulullah shallallahu ‘alaihi wa sallam pernah mendengar seseorang berdoa: (doa di atas), lalu Rasulullah shallallahu ‘alaihi wa sallam bersabda, “Sungguh ia telah memohon kepada Allah dengan menggunakan Nama-Nya yang jika Dia dimintai dengan nama tersebut, Dia pasti memberi, dan jika Dia diseru dengan nama tersebut, Dia pasti mengabulkan.”
+
+Bisa juga dengan cara menyebut nama-nama Allah yang sesuai dengan isi doa yang kita sampaikan. Misalnya, kita mohon ampunan maka kita menyebut nama Allah “Al-Ghaffar” atau “Al-Ghafur” (yang Maha Pengampun).
+
+
+Sumber: http://bbg-alilmu.com/archives/19074 dan https://konsultasisyariah.com/4677-bagaimana-cara-memuji-allah-dan-bersalawat-sebelum-berdoa.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (189, 'Beberapa Adab Dan Keutamaan', 'Doa Bersin', 'اَلْحَمْدُ لِلَّهِ', 'Alhamdulillaah.', 'Segala puji bagi Allah.', 'Lantas saudara atau temannya mengucapkan:
+
+يَرْحَمُكَ اللَّهُ
+
+Yarhamukallaah.
+
+Semoga Allah memberi rahmat kepadaMu.
+
+Bila teman atau saudaranya mengucapkan demikian, bacalah:
+
+يَهْدِيْكُمُ اللَّهُ وَيُصْلِحُ بَالَكُمْ
+
+Yahdiikumullaahu wa yushlihu baalakum.
+
+Semoga Allah memberi petunjuk kepadamu dan memperbaiki keadaanmu.
+
+
+HR. Al-Bukhari 7/125.
+
+Sumber: Hisnul Muslim.', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (190, 'Beberapa Adab Dan Keutamaan', 'Doa Bila Orang Kafir Bersin Lalu Memuji Allah', 'يَهْدِيْكُمُ اللَّهُ وَيُصْلِحُ بَالَكُمْ', 'Yahdiikumullaahu wa yushlihu baalakum.', 'Semoga Allah memberi hidayah kepadamu dan memperbaiki hatimu.', 'HR. At-Tirmidzi 5/82, Ahmad 4/400, Abu Daud 4/308. Lihat pula Shahih At-Tirmidzi 2/354.
+
+Sumber: Hisnul Muslim.', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (191, 'Beberapa Adab Dan Keutamaan', 'Doa Kepada Orang Yang Berbuat Baik Kepadamu', 'جَزَاكَ اللَّهُ خَيْرًا', 'Jazaakallaahu khoiron.', 'Semoga Allah membalasmu dengan kebaikan.', 'HR. At-Tirmidzi 2035, lihat Shahihul Jami'' 6244, Shahih At-Tirmidzi 2/200.
+Usamah bin Zaid berkata: Rasulullah shallallahu ''alaihi wasallam bersabda: "Barangsiapa yang dibuatkan kepadanya kebaikan, lalu ia mengatakan kepada pelakunya: (doa di atas), maka sungguh ia telah benar-benar meninggikan pujian." HR. Tirmidzi dan dishahihkan oleh Al Albani di dalam kitab Shahih Al Jami'', no. 6368.
+
+
+Sumber: Hisnul Muslim dan http://muslim.or.id/akhlaq-dan-nasehat/jazakallah-khoiron-membalas-orang-lain-yang-berbuat-baik.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (192, 'Beberapa Adab Dan Keutamaan', 'Jawaban Kepada Orang Yang Berkata: Ghafarallaahu Laka', 'وَلَكَ', 'Wa laka.', 'Begitu juga kamu.', 'HR. Ahmad 5/82, An-Nasa''i dalam ''Amalul Yaum wal Lailah halaman 218, no. 421.
+
+Sumber: Hisnul Muslim.', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (193, 'Beberapa Adab Dan Keutamaan', 'Jawaban Kepada Orang Yang Berkata: Uhibbuka Fillaah', 'أَحَبَّكَ الَّذِيْ أَحْبَبْتَنِي لَهُ', 'Ahabbakal-ladzii ahbabtanii lahu.', 'Semoga Allah mencintaimu, karena engkau telah mencintaiku karena-Nya.', 'HR. Abu Dawud 4/333. Al-Albani menyatakan, hadits tersebut hasan dalam Shahih Sunan Abi Dawud 3/965.
+
+Sumber: Hisnul Muslim.', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (194, 'Beberapa Adab Dan Keutamaan', 'Jawaban Kepada Orang Yang Berkata: Baarakallaahu Fiika', 'وَفِيْكَ بَارَكَ اللَّهُ', 'Wa fiika baarokallaah.', 'Semoga Allah juga memberkahimu.', 'Ibnu Sunni h. 138, no. 278, lihat Al-Waabilush Shayyib Iibnil Qayyim, hal. 304. Tahqiq Muhammad Uyun.
+
+Sumber: Hisnul Muslim.', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (195, 'Beberapa Adab Dan Keutamaan', 'Doa Kepada Orang Yang Anda Caci', 'اَللَّهُمَّ فَأَيُّمَا مُؤْمِنٍ سَبَبْتُهُ فَاجْعَلْ ذَالِكَ لَهُ قُرْبَةً إِلَيْكَ يَوْمَ الْقِيَامَةِ', 'Allaahumma fa-ayyumaa mu''minin sababtuhu faj''al dzaalika lahu qurbatan ilaika yaumal qiyaamah.', 'Ya Allah, siapa saja di antara orang mukmin yang kucaci, jadikanlah sebagai sarana yang mendekatkan dirinya kepadaMu di hari Kiamat.', 'HR. Al-Bukhari dengan Fathul Bari 11/171, Muslim 4/2007, dan kalimatnya: "Jadikanlah sebagai pembersih dan rahmat."
+
+Sumber: Hisnul Muslim.', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (196, 'Beberapa Adab Dan Keutamaan', 'Doa Bila Dipuji Orang', 'اَللَّهُمَّ لاَ تُؤَاخِذْنِيْ بِمَا يَقُوْلُوْنَ، وَاغْفِرْلِيْ مَا لاَ يَعْلَمُوْنَ (وَاجْعَلْنِيْ خَيْرًا مِمَّا يَظُنُّوْنَ)', 'Allaahumma laa tu-aakhidznii bimaa yaquuluun, waghfir lii maa laa ya''lamuun, (waj''alnii khoiron mimmaa yazhunnuun).', 'Ya Allah, semoga Engkau tidak menghukumku karena apa yang mereka katakan. Ampunilah aku atas apa yang tidak mereka ketahui. (Dan jadikanlah aku lebih baik daripada yang mereka perkirakan).', 'HR. Al-Bukhari dalam Al-Adabul Mufrad no. 761. Isnad hadits tersebut dinyatakan shahih oleh Al-Albani dalam Shahih Al-Adabul Mufrad no. 585. Kalimat dalam kurung tambahan Al-Baihaqi dalam Syu''abul Iman 4/228 dari jalan lain.
+
+Sumber: Hisnul Muslim.', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (197, 'Beberapa Adab Dan Keutamaan', 'Doa Ketika Marah', 'أَعُوْذُ بِاللَّهِ مِنَ الشَّيْطَانِ الرَّجِيْمِ', 'A''uudzu billaahi minasy-syaithoonir-rojiim.', 'Aku berlindung kepada Allah dari godaan syaitan yang terkutuk.', 'HR. Al-Bukhari 7/99, Muslim 4/2015.
+
+Sumber: Hisnul Muslim.', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (198, 'Beberapa Adab Dan Keutamaan', 'Bacaan Ketika Takut', 'لاَ إِلَـٰهَ إِلاَّ اللَّهُ', 'Laa ilaaha illallaah.', 'Tidak ada sesembahan yang berhak disembah kecuali Allah.', 'HR. Al-Bukhari dengan Fathul Bari 6/181, Muslim 4/2208.
+
+Sumber: Hisnul Muslim.', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (199, 'Beberapa Adab Dan Keutamaan', 'Jawaban Kepada Orang Kafir Yang Mengucapkan Salam', 'وَعَلَيْكُمْ', 'Wa ''alaikum.', 'Dan atasmu juga.', 'HR. Al-Bukhari dengan Fathul Bari 11/42, Muslim 4/1705.
+"Apabila ahli kitab mengucapkan salam kepadamu, jawablah: (jawaban di atas)."
+
+
+Sumber: Hisnul Muslim.', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (200, 'Beberapa Adab Dan Keutamaan', 'Ucapan Ketika Melihat Kemungkaran', 'سُبْحَانَ اللَّهِ', 'Subhaanallaah.', 'Maha Suci Allah.', 'Keterangan:
+Sebuah kemungkaran, baik perkataan maupun perbuatan, dimaknai sebagai hal-hal yang bertentangan dengan syariat atau hal-hal lain yang mengganggu orang-orang beriman.
+Ada banyak dalil yang diungkapkan para ulama tentang ucapan tasbih ketika terjadinya kemungkaran. Salah satunya adalah dalam surat An-Nur: 16 yang mengisahkan kisah al-Ifku, yaitu berita dusta tentang perzinahan ‘Aisyah radhiyallahu ‘anha.
+
+Allah berfirman, “Dan mengapa kamu tidak berkata, di waktu mendengar berita bohong itu, ‘Sekali-kali tidaklah pantas bagi kita memperkatakan ini. Maha Suci Engkau (Ya Tuhan kami), ini adalah dusta yang besar.’” [1]
+
+Al-Baghawiy dalam tafsirnya menyebutkan, “Bahwa lafadz ‘subhaanaka’ dalam ayat bermakna ‘ta’ajjub’/heran.” [2]
+
+Imam Al-hafizh Ibnu Katsir menuturkan, “Yaitu Maha Suci Allah ketika ungkapan (dusta) ditujukan kepada Istri Rasulullah shallallahu ‘alaihi wasallam sekaligus istri dari kekasih Allah.” [3]
+
+Apa yang diungkapkan oleh Ahlu al-Ifki, sebutan bagi mereka yang menyebarkan berita bohong terhadap ‘Aisyah, merupakan kemungkaran yang besar, oleh karena itu disyariatkan mengucapkan tasbih ketika mendengarnya. Ini sebagai penyucian kepada Allah karena kedustaan yang menimpa keluarga nabi. [4]
+
+Lisan ‘Aisyah Radhiyallahu ‘Anha Yang Bertasbih
+
+Jauh sebelum ayat itu turun, ketika mendengar gosip dan kedustaan yang dipublikasikan oleh ahlul ifki saat itu, Aisyah pun bertasbih sambil menuturkan, “Subhaanallah, orang-orang telah membicarakan ini?” [5]
+
+Sebagian Sahabat Juga Bertasbih
+
+Ketika mendengar kedustaan ini, para sahabat juga bertasbih kepada Allah. Mereka bertutur, “Subhaanallah, tidak pantas bagi kami membicarakan ini. Ini adalah kedustaan yang besar.” [6]
+
+Ungkapan para sahabat ini menegaskan bahwa ungkapan “subhaanallah” adalah sebagai pelajaran bagi kaum muslimin untuk memuliakan, memuji dan mengagungkan Allah ketika mendengar ungkapan mungkar lagi dusta tentang kaum muslimin lainnya.
+
+Para ulama, dari hadits ‘Aisyah tentang kisah al-Ifk, menyebutkan salah satu faidah bahwa disyari’atkan mengucapkan tasbih ketika ta’ajjub/heran terhadap terjadinya kemungkaran atau mendengar hal-hal yang dusta. [7]
+
+[1] An-Nur [24]: 16.
+[2] Lihat Tafsir al-Baghawiy hal 26 jilid 6, al-Maktabah asy-Syamilah.
+[3] Lihat Tafsir Ibn Katsir hal 29 jilid 6, al-Maktabah asy-Syamilah.
+[4] Lihat kitab at-Tasbih fiy al-Kitab was Sunnah, hal 24 Jilid 2.
+[5] Potongan hadits panjang tentang kisah tuduhan dusta terhadap ‘Aisyah radhiyallahu ‘anha diriwayatkan Bukhari dan Muslim.
+[6] Fath al-Baari hal 470 jilid 4. Dikutip dari kitab at-Tasbih fiy al-Kitab was Sunnah, hal 25 Jilid 2.
+
+
+Sumber: https://muslim.or.id/21710-mengucapkan-subhanallah-ketika-melihat-kemungkaran.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (201, 'Istighfar Dan Taubat', 'Doa Istighfar/Taubat 1', 'أَسْتَغْفِرُ اللَّهَ الْعَظِيْمَ الَّذِيْ لاَ إِلَـٰهَ إِلاَّ هُوَ الْحَيُّ الْقَيُّوْمُ وَأَتُوْبُ إِلَيْهِ', 'Astaghfirullaahal ''azhiimal-ladzii laa ilaaha illaa huwal hayyul qoyyuum, wa atuubu ilaih.', 'Aku minta ampun kepada Allah Yang Maha Agung, tidak ada sesembahan yang berhak disembah kecuali Dia, Yang Hidup dan terus-menerus mengurus makhlukNya, dan aku bertaubat kepada-Nya.', 'HR. Abu Dawud 2/85, At-Tirmidzi 5/569, Al-Hakim, dan menurut pendapatnya hadits di atas adalah shahih. Imam Adz-Dzahabi menyetujuinya 1/511, Al-Albani menyatakan hadits tersebut adalah shahih. Lihat pula Shahih At-Tirmidzi 3/182, Jami''ul Ushul li ahaditsir Rasul 4/389-390 dengan tahqiq Al-Arnauth.
+Rasul Shallallahu''alaihi wasallam bersabda: "Barangsiapa yang membaca: (doa di atas) maka Allah mengampuninya, sekalipun dia pernah lari dari perang."
+
+
+Sumber: Hisnul Muslim.', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (202, 'Istighfar Dan Taubat', 'Doa Istighfar/Taubat 2', 'اَللَّهُمَّ إِنِّيْ ظَلَمْتُ نَفْسِيْ ظُلْمًا كَثِيْرًا، وَلاَ يَغْفِرُ الذُّنُوْبَ إِلاَّ أَنْتَ، فَاغْفِرْ لِيْ مَغْفِرَةً مِنْ عِنْدِكَ، وَارْحَمْنِيْ، إِنَّكَ أَنْتَ الْغَفُوْرُ الرَّحِيْمُ', 'Allaahumma innii zholamtu nafsii zhulman katsiiron, wa laa yaghfirudz-dzunuuba illaa anta, faghfir lii maghfirotan min ''indika, warhamnii, innaka antal ghofuurur-rohiim.', 'Ya Allah, sungguh aku telah menzalimi diriku dengan kezaliman yang banyak, dan tidak ada yang dapat mengampuni dosa-dosa kecuali Engkau. Maka ampunilah aku dengan suatu pengampunan dari sisi-Mu, dan rahmatilah aku. Sesungguhnya Engkau Maha Pengampun lagi Maha Penyayang.', 'HR. Bukhari no. 834 dan Muslim no. 2705.
+
+Sumber: BBG Al-Ilmu (BlackBerry Group)', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (203, 'Istighfar Dan Taubat', 'Doa Istighfar/Taubat 3', 'رَبِّ اغْفِرْ لِيْ وَتُبْ عَلَىَّ، إِنَّكَ أَنْتَ التَّوَّابُ الرَّحِيْمُ', 'Robbighfir lii wa tub ''alayya, innaka antat-tawwaabur-rohiim.', 'Ya Rabbku, ampunilah dosa-dosaku dan terimalah taubat dariku. Sesungguhnya Engkau Maha Penerima taubat lagi Maha Penyayang.', 'HR. Ahmad, at-Tirmidzi, Abu Dawud, an-Nasa''i dalam al-Kubra, al-Bukhari dalam al-Adabul Mufrad, Ibnu Hibban, ath-Thabrani dalam al-Kabiir. Dishahihhkan oleh Syaikh al-Albani dalam Shahih Sunan Abu Dawud no. 1342.
+
+Sumber: https://www.facebook.com/permalink.php?story_fbid=340569015961100&id=113035155412349', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (204, 'Lafal Dzikir Dan Keutamaannya', 'Lafal Dzikir 1', 'سُبْحَانَ اللَّهِ وَبِحَمْدِهِ', 'Subhaanallaahi wa bihamdih.', 'Maha Suci Allah, aku memujiNya.', 'HR. Al-Bukhari 7/168, Muslim 4/2071.
+Nabi Shallallahu''alaihi wasallam bersabda: "Siapa yang membaca: (dzikir di atas) 100x dalam sehari, maka akan dihapuskan dosa-dosanya, meskipun sebanyak buih di lautan."
+
+
+Sumber: Hisnul Muslim.', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (205, 'Lafal Dzikir Dan Keutamaannya', 'Lafal Dzikir 2 (Tasbih Malaikat)', 'سُبْحَانَ اللَّهِ وَبِحَمْدِهِ', 'Subhaanallaahi wa bihamdih.', 'Maha Suci Allah, aku memujiNya.', 'HR. Muslim no.2731.
+Dari Abu Dzar, Nabi shallallahu ''alaihi wa sallam ditanya: Kalimat apakah yang paling mulia? Beliau menjawab: "Kalimat yang Allah pilihkan untuk malaikat dan untuk para hambanya: (dzikir di atas)."
+
+Tentang tasbih para malaikat, Allah nyatakan dalam firman-Nya:
+Ingatlah ketika Tuhanmu berfirman kepada para Malaikat: "Sesungguhnya Aku hendak menjadikan seorang khalifah di muka bumi." Mereka berkata: "Mengapa Engkau hendak menjadikan (khalifah) di bumi itu orang yang akan membuat kerusakan padanya dan menumpahkan darah, padahal kami senantiasa bertasbih dengan memuji Engkau dan mensucikan Engkau?" Tuhan berfirman: "Sesungguhnya Aku mengetahui apa yang tidak kamu ketahui." (Al-Baqarah [2]: 30).
+
+Kalimat (dzikir di atas) itulah cara bertasbih malaikat', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (206, 'Lafal Dzikir Dan Keutamaannya', 'Lafal Dzikir 3 (Dua Kalimat Yang Ringan Di Lisan, Berat Di Timbangan)', 'سُبْحَانَ اللَّهِ وَبِحَمْدِهِ، سُبْحَانَ اللَّهِ الْعَظِيْمِ', 'Subhaanallaahi wa bihamdih, subhaanallaahil ''azhiim.', 'Maha Suci Allah, aku memujiNya, Maha Suci Allah Yang Maha Agung.', 'HR. Al-Bukhari 7/168 dan Muslim 4/2072.
+Rasulullah Shallallahu''alaihi wasallam bersabda: "Dua kalimat yang ringan di lidah, pahalanya berat di timbangan (hari Kiamat) dan disenangi oleh Tuhan Yang Maha Pengasih, adalah: (dzikir di atas)."
+
+
+Sumber: Hisnul Muslim.', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (207, 'Lafal Dzikir Dan Keutamaannya', 'Lafal Dzikir 4 (Pohon Kurma Di Surga)', 'سُبْحَانَ اللَّهِ الْعَظِيْمِ وَبِحَمْدِهِ', 'Subhaanallaahil ''azhiimi wa bihamdih.', 'Maha Suci Allah Yang Maha Agung, aku memujiNya.', 'HR. At-Tirmidzi 5/511 dan Al-Hakim 1/501. Menurut pendapatnya, hadits tersebut shahih. Imam Adz-Dzahabi menyetujuinya. Lihat pula Shahihul Jami'' 5/531 dan Shahih At-Tirmidzi 3/160.
+"Barangsiapa yang membaca: (dzikir di atas), maka ditanam untuknya sebatang pohon kurma di Surga."
+
+
+Sumber: Hisnul Muslim.', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (208, 'Lafal Dzikir Dan Keutamaannya', 'Lafal Dzikir 5', 'سُبْحَانَ اللَّهِ، وَالْحَمْدُ لِلَّهِ، وَلاَ إِلَـٰهَ إِلاَّ اللَّهُ، وَاللَّهُ أَكْبَرُ', 'Subhaanallaah, wal hamdulillaah, wa laa ilaaha illallaah, wallaahu akbar.', 'Maha Suci Allah, Segala Puji bagi Allah, tidak ada sesembahan yang berhak disembah kecuali Allah, Allah Maha Besar.', 'HR. Muslim 4/2072.
+Rasulullah Shallallahu''alaihi wasallam bersabda: "Sungguh, apabila aku membaca: (dzikir di atas) adalah lebih senang bagiku dari apa yang disinari oleh matahari terbit."
+
+
+Sumber: Hisnul Muslim.', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (209, 'Lafal Dzikir Dan Keutamaannya', 'Lafal Dzikir 6 (Doa Dan Dzikir Terbaik)', 'Sesungguhnya doa yang terbaik adalah membaca:
+اَلْحَمْدُ لِلَّهِ', 'Alhamdulillaah.', 'Segala Puji bagi Allah.', 'Sedang dzikir yang terbaik adalah:
+
+لاَ إِلَـٰهَ إِلاَّ اللَّهُ
+
+Laa ilaaha illallaah.
+
+Tidak ada sesembahan yang berhak disembah kecuali Allah.
+
+
+HR. At-Tirmidzi 5/462, Ibnu Majah 2/1249, Al-Hakim 1/503. Menurut Al-Hakim, hadits tersebut adalah shahih. Imam Adz-Dzahabi menyetujuinya, Lihat pula Shahihul Jami'' 1/362.
+
+Sumber: Hisnul Muslim.', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (210, 'Lafal Dzikir Dan Keutamaannya', 'Lafal Dzikir 7 (Pahalanya Lebih Besar Daripada Dzikir Sehari Semalam)', 'اَلْحَمْدُ لِلَّهِ عَدَدَ مَا خَلَقَ
+وَالْحَمْدُ لِلَّهِ مِلْءَ مَا خَلَقَ
+وَالْحَمْدُ لِلَّهِ عَدَدَ مَا فِي السَّمَاوَاتِ وَمَا فِي الأَرْضِ
+وَالْحَمْدُ لِلَّهِ عَدَدَ مَا أَحْصَى كِتَابُهُ
+وَالْحَمْدُ لِلَّهِ مِلْءَ مَا أَحْصَى كِتَابُهُ
+وَالْحَمْدُ لِلَّهِ عَدَدَ كُلِّ شَيْءٍ
+وَالْحَمْدُ لِلَّهِ مِلْءَ كُلِّ شَيْءٍ
+
+سُبْحَانَ اللَّهِ عَدَدَ مَا خَلَقَ
+وَسُبْحَانَ اللَّهِ مِلْءَ مَا خَلَقَ
+وَسُبْحَانَ اللَّهِ عَدَدَ مَا فِي السَّمَاوَاتِ وَمَا فِي الأَرْضِ
+وَسُبْحَانَ اللَّهِ عَدَدَ مَا أَحْصَى كِتَابُهُ
+وَسُبْحَانَ اللَّهِ مِلْءَ مَا أَحْصَى كِتَابُهُ
+وَسُبْحَانَ اللَّهِ عَدَدَ كُلِّ شَيْءٍ
+وَسُبْحَانَ اللَّهِ مِلْءَ كُلِّ شَيْءٍ', 'Alhamdulillaahi ''adada maa kholaq,
+walhamdulillaahi mil-a maa kholaq,
+walhamdulillaahi ''adada maa fis-samaawaati wa maa fil ardh,
+walhamdulillaahi ''adada maa ahshoo kitaabuh,
+walhamdulillaahi mil-a maa ahshoo kitaabuh,
+walhamdulillaahi ''adada kulli syai-in,
+walhamdulillaahi mil-a kulli syai-in,
+
+Subhaanallaahi ''adada maa kholaq,
+wa subhaanallaahi mil-a maa kholaq,
+wa subhaanallaahi ''adada maa fis-samaawaati wa maa fil ardh,
+wa subhaanallaahi ''adada maa ahshoo kitaabuh,
+wa subhaanallaahi mil-a maa ahshoo kitaabuh,
+wa subhaanallaahi ''adada kulli syai-in,
+wa subhaanallaahi mil-a kulli syai-in.', 'Segala puji bagi Allah sebanyak ciptaan-Nya,
+Segala puji bagi Allah meliputi seluruh ciptaan-Nya,
+Segala puji bagi Allah sebanyak segala yang ada di langit dan di bumi,
+Segala puji bagi Allah sebanyak segala yang terhitung dalam kitab-Nya,
+Segala puji bagi Allah meliputi semua yang dapat dihitung dalam kitab-Nya,
+Segala puji bagi Allah sebanyak segala sesuatu,
+Segala puji bagi Allah meliputi segala sesuatu,
+
+Maha suci Allah sebanyak ciptaan-Nya,
+Maha suci Allah meliputi seluruh ciptaan-Nya,
+Maha suci Allah sebanyak segala yang ada di langit dan di bumi,
+Maha suci Allah sebanyak segala yang terhitung dalam kitab-Nya,
+Maha suci Allah meliputi semua yang dapat dihitung dalam kitab-Nya,
+Maha suci Allah sebanyak segala sesuatu,
+Maha suci Allah meliputi segala sesuatu.', 'HR. Imam Nasa’i 6/50 hadits no 9994, Ibnu Khuzaimah 1/371 hadits nomor 754 dan Imam Thabrani 8/238 hadits no. 7930. Dishahihkan oleh Syaikh Al Albani dalam kitab Shahihul Jami’ no 2615.
+Suatu saat Nabi -shallallahu alaihi wasallam- melihat Abu Umamah -radhiallahu anhu- menggerakkan bibirnya, maka beliau bertanya, “Apa yang sedang kau baca wahai Abu Umamah?” Dia menjawab, “Aku sedang berdzikir kepada Allah.” Beliau mengatakan, “Maukah aku tunjukkan kepadamu dzikir yang pahalanya lebih banyak dari dzikirmu selama sehari semalam?” Kemudian beliau mengajarinya: (dzikir di atas), dan beliau berpesan, “Ajarkanlah dzikir ini kepada orang-orang setelahmu.”
+
+
+Sumber: http://www.madinatulquran.or.id/dzikir-yang-sangat-dahsyat-pahalanya dan http://jilbab.or.id/archives/2153-berdzikir-sekali-mendapat-pahala-berdzikir-sepanjang-malam-dan-siang-hari', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (211, 'Doa Terkait Majelis', 'Khutbah Hajah (Doa Pembuka Majelis)', 'إِنَّ الْحَمْدَ ِللَّهِ، نَحْمَدُهُ وَنَسْتَعِينُهُ وَنَسْتَغْفِرُهُ، وَنَعُوذُ بِاللَّهِ مِنْ شُرُورِ أَنْفُسِنَا، وَمِنْ سَيِّئَاتِ أَعْمَالِنَا، مَنْ يَهْدِهِ اللَّهُ فَلَا مُضِلَّ لَهُ، وَمَنْ يُضْلِلْ فَلَا هَادِيَ لَهُ، وَأَشْهَدُ أَنْ لَا إِلَـٰهَ إِلَّا اللَّهُ، وَحْدَهُ لَا شَرِيْكَ لَهُ، وَأَشْهَدُ أَنَّ مُحَمَّدًا عَبْدُهُ وَرَسُولُهُ
+
+يَا أَيُّهَا الَّذِينَ آمَنُوا اتَّقُوا اللَّهَ حَقَّ تُقَاتِهِ، وَلَا تَمُوتُنَّ إِلَّا وَأَنتُمْ مُسْلِمُونَ
+
+يَا أَيُّهَا النَّاسُ اتَّقُوا رَبَّكُمُ الَّذِي خَلَقَكُمْ مِنْ نَفْسٍ وَاحِدَةٍ، وَخَلَقَ مِنْهَا زَوْجَهَا، وَبَثَّ مِنْهُمَا رِجَالًا كَثِيرًا وَنِسَاءً، وَاتَّقُوا اللَّهَ الَّذِي تَسَاءَلُونَ بِهِ وَالْأَرْحَامَ، إِنَّ اللَّهَ كَانَ عَلَيْكُمْ رَقِيبًا
+
+يَا أَيُّهَا الَّذِينَ آمَنُوا اتَّقُوا اللَّهَ وَقُولُوا قَوْلًا سَدِيدًا، يُصْلِحْ لَكُمْ أَعْمَالَكُمْ وَيَغْفِرْ لَكُمْ ذُنُوبَكُمْ، وَمَنْ يُطِعِ اللَّهَ وَرَسُولَهُ فَقَدْ فَازَ فَوْزًا عَظِيمًا
+
+أَمَّا بَعْدُ، فَإِنَّ أَصْدَقَ الْحَدِيْثِ كِتَابُ اللَّهِ، وَخَيْرَ الْهَدْيِ هَدْيُ مُحَمَّدٍ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ، وَشَرَّ اْلأُمُوْرِ مُحْدَثَاتُهَا، وَكُلَّ مُحْدَثَةٍ بِدْعَةٌ، وَكُلَّ بِدْعَةٍ ضَلَالَةٌ، وَكُلَّ ضَلَالَةٍ فِي النَّارِ', 'Innal hamdalillaah, nahmaduhu, wa nasta''iinuhu, wa nastagh-firuh. Wa na''uudzu billaahi min syuruuri anfusinaa, wa min sayyi-aati a''maalinaa. Man yahdihillaahu falaa mudhilla lah, wa man yudh-lil falaa haadiya lah. Wa asyhadu al-laa ilaaha illallaah, wahdahu laa syariika lah, wa asyhadu anna muhammadan ''abduhu wa rosuuluh.
+
+Yaa ayyuhal-ladziina aamanut-taqullaaha haqqo tuqootih, wa laa tamuutunna illaa wa antum muslimuun.
+
+Yaa ayyuhan-naasut-taquu robbakumul-ladzii kholaqokum min nafsin waahidah, wa kholaqo minhaa zaujahaa, wa bats-tsa minhumaa rijaalan katsiiron wa nisaa-a. Wat-taqullaahal-ladzii tasaa-aluuna bihi wal arhaam. Innallaaha kaana ''alaikum roqiibaa.
+
+Yaa ayyuhal-ladziina aamanut-taqullaaha wa quuluu qoulan sadiidaa. Yush-lih lakum a''maalakum, wa yagh-fir lakum dzunuubakum. Wa man yuthi''illaaha wa rosuulahu faqod faaza fauzan ''azhiimaa.
+
+Ammaa ba''du, fa-inna ash-daqol hadii-tsi kitaabullaah, wa khoirol hadyi, hadyu muhammadin shollallaahu ''alaihi wa sallam. Wa syarrol umuuri muhda-tsaatuhaa, wa kulla muhda-tsatin bid''ah, wa kulla bid''atin dholaalah, wa kulla dholaalatin fin-naar.', 'Segala puji hanya bagi Allah, kita memuji-Nya, memohon pertolongan dan ampunan kepada-Nya. Kita berlindung kepada Allah dari kejahatan diri kita dan kejelekan amal perbuatan kita. Barangsiapa yang Allah beri petunjuk, maka tidak ada yang dapat menyesatkannya. Dan barangsiapa yang Allah sesatkan, maka tidak ada yang dapat memberinya petunjuk. Aku bersaksi bahwa tidak ada sesembahan yang berhak disembah kecuali Allah, tidak ada sekutu bagi-Nya, dan aku bersaksi bahwa Muhammad adalah hamba dan Rasul-Nya.
+
+Hai orang-orang yang beriman, bertakwalah kepada Allah sebenar-benar takwa kepada-Nya; dan janganlah sekali-kali kamu mati melainkan dalam keadaan beragama Islam. (Ali ''Imran [3]: 102).
+
+Hai sekalian manusia, bertakwalah kepada Tuhan-mu yang telah menciptakan kamu dari seorang diri, dan dari padanya Allah menciptakan isterinya; dan dari pada keduanya Allah memperkembang biakkan laki-laki dan perempuan yang banyak. Dan bertakwalah kepada Allah yang dengan (mempergunakan) nama-Nya kamu saling meminta satu sama lain, dan (peliharalah) hubungan silaturrahim. Sesungguhnya Allah selalu menjaga dan mengawasi kamu. (An-Nisaa'' [4]: 1).
+
+Hai orang-orang yang beriman, bertakwalah kamu kepada Allah dan katakanlah perkataan yang benar, niscaya Allah memperbaiki bagimu amalan-amalanmu dan mengampuni bagimu dosa-dosamu. Dan barangsiapa mentaati Allah dan Rasul-Nya, maka sesungguhnya ia telah mendapat kemenangan yang besar. (Al-Ahzaab [33]: 70-71).
+
+Adapun selanjutnya, sesungguhnya sebenar-benar perkataan adalah Kitabullah (Al-Quran), dan sebaik-baik petunjuk adalah petunjuk Muhammad Shallallahu ‘alaihi wa sallam, dan seburuk-buruk perkara adalah yang diada-adakan (dalam agama), dan setiap yang diada-adakan itu bid’ah, dan setiap bid’ah itu sesat, dan setiap kesesatan tempatnya di neraka.', 'Hadits shahih. Shahih Nasa''i no. 1331, Muslim II: 592 no. 467 dan Nasa''i III: 188.
+Kapan Khutbah Ini Diucapkan?
+
+Pengantar khotbah ini diucapkan ketika ada hajat dan kebutuhan yang hendak disampaikan. Di antaranya adalah ketika hendak melakukan akad nikah atau menyampaikan khotbah jumat.
+
+Terdapat keterangan lain, sebagaimana disebutkan dalam riwayat berikut: Syu’bah bertanya kepada gurunya, Abu Ishaq, “Apakah ini khusus untuk khutbah nikah atau boleh dibaca pada kesempatan lain?” Jawab Abu Ishaq, “Diucapkan pada setiap acara yang penting.” (Sunan Al-Kubra, karya Al-Baihaqi, no. 13604).
+
+Syu’bah bin Hajjaj adalah salah satu perawi hadis yang menyebutkan tentang khutbatul hajah.
+
+Syaikh Muhammad Nashiruddin al-Albani rahimahullaah berkata, “…Sesungguhnya khutbah ini dibaca sebagai pembuka setiap khutbah, apakah khutbah nikah, atau khutbah Jumat, atau yang lainnya (seperti ceramah, mengajar dan yang lainnya-pent.), tidak khusus untuk khutbah nikah saja, sebagaimana disangka oleh sebagian orang…” (Khutbatul Hajah (hal. 36), cet. I/ Maktabah al-Ma’arif).
+
+
+Sumber: https://almanhaj.or.id/1348-akad-nikah-khutbah-nikah-mahar-maskawin.html, https://almanhaj.or.id/3230-syarat-rukun-dan-kewajiban-dalam-aqad-nikah.html dan https://khotbahjumat.com/mukaddimah-khutbah-jumat', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (212, 'Doa Terkait Majelis', 'Doa Dalam Majelis', 'رَبِّ اغْفِرْ لِيْ وَتُبْ عَلَيَّ إِنَّكَ أَنْتَ التَّوَّابُ الْغَفُوْرُ', 'Robbighfir lii wa tub ''alayya, innaka antat-tawwaabul ghofuur.', 'Wahai Tuhanku! Ampunilah aku dan terimalah taubatku, sesungguhnya Engkau Maha Menerima taubat lagi Maha Pengampun.', 'HR. At-Tirmidzi dan Imam hadis lain, lihat pula di Shahih At-Tirmidzi 3/153, Shahih Ibnu Majah 2/321, dan lafal hadis tersebut menurut riwayat At-Tirmidzi.
+Dari Ibnu Umar katanya: adalah pernah dihitung bacaan Rasulullah Shallallahu''alaihi wasallam dalam satu majelis 100x sebelum beliau berdiri, yaitu: (doa di atas).
+
+
+Sumber: Hisnul Muslim.', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (213, 'Doa Terkait Majelis', 'Doa Penceramah/Pembicara Kepada Dirinya Dan Peserta Majelis', 'اَللَّهُمَّ اقْسِمْ لَنَا مِنْ خَشْيَتِكَ مَا يَحُولُ بَيْنَنَا وَبَيْنَ مَعَاصِيكَ،
+وَمِنْ طَاعَتِكَ مَا تُبَلِّغُنَا بِهِ جَنَّتَكَ،
+وَمِنَ الْيَقِينِ مَا تُهَوِّنُ بِهِ عَلَيْنَا مُصِيبَاتِ الدُّنْيَا،
+وَمَتِّعْنَا بِأَسْمَاعِنَا، وَأَبْصَارِنَا، وَقُوَّتِنَا مَا أَحْيَيْتَنَا، وَاجْعَلْهُ الْوَارِثَ مِنَّا،
+وَاجْعَلْ ثَأْرَنَا عَلَى مَنْ ظَلَمَنَا،
+وَانْصُرْنَا عَلَى مَنْ عَادَانَا،
+وَلَا تَجْعَلْ مُصِيبَتَنَا فِي دِينِنَا،
+وَلَا تَجْعَلِ الدُّنْيَا أَكْبَرَ هَمِّنَا، وَلَا مَبْلَغَ عِلْمِنَا،
+وَلَا تُسَلِّطْ عَلَيْنَا مَنْ لَا يَرْحَمُنَا', 'Allaahummaqsim lanaa min khosy-yatika maa yahuulu bainanaa wa baina ma''aashiik,
+wa min thoo''atika maa tuballighunaa bihi jannatak,
+wa minal yaqiini maa tuhawwinu bihi ''alainaa mushiibaatid-dunyaa,
+wa matti''naa bi-asmaa''inaa, wa ab-shoorinaa, wa quwwatinaa maa ah-yaytanaa, waj''alhul waari-tsa minnaa,
+waj''al tsa''ronaa ''alaa man zholamanaa,
+wan-shurnaa ''alaa man ''aadaanaa,
+wa laa taj''al mushiibatanaa fii diininaa,
+wa laa taj''alid-dunyaa akbaro hamminaa, wa laa mablagho ''ilminaa,
+wa laa tusallith ''alainaa man laa yarhamunaa.', 'Ya Allah, jadikanlah untuk kami rasa takut kepada-Mu yang menghalangi antara kami dan perbuatan maksiat kepada-Mu,
+dan ketaatan kepada-Mu yang dengannya Engkau menyampaikan kami ke surga-Mu,
+dan keyakinan yang dengannya Engkau meringankan atas kami musibah dunia.
+Berilah kami kenikmatan dengan pendengaran, penglihatan dan kekuatan selama Engkau menghidupkan kami, dan jadikanlah semua itu sebagai pewaris dari kami (tetap ada pada kami).
+Buatlah pembalasan atas orang yang menzalimi kami.
+Tolonglah kami atas orang yang memusuhi kami.
+Janganlah Engkau jadikan musibah pada kami menimpa agama kami.
+Janganlah Engkau jadikan dunia sebagai cita-cita terbesar kami, jangan juga sebagai tujuan utama dari ilmu kami.
+Janganlah Engkau kuasakan (menjadi pemimpin) atas kami orang yang tidak menyayangi kami (orang kafir, munafik, fasik dan zalim, pen.).', 'HR. At-Tirmidzi no. 3502, dinyatakan shahih oleh Syaikh al-Albani.
+Dari Ibnu ‘Umar radhiyallahu ‘anhuma, ia berkata, “Jarang sekali Rasulullah shallallahu ‘alaihi wa sallam berdiri dari suatu majelis sampai beliau berdoa dengan doa-doa ini untuk para sahabatnya: (doa di atas).”', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (214, 'Doa Terkait Majelis', 'Doa Kafaratul Majelis (Penghapus Dosa Majelis)', 'سُبْحَانَكَ اللَّهُمَّ وَبِحَمْدِكَ، أَشْهَدُ أَنْ لاَ إِلَـٰهَ إِلاَّ أَنْتَ، أَسْتَغْفِرُكَ، وَأَتُوْبُ إِلَيْكَ', 'Subhaanakallaahumma wa bihamdika, asyhadu al-laa ilaaha illaa anta, astaghfiruka, wa atuubu ilaik.', 'Maha Suci Engkau ya Allah, aku memuji-Mu. Aku bersaksi bahwa tidak ada sesembahan yang berhak disembah kecuali Engkau, aku minta ampun dan bertaubat kepada-Mu.', 'HR. Tirmidzi, ia mengatakan bahwa hadits ini hasan shahih. HR. Tirmidzi no. 3433. Al-Hafizh Abu Thahir mengatakan bahwa hadits ini shahih.
+Abu Hurairah radhiyallahu ‘anhu meriwayatkan bahwa Rasulullah shallallahu ‘alaihi wa sallam bersabda, “Barangsiapa yang duduk di suatu majelis lalu banyak senda guraunya (kalimat yang tidak bermanfaat untuk akhiratnya), maka hendaklah ia mengucapkan sebelum bangun dari majelisnya itu: (doa di atas), maka diampuni baginya dosa-dosa selama di majelisnya itu.”
+
+Doa ini disebut sebagai doa Kafaratul Majelis (penghapus dosa majelis) atau Khatimah Majelis (penutup majelis), karena doa ini menjadi penghapus dosa bagi orang yang ikut duduk dalam majelis itu. Doa ini menjadi penghapus dosa, karena isinya pengakuan terhadap tauhid dan permohonan ampun kepada Allah.
+
+Ibnu Rajab mengatakan, “Nabi shallallahu ‘alaihi wa sallam mengakhiri majelis beliau dengan doa kafaratul majelis dan beliau perintahkan agar semua majelis diakhiri dengan doa itu. Beliau juga mengabarkan, bahwa jika majelis itu sia-sia maka doa ini menjadi kafarah baginya. Doa ini juga diriwayatkan dari sekelompok sahabat.” (Fathul Bari, 3/345).
+
+Doa ini diucapkan ketika akan berpisah atau akan selesai dari suatu majelis. Majelis ini tidak mesti dengan duduk-duduk. Pokoknya setiap pembicaraan atau obrolan biasa apalagi diyakini ada perkataan sia-sia yang terucap, maka doa kafaratul majelis sangat dianjurkan untuk dibaca.
+
+Jika suatu majelis atau tempat obrolan yang membicarakan hal akhirat maupun hal dunia, lantas di dalamnya tidak terdapat dzikir pada Allah, sungguh sangat merugi.
+
+Dari Abu Hurairah radhiyallahu ‘anhu, ia berkata bahwa Rasulullah shallallahu ‘alaihi wa sallam bersabda, “Setiap kaum yang bangkit dari majelis yang tidak ada dzikir pada Allah, maka selesainya majelis itu seperti bangkai keledai dan hanya menjadi penyesalan pada hari kiamat.” (HR. Abu Daud, no. 4855; Ahmad, 2: 389. Al-Hafizh Abu Thahir mengatakan bahwa sanad hadits ini shahih).
+
+Tentu kita tidak mau menjadi orang yang merugi dalam setiap waktu kita. Karenanya, jadikanlah akhir majelis dengan istighfar dan bacaan doa kafaratul majelis.
+
+Hadits lain terkait doa ini:
+Dari Abu Barzah radhiyallahu ‘anhu, ia berkata, “Rasulullah shallallahu ‘alaihi wa sallam mengucapkan ketika di akhir (pertemuan) ketika beliau akan bangun dari majelis: (doa di atas). Lantas ada seseorang yang berkata, ‘Wahai Rasulullah, engkau mengucapkan ucapan yang belum pernah engkau ucapkan sebelumnya.’ Beliau menjawab, ‘Itu adalah kafarat bagi dosa yang terjadi selama di dalam majelis.’ (HR. Abu Daud, Al-Hakim Abu ‘Abdillah dalam Al-Mustadrak dari riwayat ‘Aisyah radhiyallahu ‘anha dan ia mengatakan bahwa hadits ini sanadnya shahih). [HR. Abu Daud no. 4859, Ahmad 4:425. Al-Hafizh Abu Thahir mengatakan bahwa sanad hadits ini hasan].
+
+
+Sumber: https://rumaysho.com/17134-doa-kafaratul-majelis.html, https://rumaysho.com/13241-keutamaan-doa-kafaratul-majelis.html dan https://konsultasisyariah.com/24008-baca-dzikir-ini-agar-tidak-menyesal.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (215, 'Doa Bertemu Musuh Dan Penguasa', 'Doa Bertemu Musuh Dan Penguasa', 'اَللَّهُمَّ إِنَّا نَجْعَلُكَ فِيْ نُحُوْرِهِمْ وَنَعُوْذُ بِكَ مِنْ شُرُوْرِهِمْ', 'Allaahumma innaa naj''aluka fii nuhuurihim, wa na''uudzu bika min syuruurihim.', 'Ya Allah, sesungguhnya aku menjadikan Engkau di leher mereka (agar kekuatan mereka tidak berdaya dalam berhadapan dengan kami). Dan aku berlindung kepadaMu dari kejelekan mereka.', 'HR. Abu Dawud 2/89. Menurut pendapat Al-Hakim dan disepakati Adz-Dzahabi: Hadits di atas adalah shahih 2/142.
+
+Sumber: Hisnul Muslim.', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (216, 'Doa Bertemu Musuh Dan Penguasa', 'Doa Bila Takut Kezaliman Penguasa', 'اَللَّهُمَّ رَبَّ السَّمَاوَاتِ السَّبْعِ، وَرَبَّ الْعَرْشِ الْعَظِيْمِ، كُنْ لِيْ جَارًا مِنْ فُلاَنٍ بْنِ فُلاَنٍ، وَأَحْزَابِهِ مِنْ خَلاَئِقِكَ، أَنْ يَفْرُطَ عَلَيَّ أَحَدٌ مِنْهُمْ أَوْ يَطْغَى، عَزَّ جَارُكَ، وَجَلَّ ثَنَاؤُكَ، وَلاَ إِلَـٰهَ إِلاَّ أَنْتَ', 'Allaahumma robbas-samaawaatis-sab''i, wa robbal ''arsyil ''azhiim, kun lii jaaron min fulaanibni fulaan, wa ahzaabihi min kholaa-iqika, an yafrutho ''alayya ahadun minhum au yath-ghoo, ''azza jaaruka, wa jalla tsanaa-uka, wa laa ilaaha illa anta.', 'Ya Allah, Tuhan Penguasa tujuh langit, Tuhan Penguasa ''Arsy yang agung. Jadilah Engkau pelindung bagiku dari Fulan bin Fulan, dan para kelompoknya dari makhlukMu. Jangan ada seorang pun dari mereka menyakitiku atau melampaui batas terhadapku. Sungguh kuat perlindunganMu, dan agunglah pujiMu. Tidak ada sesembahan yang berhak disembah kecuali Engkau.', 'HR. Al-Bukhari dalam Al-Adabul Mufrad no. 707. Dinyatakan shahih oleh Al-Albani dalam Shahih Al-Adab Al-Mufrad no. 545.
+
+Sumber: Hisnul Muslim.', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (217, 'Doa Bertemu Musuh Dan Penguasa', 'Doa Untuk Mengalahkan Musuh', 'اَللَّهُمَّ مُنْزِلَ الْكِتَابِ، سَرِيْعَ الْحِسَابِ، اِهْزِمِ اْلأَحْزَابَ، اَللَّهُمَّ اهْزِمْهُمْ وَزَلْزِلْهُمْ', 'Allaahumma munzilal kitaab, sarii''al hisaab, ihzimil ahzaab, allaahummah-zimhum wa zalzilhum.', 'Ya Allah, yang menurunkan Kitab Suci, yang menghisab perbuatan manusia dengan cepat, cerai beraikanlah golongan musuh. Ya Allah, kalahkanlah mereka, dan goncangkanlah mereka.', 'HR. Muslim 3/1362.
+
+Sumber: Hisnul Muslim.', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (218, 'Doa Bertemu Musuh Dan Penguasa', 'Doa Untuk Mengalahkan Musuh Dan Memohon Kemenangan', 'اَللَّهُمَّ مُنْزِلَ الْكِتَابِ، وَمُجْرِيَ السَّحَابِ، وَهَازِمَ الأَحْزَابِ، اِهْزِمْهُمْ، وَانْصُرْنَا عَلَيْهِمْ', 'Allaahumma munzilal kitaab, wa mujriyas-sahaab, wa haazimal ahzaab, ihzimhum, wan-shurnaa ''alaihim.', 'Ya Allah, Dzat Yang menurunkan Al-Quran, Yang menggerakkan awan, Yang mengalahkan komplotan tentara (kafir), kalahkanlah mereka, dan menangkanlah kami atas mereka.', 'HR. Bukhari dan Muslim.
+
+Sumber: https://khotbahjumat.com/5149-meminta-kemenangan-dengan-doa.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (219, 'Doa Bertemu Musuh Dan Penguasa', 'Doa Bila Takut Kepada Suatu Kaum', 'اَللَّهُمَّ اكْفِنِيْهِمْ بِمَا شِئْتَ', 'Allaahummak-finiihim bimaa syi''ta.', 'Ya Allah, cukupilah aku dalam menghadapi mereka dengan apa yang Engkau kehendaki.', 'HR. Muslim 4/2300.
+
+Sumber: Hisnul Muslim.', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (220, 'Doa Berlindung Dari Orang Zalim Dan Orang Kafir', 'Doa Berlindung Dari Orang Zalim (Doa Nabi Musa)', 'رَبِّ نَجِّنِي مِنَ الْقَوْمِ الظَّالِمِينَ', 'Robbi najjinii minal qoumizh-zhoolimiin.', 'Ya Tuhanku, selamatkanlah aku dari orang-orang yang zalim. (Al Qashash [28]: 21).', 'Sumber: https://muslim.or.id/26031-doa-doa-dari-al-quran-2.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (221, 'Doa Berlindung Dari Orang Zalim Dan Orang Kafir', 'Doa Berlindung Dari Keburukan Orang Kafir (Doa Nabi Ibrahim)', 'رَبَّنَا لَا تَجْعَلْنَا فِتْنَةً لِلَّذِينَ كَفَرُوا وَاغْفِرْ لَنَا رَبَّنَا إِنَّكَ أَنْتَ الْعَزِيزُ الْحَكِيمُ', 'Robbanaa laa taj''alnaa fitnatan lilladziina kafaruu, wagh-fir lanaa robbanaa, innaka antal ''aziizul hakiim.', 'Ya Tuhan kami, janganlah Engkau jadikan kami (sasaran) fitnah bagi orang-orang kafir. Dan ampunilah kami ya Tuhan kami. Sesungguhnya Engkaulah Yang Maha Perkasa lagi Maha Bijaksana. (Al Mumtahanah [60]: 5).', 'Sumber: https://muslim.or.id/26031-doa-doa-dari-al-quran-2.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (222, 'Beberapa Doa Terkait Shalat', 'Doa Sujud Tilawah', 'سَجَدَ وَجْهِيَ لِلَّذِيْ خَلَقَهُ وَشَقَّ سَمْعَهُ وَبَصَرَهُ بِحَوْلِهِ وَقُوَّتِهِ، فَتَبَارَكَ اللَّهُ أَحْسَنُ الْخَالِقِيْنَ', 'Sajada wajhiya lilladzii kholaqohu wa syaqqo sam''ahu wa bashorohu bihaulihi wa quwwatih, fatabaarokallaahu ahsanul khooliqiin.', 'Bersujud wajahku kepada Tuhan yang menciptakannya, yang membelah pendengaran dan penglihatannya dengan Daya dan KekuatanNya, Maha Suci Allah sebaik-baik Pencipta.', 'HR. At-Tirmidzi 2/474. Ahmad 6/30 dan Al-Hakim. Menurut Al-Hakim, hadits tersebut shahih. Imam Adz-Dzahabi menyetujui pendapatnya 1/220. Sedang tambahannya: Fatabaarakallaahu menurut riwayat Adz-Dzahabi sendiri.
+
+Sumber: Hisnul Muslim.', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (223, 'Beberapa Doa Terkait Shalat', 'Doa Qunut Witir', 'اَللَّهُمَّ اهْدِنِيْ فِيْمَنْ هَدَيْتَ، وَعَافِنِيْ فِيْمَنْ عَافَيْتَ، وَتَوَلَّنِيْ فِيْمَنْ تَوَلَّيْتَ، وَبَارِكْ لِيْ فِيْمَا أَعْطَيْتَ، وَقِنِيْ شَرَّ مَا قَضَيْتَ، فَإِنَّكَ تَقْضِيْ وَلاَ يُقْضَى عَلَيْكَ، وَإِنَّهُ لاَ يَذِلُّ مَنْ وَالَيْتَ، (وَلاَ يَعِزُّ مَنْ عَادَيْتَ)، تَبَارَكْتَ رَبَّنَا وَتَعَالَيْتَ', 'Allaahummah-dinii fiiman hadait, wa ''aafinii fiiman ''aafait, wa tawallanii fiiman tawallait, wa baarik lii fiimaa a''thoit, wa qinii syarro maa qodhoit, fa-innaka taqdhii wa laa yuqdhoo ''alaik, wa innahu laa yadzillu man waalait, (wa laa ya''izzu man ''aadait), tabaarokta robbanaa wa ta''aalait.', 'Ya Allah, berilah aku petunjuk sebagaimana orang yang telah Engkau beri petunjuk, berilah aku perlindungan (dari penyakit dan apa yang tidak disukai) sebagaimana orang yang telah Engkau lindungi, sayangilah aku sebagaimana orang yang telah Engkau sayangi. Berilah berkah pada apa yang Engkau berikan kepadaku, jauhkan aku dari kejelekan apa yang Engkau takdirkan, sesungguhnya Engkau yang menjatuhkan hukum, dan tidak ada orang yang memberikan hukuman kepadaMu. Sesungguhnya orang yang Engkau bela tidak akan terhina, (dan orang yang Engkau musuhi tidak akan mulia), Maha Suci Engkau, wahai Tuhan kami dan Maha Tinggi Engkau.', 'HR. Empat penyusun kitab Sunan, Ahmad, Ad-Darimi, Al-Hakim dan Al-Baihaqi. Sedang doa yang ada di antara dua kurung, menurut riwayat Al-Baihaqi. Lihat Shahih At-Tirmidzi 1/144, Shahih Ibnu Majah 1/194 dan Irwa''ul Ghalil, oleh Al-Albani 2/172.
+Ketika witir, disyariatkan untuk melakukan qunut di rakaat terakhir.
+
+Hadits selengkapnya:
+Dari Hasan bin Ali radhiyallahu ''anhuma, beliau mengatakan: Rasulullah shallallahu ''alaihi wa sallam mengajariku beberapa kalimat, yang hendaknya kuucapkan ketika qunut shalat witir: (doa di atas).
+
+
+Sumber: Hisnul Muslim dan http://www.facebook.com/doa.dzikir.shahih.harian/posts/272729346160464', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (224, 'Beberapa Doa Terkait Shalat', 'Doa Di Akhir Shalat Witir', 'اَللَّهُمَّ إِنِّيْ أَعُوْذُ بِرِضَاكَ مِنْ سَخَطِكَ، وَبِمُعَافَاتِكَ مِنْ عُقُوْبَتِكَ، وَأَعُوْذُ بِكَ مِنْكَ، لاَ أُحْصِيْ ثَنَاءً عَلَيْكَ، أَنْتَ كَمَا أَثْنَيْتَ عَلَى نَفْسِكَ', 'Allaahumma innii a''uudzu biridhooka min sakhothika, wa bimu''aafaatika min ''uquubatika, wa a''uudzu bika minka, laa uhshii tsanaa-an ''alaika, anta kamaa ats-naita ''alaa nafsik.', 'Ya Allah, sesungguhnya aku berlindung dengan keridhaan-Mu dari kemarahanMu, dan dengan keselamatanMu dari hukumanMu, dan aku berlindung kepadaMu dari siksaMu. Aku tidak mampu menghitung pujian dan sanjungan kepadaMu, Engkau adalah sebagaimana yang Engkau sanjungkan kepada diriMu sendiri.', 'HR. An-Nasa''i 1747, Abu Daud 1427 dan Turmudzi 3566, dinilai shahih oleh Al-Albani.
+Hadis selengkapnya:
+Dari Ali bin Abi Thalib radhiyallahu ''anhu, beliau mengatakan: Bahwa Nabi shallallahu ''alaihi wa sallam di penghujung shalat witirnya, beliau membaca: (doa di atas).
+
+Kapankah doa ini dibaca?
+Pada hadits di atas tidak dijelaskan kapan Nabi shallallahu ''alaihi wa sallam membaca doa tersebut ketika shalat witir. Dalam catatan untuk Sunan An-Nasa''i, As-Sindi mengatakan: Keterangan beliau "di penghujung shalat witirnya, beliau membaca…" mungkin maknanya adalah beliau baca di akhir tahajud, sehingga itu termasuk doa qunut, sebagaimana isyarat keterangan An-Nasa''i, mungkin juga dimaknai bahwa doa ini dibaca ketika duduk tasyahud akhir, dan ini makna yang tersirat dari hadis tersebut. (Dinukil dari Bughyatul Mutathawi'', hlm. 30).
+
+Akan tetapi disebutkan dalam kitab Amalul Yaum wa Lailah karya An-Nasai, demikian pula ibnu Sunni, bahwa Ali bin Abi Thalib radhiyallahu ''anhu mengatakan: Saya menginap di rumah Rasulullah shallallahu ''alaihi wa sallam di suatu malam. Ketika beliau usai shalat dan bersiap di tempat tidurnya, beliau membaca: (doa di atas). (Muntaqa Amalul yaum wa Lailah An-Nasai, hlm. 25). Diantara kebiasaan Nabi shallallahu ''alaihi wa sallam, beliau kembali ke tempat tidur seusai melaksanakan shalat tahajud. Sambil mempersiapkan tempat tidurnya, beliau membaca doa tersebut.
+
+Sementara itu, disebutkan dalam riwayat yang lain, dari A''isyah radhiyallahu ''anha, beliau mengatakan: Saya kehilangan Rasulullah shallallahu ''alaihi wa sallam di suatu malam, ternyata aku dapati beliau dalam keadaan sedang sujud, dan dua kaki beliau dipancangkan, sementara beliau membaca: (doa di atas). (HR. Ahmad 25655, An-Nasa''i 1100, Ibn Majah 3841, Ibnu Hibban dalam shahihnya 1932, Ibn Khuzaimah dalam shahihnya 655, dan dishahihkan Al-Albani).
+
+Kesimpulan:
+Berdasarkan dua riwayat ini, dapat kita simpulkan bahwa ada dua tempat untuk membaca doa ini ketika witir atau tahajud:
+
+Setelah shalat witir.
+Ketika sujud dalam shalat.
+Allahu a''lam.
+
+
+Sumber: http://www.facebook.com/doa.dzikir.shahih.harian/posts/271923406241058', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (225, 'Beberapa Doa Terkait Shalat', 'Bacaan Setelah Salam Shalat Witir', '(سُبْحَانَ الْمَلِكِ الْقُدُّوْسِ (3×) (رَبِّ الْمَلاَئِكَةِ وَالرُّوْحِ', 'Subhaanal malikil qudduus (3x), (robbil malaa-ikati war-ruuh).', 'Maha suci Allah, Raja Yang Maha suci (3x, dan yang ketiga, beliau membacanya dengan suara keras dan panjang, dan menambahkan) Tuhannya para malaikat dan Jibril.', 'HR. An-Nasai 3/244, Ad-Daruquthni dan beberapa imam hadis yang lain. Sedang kalimat antara dua tanda kurung adalah tambahan menurut riwayatnya 2/31. Sanadnya shahih, lihat Zadul Ma''ad yang ditahqiq oleh Syu''aib Al-Arnauth dan Abdul Qadir Al-Arnauth 1/337.
+Keterangan:
+Tidak ada doa setelah tarawih maupun di sela tarawih. Yang ada adalah doa setelah witir. Berikut beberapa doa setelah witir yang diajarkan Rasulullah shallallahu ''alaihi wa sallam.
+
+Subhaanal malikil qudduus. (Maha suci Allah, Raja Yang Maha suci).
+
+Hadis Selengkapnya:
+Dari Ubay bin Ka''ab radhiyallahu ''anhu, beliau mengatakan: Rasulullah shallallahu ''alaihi wa sallam setelah salam shalat witir, beliau membaca: Subhaanal malikil qudduus. (HR. Abu Daud 1430, dishahihkan Al-Albani).
+
+Dalam riwayat Nasa''i dari Abdurrahman bin Abza radhiyallahu ''anhu, terdapat tambahan: Rasulullah shallallahu ''alaihi wa sallam melakukan witir dengan membaca surat Al-A''la (rakaat pertama), surat Al-Kafirun (rakaat kedua), dan surat Al-Ikhlas (rakaat ketiga). Setelah salam, beliau membaca: Subhaanal malikil qudduus 3x. Beliau keraskan yang ketiga. (HR. Nasa''i 1732 dan dishahihkan Al-Albani).
+
+Dalam riwayat yang lain, terdapat tambahan: "Beliau baca panjang yang ketiga." (HR. Nasa''i 1734 dan dishahihkan Al-Albani).
+
+Tambahan "Rabbil Malaaikati war Ruuh":
+Disebutkan dalam riwayat Thabrani adanya tambahan:
+
+Rabbil Malaaikati war Ruuh. (Tuhannya para malaikat dan Jibril).
+
+Dari Ubay bin Ka''ab radhiyallahu ''anhu, beliau mengatakan: Di bagian akhir beliau membaca: Rabbil Malaaikati war Ruuh. (HR. Ad-Daruquthni 1660. Dalam fatwa islam (no. 14093) dinyatakan: sanadnya shahih, dan disebutkan Ibnul Qoyim dalam Zadul Ma''ad 1/323).
+
+Dari beberapa riwayat di atas, dapat kita simpulkan terkait bacaan doa ini:
+
+Doa ini dibaca tepat setelah salam shalat witir.
+Doa ini dibaca 3x.
+Pada bacaan kali ke-3, dikeraskan dan dipanjangkan "Subhaaanal malikil qudduuuuu … ss".
+Disambung dengan membaca "Rabbil malaaikati war ruuh…".
+Kalimat: "Subbuuhun qudduusun rabbul malaaikati war ruuh":
+Kalimat termasuk salah satu doa yang diajarkan Nabi shallallahu ''alaihi wa sallam ketika rukuk atau sujud. A''isyah radhiyallahu ''anha mengatakan: Bahwa Rasulullah shallallahu ''alaihi wa sallam membaca doa ketika rukuk dan sujud beliau: "Subbuuhun qudduusun… dst". (HR. Muslim 487). Mengingat lafal "Subbuuhun qudduusun… dst" adalah doa sujud atau rukuk ketika shalat, sehingga tambahan ini tidak ada hubungannya dengan shalat witir. Karena tidak perlu dibaca seusai witir.
+
+Allahu a''lam.
+
+
+Sumber: Hisnul Muslim dan http://www.facebook.com/doa.dzikir.shahih.harian/posts/271175212982544', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (226, 'Beberapa Doa Terkait Shalat', 'Doa Setelah Shalat Istikharah', 'اَللَّهُمَّ إِنِّيْ أَسْتَخِيْرُكَ بِعِلْمِكَ، وَأَسْتَقْدِرُكَ بِقُدْرَتِكَ، وَأَسْأَلُكَ مِنْ فَضْلِكَ الْعَظِيْمِ، فَإِنَّكَ تَقْدِرُ وَلاَ أَقْدِرُ، وَتَعْلَمُ وَلاَ أَعْلَمُ، وَأَنْتَ عَلاَّمُ الْغُيُوْبِ، اَللَّهُمَّ إِنْ كُنْتَ تَعْلَمُ أَنَّ هَـٰذَا اْلأَمْرَ خَيْرٌ لِيْ فِيْ دِيْنِيْ، وَمَعَاشِيْ، وَعَاقِبَةِ أَمْرِيْ، فَاقْدُرْهُ لِيْ، وَيَسِّرْهُ لِيْ، ثُمَّ بَارِكْ لِيْ فِيْهِ، وَإِنْ كُنْتَ تَعْلَمُ أَنَّ هَـٰذَا اْلأَمْرَ شَرٌّ لِيْ فِيْ دِيْنِيْ، وَمَعَاشِيْ، وَعَاقِبَةِ أَمْرِيْ، فَاصْرِفْهُ عَنِّيْ، وَاصْرِفْنِيْ عَنْهُ، وَاقْدُرْ لِيَ الْخَيْرَ حَيْثُ كَانَ، ثُمَّ أَرْضِنِيْ بِهِ', 'Allaahumma innii asta-khiiruka bi''ilmika, wa astaqdiruka biqudrotika, wa as-aluka min fadh-likal ''azhiim, fa-innaka taqdiru wa laa aqdiru, wa ta''lamu wa laa a''lamu, wa anta ''allaamul ghuyuub. Allaahumma in kunta ta''lamu anna haadzal amro khoirun lii fii diinii, wa ma''aasyii, wa ''aaqibati amrii, faqdurhu lii, wa yassirhu lii, tsumma baarik lii fiihi, wa in kunta ta''lamu anna haadzal amro syarrun lii fii diinii, wa ma''aasyii, wa ''aaqibati amrii, fash-rif-hu ''annii, wash-rifnii ''anhu, waqdur liyal khoiro haitsu kaana, tsumma ardhinii bih.', 'Ya Allah, sesungguhnya aku meminta pilihan yang tepat kepada-Mu dengan ilmu-Mu, aku mohon kekuasaan-Mu (untuk mengatasi persoalanku) dengan kemahakuasaan-Mu, dan aku mohon anugerah-Mu Yang Maha Agung. Sesungguhnya Engkau Mahakuasa sedang aku tidak kuasa, Engkau mengetahui sedang aku tidak mengetahui, dan Engkau Maha Mengetahui hal yang gaib. Ya Allah, jika Engkau mengetahui bahwa urusan ini baik untuk agama, kehidupan dan akhir urusanku, maka takdirkanlah ia untukku, mudahkan ia untukku, kemudian berkahilah ia untukku. Tapi jika Engkau mengetahui bahwa urusan ini buruk untuk agama, kehidupan dan akhir urusanku, maka jauhkan ia dariku, dan jauhkan aku darinya. Takdirkanlah yang terbaik untukku di mana pun itu, kemudian jadikanlah aku ridha dengannya.', 'HR. Al-Bukhari 7/162.
+
+Tata Cara Shalat Istikharah
+
+Istikharah dilakukan ketika seseorang bertekad untuk melakukan satu hal tertentu, bukan sebatas lintasan batin. Kemudian dia pasrahkan kepada Allah.
+
+1. Bersuci, baik wudhu atau tayammum.
+2. Melaksanakan shalat dua rakaat. Shalat sunnah dua rakaat ini bebas, tidak harus shalat khusus. Bisa juga berupa shalat rawatib, shalat tahiyatul masjid, shalat dhuha, dll, yang penting dua rakaat.
+3. Tidak ada bacaan surat khusus ketika shalat. Artinya cukup membaca Al-Fatihah (ini wajib) dan surat atau ayat yang dihafal.
+4. Berdoa setelah salam dan dianjurkan mengangkat tangan. Caranya: membaca doa di atas (atau doa di halaman selanjutnya).
+5. Selesai doa dia langsung menyebutkan keinginannya dengan bahasa bebas. Misalnya: bekerja di perusahaan A, atau menikah dengan B, atau berangkat ke kota C, dst.
+6. Banyak orang beranggapan bahwa jawaban istikharah akan Allah sampaikan dalam mimpi. Ini adalah anggapan yang yang sama sekali tidak berdalil, karena tidak ada keterkaitan antara istikharah dengan mimpi.
+7. Melakukan apa yang menjadi tekadnya. Jika menjumpai halangan, berarti itu isyarat bahwa Allah tidak menginginkan hal itu terjadi pada anda.
+8. Apapun hasil akhir setelah istikharah, itulah yang terbaik bagi kita. Meskipun bisa jadi tidak sesuai dengan harapan sebelumnya. Karena itu, kita harus berusaha ridha dan lapang dada dengan pilihan Allah untuk kita. Nabi shallallahu ‘alaihi wa sallam mengajarkan dalam doa di atas, dengan menyatakan “kemudian jadikanlah aku ridha dengannya”, maksudnya adalah ridha dengan pilihan-Mu ya Allah, meskipun tidak sesuai keinginanku.
+
+Hadits:
+Jabir bin Abdillah Radhiallahu''anhu berkata, “Adalah Rasulullah Shallallahu''alaihi wasallam mengajari kami shalat Istikharah untuk memutuskan segala sesuatu, sebagaimana mengajari surah Al-Quran. Beliau bersabda, ‘Apabila seseorang di antara kamu mempunyai rencana untuk mengerjakan sesuatu, hendaknya melakukan shalat sunnah (Istikharah) dua rakaat, kemudian bacalah: (doa di atas).’”
+
+Tidak menyesal orang yang beristikharah kepada Al-Khaliq dan bermusyawarah dengan orang-orang mukmin dan berhati-hati dalam menangani persoalannya. Allah Ta''ala berfirman, “… dan bermusyawarahlah kepada mereka (para sahabat) dalam urusan itu (peperangan, perekonomian, politik dan lain-lain). Bila kamu telah membulatkan tekad, bertawakkallah kepada Allah…” (Ali Imran [3]: 159).
+
+
+Sumber: Hisnul Muslim dan https://konsultasisyariah.com/8754-tata-cara-shalat-istikharah.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+INSERT INTO duas (id, grup, nama, ar, tr, idn, tentang, tags)
+VALUES (227, 'Beberapa Doa Terkait Shalat', 'Doa Setelah Shalat Dhuha', 'اَللَّهُمَّ اغْفِرْ لِي وَتُبْ عَلَيَّ، إِنَّكَ أَنْتَ التَّوَّابُ الرَّحِيمُ', 'Allaahummagh-fir lii wa tub ''alayya, innaka antat-tawwaabur-rohiim (100x).', 'Ya Allah, ampunilah dosaku dan terimalah taubatku, sesungguhnya Engkau Maha Penerima Taubat lagi Maha Penyayang (100x).', 'HR. Bukhari dalam al-Adab al-Mufrod 217 no. 619. Dishahihkan oleh al-Albani.
+Dari Aisyah radhiyallahu anha, ia berkata, “Rasulullah shallallahu alaihi wa sallam melaksanakan shalat dhuha kemudian Beliau berucap: (doa di atas). Beliau mengulangnya hingga 100 kali.”
+
+
+Sumber: http://www.salamdakwah.com/baca-pertanyaan/dzikir-sholat-dhuha.html', '["umum"]'::jsonb)
+ON CONFLICT (id) DO UPDATE SET
+  grup = EXCLUDED.grup,
+  nama = EXCLUDED.nama,
+  ar = EXCLUDED.ar,
+  tr = EXCLUDED.tr,
+  idn = EXCLUDED.idn,
+  tentang = EXCLUDED.tentang,
+  tags = EXCLUDED.tags;
+
+-- ==============================================================================
+-- INSERTS: DHIKR (DZIKIR PAGI, PETANG, SHOLAT)
+-- ==============================================================================
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('pagi_1', 'pagi', 1, 'Ayat Kursi (QS. Al-Baqarah: 255)', 'ayat_kursi_zoom0.png', 1, 'Dibaca 1x', 'اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ ۗ مَنْ ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَيْءٍ مِنْ عِلْمِهِ إِلَّا بِمَا شَاءَ ۚ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ ۖ وَلَا يَئُودُهُ حِفْظُهُمَا ۚ وَهُوَ الْعَلِيُّ الْعَظِيمُ', 'Allāhu lā ilāha illā huwal-ḥayyul-qayyūm, lā ta''khużuhū sinatuw wa lā na''ūm, lahū mā fis-samāwāti wa mā fil-arḍ, man żal-lażī yasyfa''u ''indahū illā bi''iżnih, ya''lamu mā baina aidīhim wa mā khalfahum, wa lā yuḥīṭūna bisyai''im min ''ilmihī illā bimā syā'', wasi''a kursiyyuhus-samāwāti wal-arḍ, wa lā ya''ūduhū ḥifẓuhumā, wa huwal-''aliyyul-''aẓīm.', 'Allah tidak ada Illah (yang berhak diibadahi dengan benar) melainkan Dia Yang Mahahidup, Yang terus menerus mengurus (makhluk-Nya); tidak mengantuk dan tidak tidur. Milik-Nya apa yang dilangit dan apa yang dibumi. Tidak ada yang dapat memberi syafa''at disii-Nya tanpa izin-Nya. Dia mengetahui apa yang dihadapan mereka dan dibelakang mereka, dan mereka tidak mengetahui sesuatu pun tentang ilmu-Nya melainkan apa yang Dia kehendaki. Kursi-Nya meliputi langit dan bumi. dan Dia tidak merasa berat memelihara keduanya, dan Dia Mahatinggi, Mahabesar.(QS. Al-Baqarah: 255)', 'Nabi Shallallahu ''alaihi wasallam bersabda: ''Barangsiapa yang membaca ayat ini ketika pagi hari, maka ia dijaga dari (gangguan) jin hingga sore hari. Dan barangsiapa mengucapkannya ketika sore hari, maka ia dijaga dari (gangguan) jin hingga pagi hari.'' (HR. Al-Hakim 1/562, Shahiih at-Targhiib wat Tarhiib 1/418 no. 662, shahih)', 'taawud_dan_ayat_kursi_dan_artinya.mp3', 1)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('pagi_2', 'pagi', 2, 'Surat Al-Ikhlas (QS. 112: 1-4)', 'surat_al_ikhlas_zoom1.png', 3, 'Dibaca 3x', 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
+قُلْ هُوَ اللَّهُ أَحَدٌ ۝ اللَّهُ الصَّمَدُ ۝ لَمْ يَلِدْ وَلَمْ يُولَدْ ۝ وَلَمْ يَكُنْ لَهُ كُفُوًا أَحَدٌ', 'Bismillāhir-raḥmānir-raḥīm. Qul huwallāhu aḥad. Allāhuṣ-ṣamad. Lam yalid wa lam yūlad. Wa lam yakul lahū kufuwan aḥad.', 'Katakanlah (Muhammad);''Dia-lah Allah, yang Maha Esa. Alah rabb yang bergantung kepada-Nya segala urusan. (Allah) tidak beranak dan tidak pula diperanakkan. Dan tidak ada sesuatu pun yang setara dengan Dia.''(QS. Al-Ikhlash: 1-4)', 'HR. Abu Dawud no. 5082, an-Nasa-i VIII/250 dan at-Tirmidzi no. 3575, Ahmad V/312, Shahiih at-Tirmidzi no. 2829, Tuhfatul Ahwadzi no. 3646, Shahiih at-Targhiib wat Tarhiib 1/411 no. 649, hasan shahih', 'surat_al_ikhlas_dan_artinya.mp3', 2)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('pagi_3', 'pagi', 3, 'Surat Al-Falaq (QS. 113: 1-5)', 'surat_al_falaq_zoom.png', 3, 'Dibaca 3x', 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
+قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ ۝ مِنْ شَرِّ مَا خَلَقَ ۝ وَمِنْ شَرِّ غَاسِقٍ إِذَا وَقَبَ ۝ وَمِنْ شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ ۝ وَمِنْ شَرِّ حَاسِدٍ إِذَا حَسَدَ', 'Bismillāhir-raḥmānir-raḥīm. Qul a''ūżu birabbil-falaq. Min syarri mā khalaq. Wa min syarri gāsiqin iżā waqab. Wa min syarrin-naffāṡāti fil-''uqad. Wa min syarri ḥāsidin iżā ḥasad.', 'Katakanlah:''Aku berlindung kepada Rabb Yang Menguasai shubuh, dari kejahatan makhluk-Nya, dan dari kejahatan malam apabila telah gelap gulita, dan dari kejahatan (wanita-wanita) tukang sihir yang meniup pada buhul-buhul (talinya), dan dari kejahatan orang dengki bila ia dengki.''(QS. Al-Falaq: 1-5)', 'HR. Abu Dawud no. 5082, an-Nasa-i VIII/250 dan at-Tirmidzi no. 3575, Ahmad V/312, Shahiih at-Tirmidzi no. 2829, Tuhfatul Ahwadzi no. 3646, Shahiih at-Targhiib wat Tarhiib 1/411 no. 649, hasan shahih', 'surat_al_falaq_dan_artinya.mp3', 3)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('pagi_4', 'pagi', 4, 'Surat An-Nas (QS. 114: 1-6)', 'surat_an_nas_zoom3.png', 3, 'Dibaca 3x', 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
+قُلْ أَعُوذُ بِرَبِّ النَّاسِ ۝ مَلِكِ النَّاسِ ۝ إِلَٰهِ النَّاسِ ۝ مِنْ شَرِّ الْوَسْوَاسِ الْخَنَّاسِ ۝ الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ ۝ مِنَ الْجِنَّةِ وَالنَّاسِ', 'Bismillāhir-raḥmānir-raḥīm. Qul a''ūżu birabbin-nās. Malikin-nās. Ilāhin-nās. Min syarril-waswāsil-khannās. Allażī yuwaswisu fī ṣudūrin-nās. Minal-jinnati wan-nās.', 'Katakanlah: ''Aku berlindung kepada Rabb manusia. Raja manusia. Sembahan manusia. Dari kejahatan (bisikan) syaitan yang bersembunyi, yang membisikkan (kejahatan) ke dalam dada manusia, dari (golongan) jin dan manusia.'' (QS. An-Naas:1-6)', '''Barangsiapa membaca tiga surat tersebut setiap pagi dan sore hari, maka (tiga surat tersebut) cukup baginya dari segala sesuatu''. At-Tirmizi berkata ''Hadits ini hasan shahih'' HR. Abu Dawud no. 5082, an-Nasa-i VIII/250 dan at-Tirmidzi no. 3575, Ahmad V/312, Shahiih at-Tirmidzi no. 2829, Tuhfatul Ahwadzi no. 3646, Shahiih at-Targhiib wat Tarhiib 1/411 no. 649, hasan shahih', 'surat_an_naas_dan_artinya.mp3', 4)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('pagi_5', 'pagi', 5, 'Memasuki Waktu Pagi Memohon Kebaikan', 'dzikir_pagi_zoom4.png', 1, 'Dibaca 1x', 'أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ، رَبِّ أَسْأَلُكَ خَيْرَ مَا فِي هَٰذَا الْيَوْمِ وَخَيْرَ مَا بَعْدَهُ، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِي هَٰذَا الْيَوْمِ وَشَرِّ مَا بَعْدَهُ، رَبِّ أَعُوذُ بِكَ مِنَ الْكَسَلِ وَسُوءِ الْكِبَرِ، رَبِّ أَعُوذُ بِكَ مِنْ عَذَابٍ فِي النَّارِ وَعَذَابٍ فِي الْقَبْرِ', 'Ash-bahnaa wa ash-bahal mulku lillaah, wal-hamdu lillaah, laa ilaaha illallaahu wahdahu laa syariika lah, lahul mulku wa lahul hamdu wa huwa ''alaa kulli syai-in qadiir. Rabbi as-aluka khaira maa fii haadzal yaumi wa khaira maa ba''dahu, wa a''uudzu bika min syarri maa fii haadzal yaumi wa syarri maa ba''dahu, rabbi a''uudzu bika minal kasali wa suu-il kibar, rabbi a''uudzu bika min ''adzaabin fin naari wa ''adzaabin fil qabr.', 'Kami telah memasuki waktu pagi dan kerajaan hanya milik Allah, segala puji bagi Allah. Tidak ada Illah yang berhak diibadahi dengan benar selain Allah semata, tidak ada sekutu bagi-Nya. Bagi-Nya kerajaan dan bagi-Nya pujian. Dia-lah Yang Mahakuasa atas segala sesuatu. Ya Rabb-ku, aku mohon kepada-Mu kebaikan di hari ini dan kebaikan sesudahnya. Aku berlindung kepada-Mu dari kemalasan dan kejelekan dihari tua. Ya Rabb-ku, aku berlindung kepada-Mu dari siksaan di Neraka dan siksaan di kubur.', 'HR. Muslim IV/2088 no. 2723, Abu Dawud no. 5071, at-Tirmidzi 3390, shahih. Dari Abdullah bin Mas''ud Radhiallahu''anh', 'asbakhna_wa_asbkhalmulkulillah_dan_artinya.mp3', 5)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('pagi_6', 'pagi', 6, 'Memohon Pertolongan di Waktu Pagi', 'dzikir_pagi_zoom5.png', 1, 'Dibaca 1x', 'اللَّهُمَّ بِكَ أَصْبَحْنَا، وَبِكَ أَمْسَيْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ، وَإِلَيْكَ النُّشُورُ', 'Allaahumma bika ash-bahnaa, wa bika amsaynaa, wa bika nahyaa, wa bika namuutu, wa ilaykan-nusyuur.', 'Ya Allah, dengan rahmat dan pertolongan-Mu kami memasuki waktu pagi, dan dengan rahmat dan pertolongan-Mu kami memasuki waktu sore. Dengan rahmat dan pertolongan-Mu kami hidup dan dengan kehendak-Mu kami mati. Dan kepada-Mu kebangkitan (bagi semua makhluk).', 'HR. Al-Bukhari dalam al-Adabul Mufrad, lafazh ini adalah lafazh al-Bukhari, at-Tirmidzi no. 3391, Abu Dawud no. 5068, Ahmad 11/354, Ibnu Majah no. 3868, Shahiih al-Adabil Mufrad no. 911, shahih. Lihat pula Silsilah al-Ahaadiits ash-Shahiihah no. 262', 'allahumabikaasbakhna_dan_artinya.mp3', 6)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('pagi_7', 'pagi', 7, 'Sayyidul Istighfar (Penghulu Istighfar)', 'sayyidul_istighfar_zoom6.png', 1, 'Dibaca 1x', 'اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَٰهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَىٰ عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ، أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ، أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ، وَأَبُوءُ بِذَنْبِي فَاغْفِرْ لِي فَإِنَّهُ لَا يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ', 'Allaahumma anta rabbii laa ilaaha illaa anta, khalaqtanii wa anaa ''abduka, wa anaa ''alaa ''ahdika wa wa''dika mastatha''tu, a''uudzu bika min syarri maa shana''tu, abuu-u laka bini''matika ''alayya, wa abuu-u bidzanbii faghfir lii fa-innahu laa yaghfirudz-dzunuuba illaa anta.', 'Ya Allah, Engkau adalah Rabb-ku, tidak ada Illah yang berhak diibadahi dengan benar selain Engkau, Engkau-Lah yang menciptakan aku. Aku adalah hamba-MU. Aku akan setia pada perjanjianku dengan-Mu semampuku. Aku berlindung kepada-MU dari kejelekan yang kuperbuat. Aku mengakui nikmat-Mu (yang diberikan) kepadaku dan Aku mengakui dosaku, oleh karena itu, ampunilah aku. Sesungguhnya tidak ada yang dapat mengampuni dosa kecuali Engkau.', '''Barangsiapa membacanya dengan yakin di waktu pagi lalu ia meninggal sebelum masuk waktu sore, maka ia termasuk ahli Surga. Dan barangsiapa membacanya dengan yakin di waktu sore lalu ia meninggal sebelum masuk waktu pagi, maka ia termasuk ahli Surga.'' -Shahih- (HR. Al-Bukhari no. 6306, 6323, Ahmad IV/122-125, an-Nasa-i VIII/279-280)', 'allahuma_antarobbi_dan_artinya.mp3', 7)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('pagi_8', 'pagi', 8, 'Doa Keselamatan Tubuh, Pendengaran & Penglihatan', 'dzikir_zoom7.png', 3, 'Dibaca 3x', 'اللَّهُمَّ عَافِنِي فِي بَدَنِي، اللَّهُمَّ عَافِنِي فِي سَمْعِي، اللَّهُمَّ عَافِنِي فِي بَصَرِي، لَا إِلَٰهَ إِلَّا أَنْتَ. اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْكُفْرِ وَالْفَقْرِ، وَأَعُوذُ بِكَ مِنْ عَذَابِ الْقَبْرِ، لَا إِلَٰهَ إِلَّا أَنْتَ', 'Allaahumma ''aafinii fii badanii, Allaahumma ''aafinii fii sam''ii, Allaahumma ''aafinii fii basharii, laa ilaaha illaa anta. Allaahumma innii a''uudzu bika minal kufri wal faqr, wa a''uudzu bika min ''adzaabil qabr, laa ilaaha illaa anta.', 'Ya Allah, selamatkanlah tubuhku (dari penyakit dan dari apa yang tidak aku inginkan). Ya Allah, selamatkanlah pendengaranku (dari penyakit dan maksiat atau dari apa yang tidak aku inginkan). Ya Allah, selamatkanlah penglihatanku, tidak ada Ilah (yang berhak diibadahi) kecuali Engkau. Ya Allah, sesungguhnya aku berlindung kepada-Mu dari kekufuran dan kefakiran. Aku berlindung kepada-Mu dari siksa kubur, tidak ada Ilah (yang berhak diibadahi) kecuali Engkau.', 'HR. Al-Bukhari dalam al-Adabul Mufrad (no. 701), dalam Shahiib al-Adabil Mufrad no. 539, Abu Dawud no. 5090, Ahmad V/42, hasan', 'allahuma_aafinii_fiibadanii_dan_artinya.mp3', 8)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('pagi_9', 'pagi', 9, 'Doa Perlindungan Menyeluruh & Afiat', 'dzikir_zoom8.png', 1, 'Dibaca 1x', 'اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي الدُّنْيَا وَالْآخِرَةِ، اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي دِينِي وَدُنْيَايَ وَأَهْلِي وَمَالِي، اللَّهُمَّ اسْتُرْ عَوْرَاتِي وَآمِنْ رَوْعَاتِي، اللَّهُمَّ احْفَظْنِي مِنْ بَيْنِ يَدَيَّ، وَمِنْ خَلْفِي، وَعَنْ يَمِينِي، وَعَنْ شِمَالِي، وَمِنْ فَوْقِي، وَأَعُوذُ بِعَظَمَتِكَ أَنْ أُغْتَالَ مِنْ تَحْتِي', 'Allaahumma innii as-alukal ''afwa wal ''aafiyah fid-dunyaa wal aakhirah. Allaahumma innii as-alukal ''afwa wal ''aafiyah fii diinii wa dunyaaya wa ahlii wa maalii. Allaahummastur ''awraatii wa aamin raw''aatii. Allaahummahfazhnii min bayni yadayya, wa min khalfii, wa ''an yamiinii, wa ''an syimaalii, wa min fawqii, wa a''uudzu bi''azhamatika an ughtaala min tahtii.', 'Ya Allah, sesungguhnya aku memohon maaf dan keselamatan di dunia dan akhirat. Ya Allah, sesungguhnya aku memohon maaf dan keselamatan dalam agama, dunia, keluarga dan hartaku. Ya Allah, tutupilah auratku (aib dna sesuatu yang tidak layak dilihat orang) dan tenteramkanlah aku dari rasa takut. Ya Allah, peliharalah aku dari depan, belakang, kanan, kiri dan atasku. Aku berlindung dengan kebesaran-Mu, agar aku tidak disambar dari bawahku (oleh ular atau bumi pecah yang membuat aku jatuh dan lain-lain).', 'HR. Al-Bukhari dalam al-Adabul Mufrad (no. 1200), Abu Dawud no. 5074, Ibnu Majah no. 3871, al-Hakim 1/517-518, Shahiih al-Adabul Mufrad no. 912, shahih', 'allahuma_inni_asaluka_afwawalaafiyah_dan_artinya.mp3', 9)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('pagi_10', 'pagi', 10, 'Doa Perlindungan dari Godaan Syaitan dan Nafsu', 'dzikir_zoom9.png', 1, 'Dibaca 1x', 'اللَّهُمَّ عَالِمَ الْغَيْبِ وَالشَّهَادَةِ، فَاطِرَ السَّمَاوَاتِ وَالْأَرْضِ، رَبَّ كُلِّ شَيْءٍ وَمَلِيكَهُ، أَشْهَدُ أَنْ لَا إِلَٰهَ إِلَّا أَنْتَ، أَعُوذُ بِكَ مِنْ شَرِّ نَفْسِي، وَمِنْ شَرِّ الشَّيْطَانِ وَشِرْكِهِ، وَأَنْ أَقْتَرِفَ عَلَىٰ نَفْسِي سُوءًا أَوْ أَجُرَّهُ إِلَىٰ مُسْلِمٍ', 'Allaahumma ''aalimal ghaybi wash-syahaadah, faathiras-samaawaati wal ardh, rabba kulli syai-in wa maliikah, asyhadu al-laa ilaaha illaa anta, a''uudzu bika min syarri nafsii, wa min syarrisy-syaithaani wa syirkihi, wa an aqtarifa ''alaa nafsii suu-an aw ajurrahu ilaa muslim.', 'Ya Allah Yang Mahamengetahui yang ghaib dan yang nyata, wahai Rabb Pencipta langit dan bumi, Rabb atas segala sesuatu dan Yang Merajainya. Aku bersaksi bahwa tidak ada Ilah (yang berhak diibadahi) kecuali Engkau. Aku berlindung kepada-Mu dari kejahatan diriku, syaitan dan sekutunya, (aku berlindung kepada-Mu) dari berbuat kejelekan atas diriku atau mendorong seorang muslim kepadanya.', 'Nabi Shallallahu ''alaihi wasallaam bersabda kepada Abu Bakar ash-Shiddiq Radiyallahu ''anhu ''Ucapkanlah pagi dan petang dan apabila engkau hendak tidur.'' HR. AL-Bukhari dalam al-Adabul Mufrad (no. 1202, 1203), Ahmad (II/297) HR. At-T irmidzi no. 3392 dan Abu Dawud no. 5067, lihat Shahiih at-Tirmidzi no. 2798, Shahiih al-Adabil Mufrad no. 913, 914, shahih. Lihat Silsilah al-Ahaadiits ash-Shahiihah no. 2753', 'allahuma_aalimal_ghoibi_wassahaadah_dan_artinya.mp3', 10)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('pagi_11', 'pagi', 11, 'Berlindung dengan Asma Allah dari Segala Bahaya', 'dzikir_zoom10.png', 3, 'Dibaca 3x', 'بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ', 'Bismillaahilladzii laa yadhurru ma''asmihi syai-un fil ardhi wa laa fis-samaa-i wa huwas-samii''ul ''aliim.', 'Dengan Nama Allah yang tidak ada bahaya atas Nama-Nya sesuatu di bumi dan tidak pula dilangit. Dia-lah Yang Mahamendengar dan Mahamengetahui.', '''Barangsiapa membacanya sebanyak tiga kali ketika pagi dan sore hari, maka tidak ada sesuatu pun yang membahayakan dirinya.'' HR. At-Tirmidzi no. 3388, Abu Dawud no. 5088, Ahmad no. 446 dan 476, Tahqiq Ahmad Syakir dan Ibnu Majah no. 3869, lihat Shahiih Ibni Majah no. 3120, al-Hakim 1/513, Shahiih al-Adabil Mufrad no. 513, Shahiih at-Targhiib wat Tarhiib 1/413 no. 655, sanad-nya shahih', 'bismillahillazdi_laa_yaddzurruma_dan_artinya.mp3', 11)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('pagi_12', 'pagi', 12, 'Rela kepada Allah, Islam, dan Nabi Muhammad', 'dzikir_zoom11.png', 3, 'Dibaca 3x', 'رَضِيتُ بِاللَّهِ رَبًّا، وَبِالْإِسْلَامِ دِينًا، وَبِمُحَمَّدٍ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ نَبِيًّا', 'Radhiitu billaahi rabbaa, wa bil Islaami diinaa, wa bi Muhammadin shallallaahu ''alayhi wa sallama nabiyyaa.', 'Aku rela (ridha) Allah sebagai Rabb-ku (untukku dan orang lain), Islam sebagai agamaku dan Muhammad Shalallahu ''alaihi wa sallam sebagai Nabiku (yang diutus oleh Allah).', '''Barangsiapa membacanya sebanyak tiga kali ketika pagi dan sore, maka Allah memberikan keridhaan-Nya kepadanya pada hari Kiamat.'' HR. Ahmad IV/337, Abu Dawud no. 5072, at-Tirmidzi no. 3389, Ibnu Majah no. 3870, an-Nasa-i dalam ''Amalul Yaum wal Lailah no. 4 dan Ibnus Sunni no. 68, Shahiih at-Targhiib wat Tarhiib 1/415 no. 657, dishahihkan oleh Imam al-Hakim dalam al-Mustadrak 1/518 dan disetujui oleh Imam adz-Dzahabi, hasan. Lihat juga Shahiih al-Waabilish Shayyib hal. 170, Zaadul Ma''aad II/372, Silsilah al-Ahaadiits ash-Shahiihah no. 2686', 'robbitubillaahirobbah_dan_artinya.mp3', 12)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('pagi_13', 'pagi', 13, 'Doa Memohon Rahmat & Perbaikan Urusan (Istighatsah)', 'dzikir_zoom12.png', 1, 'Dibaca 1x', 'يَا حَيُّ يَا قَيُّومُ بِرَحْمَتِكَ أَسْتَغِيثُ، أَصْلِحْ لِي شَأْنِي كُلَّهُ، وَلَا تَكِلْنِي إِلَىٰ نَفْسِي طَرْفَةَ عَيْنٍ', 'Yaa Hayyu Yaa Qayyuum, bi rahmatika astaghiits, ashlih lii sya''nii kullah, wa laa takilnii ilaa nafsii tharfata ''ayn.', 'Wahai Rabb Yang Mahahidup, Wahai Rabb Yang berdiri sendiri (tidak butuh segala sesuatu) dengan rahmat-Mu aku meminta pertolongan, perbaikilah segala urusanku dan jangan diserahkan kepadaku meski sekejap mata sekali pun (tanpa mendapat pertolongan dari-Mu).', 'HR. An-Nasa-i dalam ''Amalul Yaum wal Lailah (no. 575), al-Bazzar dalam Musnadnya (no. 3107) dan al-Hakim 1/545 dan Ibnus sunni dalam ''Amalul Yaum wal Lailah (no. 48) dari Anas bin Malik Radhiallahu''anh. lihat Shahiih at-Targhiib wat Tarhiib 1/AV7 no. 661, dan Silsilah Ash-Shahiihah (no 227) hasan', 'yaahaiyuyaakhoiyuum_dan_artinya.mp3', 13)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('pagi_14', 'pagi', 14, 'Di Atas Fitrah Islam & Agama Nabi Ibrahim (Pagi)', 'dzikir_pagi_zoom13.png', 1, 'Dibaca 1x', 'أَصْبَحْنَا عَلَىٰ فِطْرَةِ الْإِسْلَامِ، وَعَلَىٰ كَلِمَةِ الْإِخْلَاصِ، وَعَلَىٰ دِينِ نَبِيِّنَا مُحَمَّدٍ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ، وَعَلَىٰ مِلَّةِ أَبِينَا إِبْرَاهِيمَ حَنِيفًا مُسْلِمًا وَمَا كَانَ مِنَ الْمُشْرِكِينَ', 'Ash-bahnaa ''alaa fithratil Islaam, wa ''alaa kalimatil ikhlaash, wa ''alaa diini nabiyyinaa Muhammadin shallallaahu ''alayhi wa sallam, wa ''alaa millati abiinaa Ibraahiima haniifam muslimaw wa maa kaana minal musyrikiin.', 'Di waktu pagi kami berada diatas fitrah agama Islam, kalimat ikhlas, agama Nabi kami Muhammad Shalallahu ''alaihi wa sallam dan agama ayah kami, Ibrahim, yang berdiri di atas jalan yang lurus, muslim dan tidak tergolong orang-orang musyrik.', 'HR. Ahmad III/406, 407, V/123, ad-Darimi II/292 dan Ibnus Sunni dalam Amalul Yaum wol Lailah no. 34, Misykaatul Mashaabiih no. 2415, Shahiihal-Jaami''ish Shaghiir no. 4674, shahih', 'asbakhna_alaa_fitratil_islaam_dan_artinya.mp3', 14)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('pagi_15', 'pagi', 15, 'Kalimat Tahlil & Pengagungan Allah', 'dzikir_zoom14.png', 100, 'Dibaca 1x atau dibaca 10x. boleh juga dibaca 100x', 'لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ، وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ', 'Laa ilaaha illallaahu wahdahu laa syariika lah, lahul mulku wa lahul hamdu wa huwa ''alaa kulli syai-in qadiir.', 'Tidak ada Ilah (yang berhak diibadahi dengan benar) selain Allah Yang Maha Esa, tidak ada sekutu bagi-Nya. Bagi-Nya kerajaan dan bagi-Nya segala puji. Dan Dia Mahakuasa atas segala sesuatu.', 'dibaca 1x : HR. Abu Dawud no. 5077, Ibnu Majah no. 3867, Shahiih Jaami''ish Shaghiir no. 6418, MisykaatulMashaabiih no. 2395, Shahiih at-Targhiib 1/414 no. 656, shahih.
+dibaca 10x : HR. An-Nasa-i dalam ''Amalul Yaum wal Lailah (no. 24), Ahmad (V/420), dari Abu Ayyub al-Anshari Radhiallahu'' anh. Lihat Shahih At-Targhiib wat Tarhiib (I/416, no 660)
+dibaca 100x : ''Barangsiapa membacanya sebanyak 100x dalam sehari, maka baginya (pahala) seperti memerdekakan sepuluh budak, ditulis seratus kebaikan, dihapus darinya seratus keburukan, baginya perlindungan dari syaitan pada hari itu hingga sore hari. Tidaklah seseorang itu dapat mendatangkan yang lebih baik dari apa yang dibawanya kecuali ia melakukan lebih banyak lagi dari itu.'' HR. Al-Bukhari no. 3293 dan 6403, Muslim IV/2071 no. 2691 (28), at-Tirmidzi no. 3468, Ibnu Majah no. 3798, dari Sahabat Abu Hurairah Radiyallahu ''anhu. Penjelasan: Dalam riwayat an-Nasa-i (''Amalul Yaum wal Lailah no. 580) dan Ibnus Sunni no. 75 dari ''Amr bin Syu''aib dari ayahnya dari kakeknya lafazhnya: ''Barangsiapa membaca 100x pada pagi hari dan 100x pada sore Hari.'' Jadi, dzikir ini dibaca 100x diwaktu pagi dan 100x diwaktu sore. Lihat Silsilah al-Ahaadiits ash-Shahiihah no. 2762', 'laaialaahaillaahuwakhdahulaatsariikalah_10x_atau_1x__dan_artinya.mp3', 15)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('pagi_16', 'pagi', 16, 'Tasbih Sebanyak Makhluk dan Seberat Arsy', 'dzikir_pagi_zoom15.png', 3, 'Dibaca 3x', 'سُبْحَانَ اللَّهِ وَبِحَمْدِهِ، عَدَدَ خَلْقِهِ، وَرِضَا نَفْسِهِ، وَزِنَةَ عَرْشِهِ، وَمِدَادَ كَلِمَاتِهِ', 'Subhaanallaahi wa bihamdih, ''adada khalqih, wa ridhaa nafsih, wa zinata ''arsyih, wa midaada kalimaatih.', 'Mahasuci Allah, aku memuji-Nya sebanyak bilangan makhluk-Nya, Mahasuci Allah sesuai ke-ridhaan-Nya, Mahasuci seberat timbangan ''Arsy-Nya, dan Mahasuci sebanyak tinta (yang menulis) kalimat-Nya.', '-Shahih- HR. Muslim no. 2726. Syarah Muslim XVII/44.dari Juwairiyah binti Al- Harits Radhiallahu''anh', 'subhanallahiwabihamdi_adadakholqih_dan_artinya.mp3', 16)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('pagi_17', 'pagi', 17, 'Memohon Ilmu yang Bermanfaat, Rezeki Halal & Amal Diterima', 'dzikir_pagi_zoom16.png', 1, 'Dibaca 1x', 'اللَّهُمَّ إِنِّي أَسْأَلُكَ عِلْمًا نَافِعًا، وَرِزْقًا طَيِّبًا، وَعَمَلًا مُتَقَبَّلًا', 'Allaahumma innii as-aluka ''ilman naafi''aa, wa rizqan thayyibaa, wa ''amalam mutaqabbalaa.', 'Ya Allah, sesungguhnya aku meminta kepada-Mu ilmu yang bermanfaat, rizki yang halal, dan amalan yang diterima.', 'HR. Ibnu Majah no. 925, Shahiib Ibni Majah 1/152 no. 753 dan Ibnus Sunni dalam ''Amalul Yaum walLailah (no. 54, 110), dari ummu Salamah Radhiallahu''anha, shahih', 'allahuma_innii_asaluka_ilmannaafia_dan_artinya.mp3', 17)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('pagi_18', 'pagi', 18, 'Tasbih dan Tahmid 100x', 'dzikir_zoom17.png', 100, 'Dibaca 100x', 'سُبْحَانَ اللَّهِ وَبِحَمْدِهِ', 'Subhaanallaahi wa bihamdih.', 'Mahasuci Allah, aku memuji-Nya.', '-Shahih- HR. Muslim no. 2691 dan no. 2692, Syarak Muslim XVTV 17-18, Shahiih at-Targhiib wat Tarhiib 1/413 no. 653. Jumlah yang terbanyak dari dzikir-dzikir Nabi adalah seratus diwaktu pagi dan seratus diwaktu sore. Adapun riwayat yang menyebutkan sampai seribu adalah munkar, karena haditsnya dha''if. (Silsilah al-Ahaadiits adh-Dha-''iifah no. 5296)', 'subhanallahiwabihamdi_100x_dan_artinya.mp3', 18)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('pagi_19', 'pagi', 19, 'Istighfar dan Bertaubat 100x', 'dzikir_pagi_zoom18.png', 100, 'Dibaca pagi dan sore 100x', 'أَسْتَغْفِرُ اللَّهَ وَأَتُوبُ إِلَيْهِ', 'Astaghfirullaaha wa atuubu ilayh.', 'Aku memohon ampunan kepada Allah dan bertaubat kepada-Nya.', '-Shahih- HR. Al-Bukhari no.6307, Fat-hul Baari XI/101 dan Muslim no.2702
+Dari Ibnu ''Umar ia berkata: ''Rasulullah Shallallahu ''alaihi wasallaam bersabda: ''Wahai manusia, bertaubatlah kalian kepada Allah, sesungguhnya aku bertaubat dalam sehari seratus kali.'''' HR. Muslim no. 2702 (42).
+
+Dalam riwayat lain dari Agharr al-Muzani, Rasulullah Shallallahu ''alaihi wasallaam bersabda:
+
+''Sesungguhnya hatiku lupa padahal sesungguhnya aku istigfar (minta ampun) kepada Allah dalam sehari seratus kali.'' (HR. Muslim no. 2702 (41)
+
+Nabi Shallallahu ''alaihi wasallaam bersabda: ''Barangsiapa yang mengucapkan:
+
+''Aku memohon ampunan kepada Allah Yang Maha Agung, Yang tidak ada Ilah (yang berhak diibadahi) kecuali Dia, Yang Maha hidup lagi Mahaberdiri sendiri dan aku bertaubat kepada-Nya.''
+
+Maka Allah akan mengampuni dosanya meskipun ia pernah lari dari medan perang.'' HR. Abu Dawud no. 1517, at-Tirmidzi no. 3577 dan al-Hakim I/511. Lihat Shahiih at-Tirmidzi III/282.
+
+ Ayat yang menganjurkan istighfar dan taubat di antaranya: (QS. Huud: 3), (QS. An-Nuur: 31), (QS. At-Tahriim: 8) dan lain-lain', 'astaghfiruallahawaatuubuilaih_100x_dan_artinya.mp3', 19)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('petang_1', 'petang', 1, 'Ayat Kursi (QS. Al-Baqarah: 255)', 'ayat_kursi_zoom0.png', 1, 'Dibaca 1x', 'اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ ۗ مَنْ ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَيْءٍ مِنْ عِلْمِهِ إِلَّا بِمَا شَاءَ ۚ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ ۖ وَلَا يَئُودُهُ حِفْظُهُمَا ۚ وَهُوَ الْعَلِيُّ الْعَظِيمُ', 'Allāhu lā ilāha illā huwal-ḥayyul-qayyūm, lā ta''khużuhū sinatuw wa lā na''ūm, lahū mā fis-samāwāti wa mā fil-arḍ, man żal-lażī yasyfa''u ''indahū illā bi''iżnih, ya''lamu mā baina aidīhim wa mā khalfahum, wa lā yuḥīṭūna bisyai''im min ''ilmihī illā bimā syā'', wasi''a kursiyyuhus-samāwāti wal-arḍ, wa lā ya''ūduhū ḥifẓuhumā, wa huwal-''aliyyul-''aẓīm.', 'Allah tidak ada Ilah (yang berhak diibadahi) melainkan Dia Yang Hidup Kekal lagi terus menerus mengurus (makhluk-Nya); tidak mengantuk dan tidak tidur. Kepunyaan-Nya apa yang ada di langit dan di bumi. Tidak ada yang dapat memberi syafa''at di sisi Allah tanpa izin-Nya. Allah mengetahui apa-apa yang (berada) dihadapan mereka, dan dibelakang mereka dan mereka tidak mengetahui apa-apa dari Ilmu Allah melainkan apa yang dikehendaki-Nya. Kursi Allah meliputi langit dan bumi. Dan Allah tidak merasa berat memelihara keduanya, Allah Mahatinggi lagi Mahabesar. (Al-Baqarah: 255)', 'Nabi Shallallahu ''alaihi wasallaam bersabda: ''Barangsiapa yang membaca ayat ini ketika pagi hari, maka ia dijaga dari (gangguan) jin hingga sore hari. Dan barangsiapa mengucapkannya ketika sore hari, maka ia dijaga dari (gangguan) jin hingga pagi hari.'' (HR. Al-Hakim 1/562, Shahiih at-Targhiib wat Tarhiib 1/418 no. 662, shahih)', 'taawud_dan_ayat_kursi_dan_artinya.mp3', 1)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('petang_2', 'petang', 2, 'Surat Al-Ikhlas (QS. 112: 1-4)', 'surat_al_ikhlas_zoom1.png', 3, 'Dibaca 3x', 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
+قُلْ هُوَ اللَّهُ أَحَدٌ ۝ اللَّهُ الصَّمَدُ ۝ لَمْ يَلِدْ وَلَمْ يُولَدْ ۝ وَلَمْ يَكُنْ لَهُ كُفُوًا أَحَدٌ', 'Bismillāhir-raḥmānir-raḥīm. Qul huwallāhu aḥad. Allāhuṣ-ṣamad. Lam yalid wa lam yūlad. Wa lam yakul lahū kufuwan aḥad.', 'Katakanlah, Dia-lah Allah Yang Maha Esa. Allah adalah (Rabb) yang segala sesuatu bergantung kepada-Nya. Dia tidak beranak dan tidak pula diper­anakkan. Dan tidak ada seorang pun yang setara dengan-Nya.’ (QS. Al-Ikhlash: 1-4)', 'HR. Abu Dawud no. 5082, an-Nasa-i VIII/250 dan at-Tirmidzi no. 3575, Ahmad V/312, Shahiih at-Tirmidzi no. 2829, Tuhfatul Ahwadzi no. 3646, Shahiih at-Targhiib wat Tarhiib 1/411 no. 649, hasan shahih', 'surat_al_ikhlas_dan_artinya.mp3', 2)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('petang_3', 'petang', 3, 'Surat Al-Falaq (QS. 113: 1-5)', 'surat_al_falaq_zoom.png', 3, 'Dibaca 3x', 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
+قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ ۝ مِنْ شَرِّ مَا خَلَقَ ۝ وَمِنْ شَرِّ غَاسِقٍ إِذَا وَقَبَ ۝ وَمِنْ شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ ۝ وَمِنْ شَرِّ حَاسِدٍ إِذَا حَسَدَ', 'Bismillāhir-raḥmānir-raḥīm. Qul a''ūżu birabbil-falaq. Min syarri mā khalaq. Wa min syarri gāsiqin iżā waqab. Wa min syarrin-naffāṡāti fil-''uqad. Wa min syarri ḥāsidin iżā ḥasad.', 'Katakanlah: ‘Aku berlindung kepada Rabb Yang menguasai (waktu) Shubuh dari kejahatan makhluk-Nya. Dan dari kejahatan malam apabila telah gelap gulita. Dan dari kejahatan wanita-wanita tukang sihir yang menghembus pada buhul-buhul. Serta dari kejahatan orang yang dengki apabila dia dengki.‘ (QS. Al-Falaq: 1-5)', 'HR. Abu Dawud no. 5082, an-Nasa-i VIII/250 dan at-Tirmidzi no. 3575, Ahmad V/312, Shahiih at-Tirmidzi no. 2829, Tuhfatul Ahwadzi no. 3646, Shahiih at-Targhiib wat Tarhiib 1/411 no. 649, hasan shahih', 'surat_al_falaq_dan_artinya.mp3', 3)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('petang_4', 'petang', 4, 'Surat An-Nas (QS. 114: 1-6)', 'surat_an_nas_zoom3.png', 3, 'Dibaca 3x', 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
+قُلْ أَعُوذُ بِرَبِّ النَّاسِ ۝ مَلِكِ النَّاسِ ۝ إِلَٰهِ النَّاسِ ۝ مِنْ شَرِّ الْوَسْوَاسِ الْخَنَّاسِ ۝ الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ ۝ مِنَ الْجِنَّةِ وَالنَّاسِ', 'Bismillāhir-raḥmānir-raḥīm. Qul a''ūżu birabbin-nās. Malikin-nās. Ilāhin-nās. Min syarril-waswāsil-khannās. Allażī yuwaswisu fī ṣudūrin-nās. Minal-jinnati wan-nās.', 'Katakanlah, ‘Aku berlindung kepada Rabb (yang memelihara dan menguasai) manusia. Raja manusia. Sembahan (Ilah) manusia. Dari kejahatan (bisikan) syaitan yang biasa bersembunyi. Yang membisik­kan (kejahatan) ke dalam dada-dada manusia. Dari golongan jin dan manusia.’ (QS. An-Naas: 1-6)', '''Barangsiapa membaca tiga surat tersebut setiap pagi dan sore hari, maka (tiga surat tersebut) cukup baginya dari segala sesuatu''. At-Tirmizi berkata ''Hadits ini hasan shahih'' HR. Abu Dawud no. 5082, an-Nasa-i VIII/250 dan at-Tirmidzi no. 3575, Ahmad V/312, Shahiih at-Tirmidzi no. 2829, Tuhfatul Ahwadzi no. 3646, Shahiih at-Targhiib wat Tarhiib 1/411 no. 649, hasan shahih', 'surat_an_naas_dan_artinya.mp3', 4)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('petang_5', 'petang', 5, 'Memasuki Waktu Petang Memohon Kebaikan', 'dzikir_petang_zoom4_rev2.png', 1, 'Dibaca Sore 1x', 'أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ، رَبِّ أَسْأَلُكَ خَيْرَ مَا فِي هَٰذِهِ اللَّيْلَةِ وَخَيْرَ مَا بَعْدَهَا، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِي هَٰذِهِ اللَّيْلَةِ وَشَرِّ مَا بَعْدَهَا، رَبِّ أَعُوذُ بِكَ مِنَ الْكَسَلِ وَسُوءِ الْكِبَرِ، رَبِّ أَعُوذُ بِكَ مِنْ عَذَابٍ فِي النَّارِ وَعَذَابٍ فِي الْقَبْرِ', 'Amsaynaa wa amsal mulku lillaah, wal-hamdu lillaah, laa ilaaha illallaahu wahdahu laa syariika lah, lahul mulku wa lahul hamdu wa huwa ''alaa kulli syai-in qadiir. Rabbi as-aluka khaira maa fii haadzihil lailati wa khaira maa ba''dahaa, wa a''uudzu bika min syarri maa fii haadzihil lailati wa syarri maa ba''dahaa, rabbi a''uudzu bika minal kasali wa suu-il kibar, rabbi a''uudzu bika min ''adzaabin fin naari wa ''adzaabin fil qabr.', 'Kami telah memasuki waktu sore dan kerajaan hanya milik Allah, segala puji hanya milik Allah. Tidak ada Ilah (yang berhak diibadahi dengan benar) kecuali Allah Yang Maha Esa, tiada sekutu bagi-Nya. Bagi-Nya kerajaan dan bagi-Nya pujian. Dia-lah Yang Mahakuasa atas segala sesuatu. Wahai Rabb, aku mohon kepada-Mu kebaikan di malam ini dan kebaikan sesudahnya. Aku berlindung ke­pada-Mu dari kejahatan malam ini dan kejahatan sesudahnya. Wahai Rabb, aku berlindung kepada-Mu dari kemalasan dan kejelekan di hari tua. Wahai Rabb, aku berlindung kepada-Mu dari siksaan di Neraka dan siksaan di kubur.', 'HR. Muslim IV/2088 no. 2723, Abu Dawud no. 5071, at-Tirmidzi 3390, shahih. Dari Abdullah bin Mas''ud Radhiallahu''anh', 'amsaina_wa_amsal_mulkulillah_dan_artinya.mp3', 5)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('petang_6', 'petang', 6, 'Memohon Pertolongan di Waktu Petang', 'dzikir_petang_zoom5.png', 1, 'Dibaca sore 1x', 'اللَّهُمَّ بِكَ أَمْسَيْنَا، وَبِكَ أَصْبَحْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ، وَإِلَيْكَ الْمَصِيرُ', 'Allaahumma bika amsaynaa, wa bika ash-bahnaa, wa bika nahyaa, wa bika namuutu, wa ilaykal-mashiir.', 'Ya Allah, dengan rahmat dan pertolongan-Mu kami memasuki waktu sore dan dengan rahmat dan pertolongan-Mu kami memasuki waktu pagi. Dengan rahmat dan kehendak-Mu kami hidup dan dengan rahmat dan kehendak-Mu kami mati. Dan kepada-Mu tempat kembali (bagi semua makhluk).', 'HR. Al-Bukhari dalam al-Adabul Mufrad, lafazh ini ada­lah lafazh al-Bukhari, at-Tirmidzi no. 3391, Abu Dawud no. 5068, Ahmad 11/354, Ibnu Majah no. 3868, Shahiih al-Adabil Mufrad no. 911, shahih. Lihat pula Silsilah al-Ahaadiits ash-Shahiihah no. 262', 'allahumabika_amsaina_dan_artinya.mp3', 6)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('petang_7', 'petang', 7, 'Sayyidul Istighfar (Penghulu Istighfar)', 'sayyidul_istighfar_zoom6.png', 1, 'Dibaca 1x', 'اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَٰهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَىٰ عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ، أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ، أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ، وَأَبُوءُ بِذَنْبِي فَاغْفِرْ لِي فَإِنَّهُ لَا يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ', 'Allaahumma anta rabbii laa ilaaha illaa anta, khalaqtanii wa anaa ''abduka, wa anaa ''alaa ''ahdika wa wa''dika mastatha''tu, a''uudzu bika min syarri maa shana''tu, abuu-u laka bini''matika ''alayya, wa abuu-u bidzanbii faghfir lii fa-innahu laa yaghfirudz-dzunuuba illaa anta.', 'Ya Allah, Engkau adalah Rabb-ku, tidak ada Ilah (yang berhak diibadahi dengan benar) kecuali Engkau, Engkau-lah yang menciptakanku. Aku adalah hamba-Mu. Aku akan setia pada perjanjian­ku dengan-Mu semampuku. Aku berlindung ke­pada-Mu dari kejelekan (apa) yang kuperbuat. Aku mengakui nikmat-Mu (yang diberikan) kepadaku dan aku mengakui dosaku, oleh karena itu, ampuni­lah aku. Sesungguhnya tidak ada yang dapat me­ngampuni dosa kecuali Engkau.', '''Barangsiapa membacanya dengan yakin di waktu pagi lalu ia meninggal sebelum masuk waktu sore, maka ia ter­masuk ahli Surga. Dan barangsiapa membacanya dengan yakin di waktu sore lalu ia meninggal sebelum masuk waktu pagi, maka ia termasuk ahli Surga.'' (HR. Al-Bukhari no. 6306, 6323, Ahmad IV/122-125, an-Nasa-i VIII/279-280)', 'allahuma_antarobbi_dan_artinya.mp3', 7)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('petang_8', 'petang', 8, 'Doa Keselamatan Tubuh, Pendengaran & Penglihatan', 'dzikir_zoom7.png', 3, 'Dibaca 3x', 'اللَّهُمَّ عَافِنِي فِي بَدَنِي، اللَّهُمَّ عَافِنِي فِي سَمْعِي، اللَّهُمَّ عَافِنِي فِي بَصَرِي، لَا إِلَٰهَ إِلَّا أَنْتَ. اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْكُفْرِ وَالْفَقْرِ، وَأَعُوذُ بِكَ مِنْ عَذَابِ الْقَبْرِ، لَا إِلَٰهَ إِلَّا أَنْتَ', 'Allaahumma ''aafinii fii badanii, Allaahumma ''aafinii fii sam''ii, Allaahumma ''aafinii fii basharii, laa ilaaha illaa anta. Allaahumma innii a''uudzu bika minal kufri wal faqr, wa a''uudzu bika min ''adzaabil qabr, laa ilaaha illaa anta.', 'Ya Allah, selamatkanlah tubuhku (dari penyakit dan dari apa yang tidak aku inginkan). Ya Allah, selamatkanlah pendengaranku (dari penyakit dan maksiat atau dari apa yang tidak aku inginkan). Ya Allah, selamatkanlah penglihatanku, tidak ada Ilah (yang berhak diibadahi) kecuali Engkau. Ya Allah, sesungguhnya aku berlindung kepada-Mu dari kekufuran dan kefakiran. Aku berlindung kepada-Mu dari siksa kubur, tidak ada Ilah (yang berhak diibadahi) kecuali Engkau.', 'HR. Al-Bukhari dalam al-Adabul Mufrad (no. 701), dalam Shahiib al-Adabil Mufrad no. 539, Abu Dawud no. 5090, Ahmad V/42, hasan', 'allahuma_aafinii_fiibadanii_dan_artinya.mp3', 8)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('petang_9', 'petang', 9, 'Doa Perlindungan Menyeluruh & Afiat', 'dzikir_zoom8.png', 1, 'Dibaca 1x', 'اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي الدُّنْيَا وَالْآخِرَةِ، اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي دِينِي وَدُنْيَايَ وَأَهْلِي وَمَالِي، اللَّهُمَّ اسْتُرْ عَوْرَاتِي وَآمِنْ رَوْعَاتِي، اللَّهُمَّ احْفَظْنِي مِنْ بَيْنِ يَدَيَّ، وَمِنْ خَلْفِي، وَعَنْ يَمِينِي، وَعَنْ شِمَالِي، وَمِنْ فَوْقِي، وَأَعُوذُ بِعَظَمَتِكَ أَنْ أُغْتَالَ مِنْ تَحْتِي', 'Allaahumma innii as-alukal ''afwa wal ''aafiyah fid-dunyaa wal aakhirah. Allaahumma innii as-alukal ''afwa wal ''aafiyah fii diinii wa dunyaaya wa ahlii wa maalii. Allaahummastur ''awraatii wa aamin raw''aatii. Allaahummahfazhnii min bayni yadayya, wa min khalfii, wa ''an yamiinii, wa ''an syimaalii, wa min fawqii, wa a''uudzu bi''azhamatika an ughtaala min tahtii.', 'Ya Allah, sesungguhnya aku memohon maaf dan keselamatan di dunia dan akhirat. Ya Allah, sesungguhnya aku memohon maaf dan ke­selamatan dalam agama, dunia, keluarga dan harta­ku. Ya Allah, tutupilah auratku (aib dan sesuatu yang tidak layak dilihat orang) dan tentramkan-lah aku dari rasa takut. Ya Allah, peliharalah aku dari depan, belakang, kanan, kiri dan dari atasku. Aku berlindung dengan kebesaran-Mu, agar aku tidak disambar dari bawahku (aku berlindung dari dibenamkan ke dalam bumi).', 'HR. Al-Bukhari dalam al-Adabul Mufrad (no. 1200), Abu Dawud no. 5074, Ibnu Majah no. 3871, al-Hakim 1/517-518, Shahiih al-Adabul Mufrad no. 912, shahih', 'allahuma_inni_asaluka_afwawalaafiyah_dan_artinya.mp3', 9)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('petang_10', 'petang', 10, 'Doa Perlindungan dari Godaan Syaitan dan Nafsu', 'dzikir_zoom9.png', 1, 'Dibaca pagi dan sore 1x', 'اللَّهُمَّ عَالِمَ الْغَيْبِ وَالشَّهَادَةِ، فَاطِرَ السَّمَاوَاتِ وَالْأَرْضِ، رَبَّ كُلِّ شَيْءٍ وَمَلِيكَهُ، أَشْهَدُ أَنْ لَا إِلَٰهَ إِلَّا أَنْتَ، أَعُوذُ بِكَ مِنْ شَرِّ نَفْسِي، وَمِنْ شَرِّ الشَّيْطَانِ وَشِرْكِهِ، وَأَنْ أَقْتَرِفَ عَلَىٰ نَفْسِي سُوءًا أَوْ أَجُرَّهُ إِلَىٰ مُسْلِمٍ', 'Allaahumma ''aalimal ghaybi wash-syahaadah, faathiras-samaawaati wal ardh, rabba kulli syai-in wa maliikah, asyhadu al-laa ilaaha illaa anta, a''uudzu bika min syarri nafsii, wa min syarrisy-syaithaani wa syirkihi, wa an aqtarifa ''alaa nafsii suu-an aw ajurrahu ilaa muslim.', 'Ya Allah Yang Mahamengetahui yang ghaib dan yang nyata, wahai Rabb Pencipta langit dan bumi, Rabb atas segala sesuatu dan Yang Merajainya. Aku bersaksi bahwa tidak ada Ilah (yang berhak diibadahi) kecuali Engkau. Aku berlindung ke­pada-Mu dari kejahatan diriku, syaitan dan sekutu­nya, (aku berlindung kepada-Mu) dari berbuat kejelekan atas diriku atau mendorong seorang muslim kepadanya.', 'Nabi Shallallahu ''alaihi wasallaam bersabda kepada Abu Bakar ash-Shiddiq Radiyallahu ''anhu ''Ucapkanlah pagi dan petang dan apabila engkau hendak tidur.'' HR. AL-Bukhari dalam al-Adabul Mufrad (no. 1202, 1203), Ahmad (II/297) HR. At-T irmidzi no. 3392 dan Abu Dawud no. 5067, lihat Shahiih at-Tirmidzi no. 2798, Shahiih al-Adabil Mufrad no. 913, 914, shahih. Lihat Silsilah al-Ahaadiits ash-Shahiihah no. 2753', 'allahuma_aalimal_ghoibi_wassahaadah_dan_artinya.mp3', 10)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('petang_11', 'petang', 11, 'Berlindung dengan Asma Allah dari Segala Bahaya', 'dzikir_zoom10.png', 3, 'Dibaca 3x', 'بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ', 'Bismillaahilladzii laa yadhurru ma''asmihi syai-un fil ardhi wa laa fis-samaa-i wa huwas-samii''ul ''aliim.', 'Dengan Nama Allah yang tidak ada bahaya atas Nama-Nya sesuatu di bumi dan tidak pula dilangit. Dia-lah Yang Mahamendengar dan Mahamengetahui.', '''Barangsiapa membacanya sebanyak tiga kali ketika pagi dan sore hari, maka tidak ada sesuatu pun yang mem­bahayakan dirinya.'' HR. At-Tirmidzi no. 3388, Abu Dawud no. 5088, Ahmad no. 446 dan 476, Tahqiq Ahmad Syakir dan Ibnu Majah no. 3869, lihat Shahiih Ibni Majah no. 3120, al-Hakim 1/513, Shahiih al-Adabil Mufrad no. 513, Shahiih at-Targhiib wat Tarhiib 1/413 no. 655, sanad-nya shahih', 'bismillahillazdi_laa_yaddzurruma_dan_artinya.mp3', 11)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('petang_12', 'petang', 12, 'Rela kepada Allah, Islam, dan Nabi Muhammad', 'dzikir_zoom11.png', 3, 'Dibaca 3x', 'رَضِيتُ بِاللَّهِ رَبًّا، وَبِالْإِسْلَامِ دِينًا، وَبِمُحَمَّدٍ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ نَبِيًّا', 'Radhiitu billaahi rabbaa, wa bil Islaami diinaa, wa bi Muhammadin shallallaahu ''alayhi wa sallama nabiyyaa.', 'Aku rela (ridha) Allah sebagai Rabb-ku (untuk­ku dan orang lain), Islam sebagai agamaku dan Muhammad shallallahu ''alaihi wasallam sebagai Nabiku (yang diutus oleh Allah).', '''Barangsiapa membacanya sebanyak tiga kali ketika pagi dan sore, maka Allah memberikan keridhaan-Nya kepada­nya pada hari Kiamat.'' HR. Ahmad IV/337, Abu Dawud no. 5072, at-Tirmidzi no. 3389, Ibnu Majah no. 3870, an-Nasa-i dalam ''Amalul Yaum wal Lailah no. 4 dan Ibnus Sunni no. 68, Shahiih at-Targhiib wat Tarhiib 1/415 no. 657, dishahihkan oleh Imam al-Hakim dalam al-Mustadrak 1/518 dan disetujui oleh Imam adz-Dzahabi, hasan. Lihat juga Shahiih al-Waabilish Shayyib hal. 170, Zaadul Ma''aad II/372, Silsilah al-Ahaadiits ash-Shahiihah no. 2686', 'robbitubillaahirobbah_dan_artinya.mp3', 12)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('petang_13', 'petang', 13, 'Doa Memohon Rahmat & Perbaikan Urusan (Istighatsah)', 'dzikir_zoom12.png', 1, 'Dibaca 1x', 'يَا حَيُّ يَا قَيُّومُ بِرَحْمَتِكَ أَسْتَغِيثُ، أَصْلِحْ لِي شَأْنِي كُلَّهُ، وَلَا تَكِلْنِي إِلَىٰ نَفْسِي طَرْفَةَ عَيْنٍ', 'Yaa Hayyu Yaa Qayyuum, bi rahmatika astaghiits, ashlih lii sya''nii kullah, wa laa takilnii ilaa nafsii tharfata ''ayn.', 'Wahai Rabb Yang Mahahidup, Wahai Rabb Yang berdiri sendiri (tidak butuh segala sesuatu) dengan rahmat-Mu aku meminta pertolongan, perbaikilah segala urusanku dan jangan diserahkan kepadaku meski sekejap mata sekali pun (tanpa mendapat pertolongan dari-Mu).', 'HR. An-Nasa-i dalam ''Amalul Yaum wal Lailah (no. 575), al-Bazzar dalam Musnadnya (no. 3107) dan al-Hakim 1/545 dan Ibnus sunni dalam ''Amalul Yaum wal Lailah (no. 48) dari Anas bin Malik Radhiallahu''anh. lihat Shahiih at-Targhiib wat Tarhiib 1/AV7 no. 661, dan Silsilah Ash-Shahiihah (no 227) hasan', 'yaahaiyuyaakhoiyuum_dan_artinya.mp3', 13)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('petang_14', 'petang', 14, 'Di Atas Fitrah Islam & Agama Nabi Ibrahim (Petang)', 'dzikir_petang_zoom13.png', 1, 'Dibaca sore 1x', 'أَمْسَيْنَا عَلَىٰ فِطْرَةِ الْإِسْلَامِ، وَعَلَىٰ كَلِمَةِ الْإِخْلَاصِ، وَعَلَىٰ دِينِ نَبِيِّنَا مُحَمَّدٍ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ، وَعَلَىٰ مِلَّةِ أَبِينَا إِبْرَاهِيمَ حَنِيفًا مُسْلِمًا وَمَا كَانَ مِنَ الْمُشْرِكِينَ', 'Amsaynaa ''alaa fithratil Islaam, wa ''alaa kalimatil ikhlaash, wa ''alaa diini nabiyyinaa Muhammadin shallallaahu ''alayhi wa sallam, wa ''alaa millati abiinaa Ibraahiima haniifam muslimaw wa maa kaana minal musyrikiin.', 'Di waktu sore kami berada diatas fitrah agama Islam, kalimat ikhlas, agama Nabi kita Muhammad shallallahu ''alaihi wasallam dan agama ayah kami, Ibrahim, yang berdiri di atas jalan yang lurus, muslim dan tidak tergolong orang-orang yang musyrik.', 'HR. Ahmad III/406, 407, V/123, ad-Darimi II/292 dan Ibnus Sunni dalam Amalul Yaum wol Lailah no. 34, Misykaatul Mashaabiih no. 2415, Shahiihal-Jaami''ish Shaghiir no. 4674, shahih', 'amsainaa_alaafitratil_islaam_dan_artinya.mp3', 14)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('petang_15', 'petang', 15, 'Kalimat Tahlil & Pengagungan Allah', 'dzikir_zoom14.png', 100, 'Di­baca 1x atau dibaca 10x, boleh juga dibaca 100x di waktu pagi dan sore', 'لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ، وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ', 'Laa ilaaha illallaahu wahdahu laa syariika lah, lahul mulku wa lahul hamdu wa huwa ''alaa kulli syai-in qadiir.', 'Tidak ada Ilah (yang berhak diibadahi dengan benar) selain Allah Yang Maha Esa, tidak ada sekutu bagi-Nya. Bagi-Nya kerajaan dan bagi-Nya segala puji. Dan Dia Mahakuasa atas segala sesuatu.', 'dibaca 1x : HR. Abu Dawud no. 5077, Ibnu Majah no. 3867, Shahiih Jaami''ish Shaghiir no. 6418, MisykaatulMashaabiih no. 2395, Shahiih at-Targhiib 1/414 no. 656, shahih.
+dibaca 10x : HR. An-Nasa-i dalam ''Amalul Yaum wal Lailah (no. 24), Ahmad (V/420), dari Abu Ayyub al-Anshari Radhiallahu'' anh. Lihat Shahih At-Targhiib wat Tarhiib (I/416, no 660)
+dibaca 100x : ''Barangsiapa membacanya sebanyak 100x dalam sehari, maka baginya (pahala) seperti memerdekakan sepuluh budak, ditulis seratus kebaikan, dihapus darinya seratus keburukan, baginya perlindungan dari syaitan pada hari itu hingga sore hari. Tidaklah seseorang itu dapat men­datangkan yang lebih baik dari apa yang dibawanya ke­cuali ia melakukan lebih banyak lagi dari itu.'' HR. Al-Bukhari no. 3293 dan 6403, Muslim IV/2071 no. 2691 (28), at-Tirmidzi no. 3468, Ibnu Majah no. 3798, dari Sahabat Abu Hurairah Radiyallahu ''anhu. Penjelasan: Dalam riwayat an-Nasa-i (''Amalul Yaum wal Lailah no. 580) dan Ibnus Sunni no. 75 dari ''Amr bin Syu''aib dari ayahnya dari kakeknya lafazhnya: ''Barangsiapa membaca 100x pada pagi hari dan 100x pada sore Hari.''… Jadi, dzikir ini dibaca 100x diwaktu pagi dan 100x diwaktu sore. Lihat Silsilah al-Ahaadiits ash-Shahiihah no. 2762', 'laaialaahaillaahuwakhdahulaatsariikalah_10x_atau_1x__dan_artinya.mp3', 15)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('petang_16', 'petang', 16, 'Tasbih dan Tahmid 100x', 'dzikir_zoom17.png', 100, 'Dibaca 100x', 'سُبْحَانَ اللَّهِ وَبِحَمْدِهِ', 'Subhaanallaahi wa bihamdih.', 'Maha Suci ALLAH, aku memuji-Nya', 'HR. Muslim no. 2691 dan no. 2692, Syarak Muslim XVTV 17-18, Shahiih at-Targhiib wat Tarhiib 1/413 no. 653. Jumlah yang terbanyak dari dzikir-dzikir Nabi adalah seratus diwaktu pagi dan seratus diwaktu sore. Adapun riwayat yang menyebutkan sampai seribu adalah munkar, karena haditsnya dha''if. (Silsilah al-Ahaadiits adh-Dha-''iifah no. 5296)', 'subhanallahiwabihamdi_100x_dan_artinya.mp3', 16)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('petang_17', 'petang', 17, 'Berlindung dengan Kalimat Allah yang Sempurna (Petang)', 'dzikir_petang_zoom19.png', 3, 'Dibaca 3x', 'أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ', 'A''uudzu bikalimaatillaahit taammaati min syarri maa khalaq.', 'Aku berlindung dengan kalimat-kalimat Allah yang sempurna, dari kejahatan sesuatu yang diciptakan-Nya.', 'HR. Ahmad 11/290, an-Nasa-i dalam ''Amalul Yaum wal Lailah no. 590, Shahiih at-Targhiib wat Tarhiib 1/412 no. 652, Shahiih al-Jaami ''ish Shaghiir no. 6427', 'audubikalimatillaah_dan_artinya.mp3', 17)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('sholat_subuh_1', 'sholat_subuh', 1, 'Istighfar & Doa Keselamatan', 'dzikir_setelah_sholat_zoom0.png', 1, '(dibaca 1x)', 'أَسْتَغْفِرُ اللَّهَ، أَسْتَغْفِرُ اللَّهَ، أَسْتَغْفِرُ اللَّهَ.
+اللَّهُمَّ أَنْتَ السَّلَامُ وَمِنْكَ السَّلَامُ، تَبَارَكْتَ يَا ذَا الْجَلَالِ وَالْإِكْرَامِ', 'Astaghfirullaah (3x). Allaahumma antas-salaamu wa minkas-salaam, tabaarakta yaa dzal-jalaali wal-ikraam.', 'Saya memohon ampun kepada Allah.(3x) Ya Allah Engkau Maha Sejahtera, dan dari-Mu lah kesejahteraan, Maha Suci Engkau wahai Rabb pemilik Keagungan dan Kemuliaan.', 'HR. Muslim no.591 (135), Ahmad (V/275,279), Abu Dawud no.1513, an-Nasa-i III/68, Ibnu Khuzaimah no.737, ad-Darimi I/311 dan Ibnu Majah no.928 dari Sahabat Tsauban radhiyallaahu ''anhu. penjelasan : Hendaklah dicukupkan dengan bacaan ini dan jangan ditambah-tambah dengan macam-macam bacaan lainnya yang tidak ada asalnya dari Nabi Shallallaahu ''alaihi wa sallam. (Lihat Misykaatul Mashaabiih 1/303)', 'dzikirsesudahsholat_0.mp3', 1)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('sholat_subuh_2', 'sholat_subuh', 2, 'Tahlil & Ketetapan Qadha Allah', 'dzikir_setelah_sholat_zoom1.png', 1, 'Dibaca 1x', 'لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ، اللَّهُمَّ لَا مَانِعَ لِمَا أَعْطَيْتَ، وَلَا مُعْطِيَ لِمَا مَنَعْتَ، وَلَا يَنْفَعُ ذَا الْجَدِّ مِنْكَ الْجَدُّ', 'Laa ilaaha illallaahu wahdahu laa syariika lah, lahul mulku wa lahul hamdu wa huwa ''alaa kulli syai-in qadiir. Allaahumma laa maani''a limaa a''thaita, wa laa mu''thiya limaa mana''ta, wa laa yanfa''u dzal jaddi minkal jaddu.', 'Tidak ada Ilah yang berhak diibadahi dengan benar melainkan hanya Allah Yang Maha Esa, tidak ada sekutu bagi-Nya. Bagi-Nya kerajaan dan bagi-Nya segala pujian dan Dia Maha Kuasa atas segala sesuatu. Ya Allah tidak ada yang dapat mencegah apa yang Engkau beri, dan tidak ada yang dapat memberi apa yang Engkau cegah. Tidak berguna kekayaan dan kemuliaan itu bagi pemiliknya dari siksa-Mu.', 'HR. Al-Bukhari no.844 dan Muslim no.593, Abu Dawud no.1505, Ahmad IV/245, 247, 250, 254, 255, Ibnu Khuzaimah no.742, ad-Darimi I/311, dan An-Nasa-i III/70,71, dari  Al-Mughirah bin Syu''bah', 'dzikirsesudahsholat_1.mp3', 2)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('sholat_subuh_3', 'sholat_subuh', 3, 'Tahlil & Kemurnian Ibadah Hanya untuk Allah', 'dzikir_setelah_sholat_zoom2_rev.png', 1, 'dibaca 1x', 'لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ. لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ، لَا إِلَٰهَ إِلَّا اللَّهُ، وَلَا نَعْبُدُ إِلَّا إِيَّاهُ، لَهُ النِّعْمَةُ وَلَهُ الْفَضْلُ وَلَهُ الثَّنَاءُ الْحَسَنُ، لَا إِلَٰهَ إِلَّا اللَّهُ مُخْلِصِينَ لَهُ الدِّينَ وَلَوْ كَرِهَ الْكَافِرُونَ', 'Laa ilaaha illallaahu wahdahu laa syariika lah, lahul mulku wa lahul hamdu wa huwa ''alaa kulli syai-in qadiir. Laa hawla wa laa quwwata illaa billaah, laa ilaaha illallaahu wa laa na''budu illaa iyyaahu, lahun ni''matu wa lahul fadhlu wa lahuts-tsanaa-ul hasan, laa ilaaha illallaahu mukhlishiina lahud-diina wa law karihal kaafiruun.', 'Tidak ada Ilah yang berhak diibadahi dengan benar melainkan hanya Allah Yang Maha Esa, tidak ada sekutu bagi-Nya. Bagi-Nya kerajaan dan bagi-Nya segala pujian dan Dia Maha Kuasa atas segala sesuatu. Tidak ada daya dan kekuatan kecuali (dengan pertolongan) Allah. Tidak ada Ilah yang berhak diibadahi dengan benar melainkan hanya Allah. Kami tidak beribadah kecuali kepada-Nya. Baginya nikmat, anugerah, dan pujian yang baik. Tidak ada Ilah yang berhak diibadahi dengan benar melainkan hanya Allah, dengan memurnikan ibadah hanya kepada-Nya, meskipun orang-orang kafir tidak menyukainya.', 'HR. Muslim no.594, Ahmad IV/ 4, 5, Abu  Dawud no. 1506, 1507, an- Nasa-i III/70, Ibnu Khuzaimah no.740, 741, Dari ''Abdullah bin az-Zubair Rahimahullah', 'dzikirsesudahsholat_2.mp3', 3)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('sholat_subuh_4', 'sholat_subuh', 4, 'Tahlil Khusus Selesai Sholat Maghrib & Shubuh (10x)', 'dzikir_setelah_sholat_zoom3.png', 10, 'Dibaca 10x setiap selesai shalat maghrib dan shubuh', 'لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ يُحْيِي وَيُمِيتُ وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ', 'Laa ilaaha illallaahu wahdahu laa syariika lah, lahul mulku wa lahul hamdu yuhyii wa yumiitu wa huwa ''alaa kulli syai-in qadiir.', 'Tidak ada Ilah yang berhak diibadahi dengan benar melainkan hanya Allah Yang Maha Esa, tidak ada sekutu bagi-Nya. Bagi-Nya kerajaan dan bagi-Nya segala pujian. Dialah yang menghidupkan (orang yang sudah mati atau memberi ruh janin yang akan dilahirkan) dan yang mematikan. Dan Dialah Yang Maha Kuasa atas segala sesuatu.', 'Nabi Shallallaahu ''alaihi wasallam bersabda: ''Barangsiapa setelah shalat Maghrib dan Shubuh membaca ''Laa ilaaha illallah wahdahu laa syarikalah, lahul mulku, walahul hamdu, yuhyiy wa yumiytu wahuwa ''ala kulli syay-in qadiir,''  sebanyak 10x Allah akan tulis setiap satu kali 10 kebaikan, dihapus 10 kejelekan, diangkat 10 derajat, Allah lindungi dari setiap kejelekan, dan Allah lindungi dari godaan syetan yang terkutuk.'' (HR. Ahmad IV/227, at-Tirmidzi no.3474). At-Tirmidzi berkata: Hadits ini hasan gharih shahih.'' (Lihat Shahiih Al-Taghrrib wat Tahriib (I/322-323, no 474, 475, dan 477), Zaadul Ma''aad (I/300-301) dan Silsilah al-Ahaadiits ash-Shahiihah (no. 113, 114 dan 2563))', 'dzikirsesudahsholat_3.mp3', 4)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('sholat_subuh_5', 'sholat_subuh', 5, 'Doa Memohon Pertolongan untuk Berdzikir, Bersyukur & Beribadah', 'dzikir_setelah_sholat_zoom4.png', 1, 'Dibaca 1x', 'اللَّهُمَّ أَعِنِّي عَلَىٰ ذِكْرِكَ، وَشُكْرِكَ، وَحُسْنِ عِبَادَتِكَ', 'Allaahumma a''innii ''alaa dzikrika, wa syukrika, wa husni ''ibaadatika.', 'Ya Allah, tolonglah aku untuk berdzikir kepada-Mu, bersyukur kepada-Mu, serta beribadah dengan baik kepada-Mu.', 'HR. Abu Dawud no.1522, an-Nasa-i III/53, Ahmad V/245 dan al-Hakim (I/273 dan III/273) dan dishahihkannya, juga disepakati oleh adz-Dzahabi, yang mana kedudukan hadits itu seperti yang dikatakan oleh keduanya, bahwa Nabi shallallaahu ''alaihi wasallam pernah memberikan wasiat kepada Mu''adz agar dia mengucapkannya di setiap akhir shalat', 'dzikirsesudahsholat_4.mp3', 5)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('sholat_subuh_6', 'sholat_subuh', 6, 'Tasbih (33x), Tahmid (33x), Takbir (33x) & Tahlil Penutup (1x)', 'dzikir_setelah_sholat_zoom5.png,dzikir_setelah_sholat_zoom6.png,dzikir_setelah_sholat_zoom7.png,dzikir_zoom14.png', 1, 'dibaca 1x', 'سُبْحَانَ اللَّهِ (٣٣×)
+الْحَمْدُ لِلَّهِ (٣٣×)
+اللَّهُ أَكْبَرُ (٣٣×)
+لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ (١×)', 'Subhaanallaah (33x), Alhamdulillaah (33x), Allaahu Akbar (33x).
+Penutup (1x): Laa ilaaha illallaahu wahdahu laa syariika lah, lahul mulku wa lahul hamdu wa huwa ''alaa kulli syai-in qadiir.', 'Maha suci Allah (dibaca 33x) Segala puji bagi Allah (dibaca 33x) Allah Maha Besar (dibaca 33x) Kemudian untuk melengkapinya menjadi seratus, ditambah dengan membaca:Laa ilaaha illallah wahdahu laa syarikalah, lahul mulku, walahul hamdu, wahuwa ''ala kulli syay-in qadiir.Tidak ada Ilah yang berhak diibadahi dengan benar melainkan hanya Allah Yang Maha Esa, tidak ada sekutu bagi-Nya. Bagi-Nya kerajaan dan bagi-Nya segala pujian dan Dialah Yang Maha Kuasa atas segala sesuatu.', '''Barangsiapa membaca kalimat tersebut setiap selesai shalat, akan diampuni kesalahannya, sekalipun seperti buih di lautan.'' HR. Muslim no.597, Ahmad II/371,483, Ibnu Khuzaimah no.750 dan al-Baihaqi II/187)', 'dzikirsesudahsholat_5.mp3', 6)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('sholat_subuh_7', 'sholat_subuh', 7, 'Ayat Kursi (QS. Al-Baqarah: 255)', 'ayat_kursi_zoom0.png', 1, 'Dibaca 1x', 'اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ ۗ مَنْ ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَيْءٍ مِنْ عِلْمِهِ إِلَّا بِمَا شَاءَ ۚ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ ۖ وَلَا يَئُودُهُ حِفْظُهُمَا ۚ وَهُوَ الْعَلِيُّ الْعَظِيمُ', 'Allāhu lā ilāha illā huwal-ḥayyul-qayyūm, lā ta''khużuhū sinatuw wa lā na''ūm, lahū mā fis-samāwāti wa mā fil-arḍ, man żal-lażī yasyfa''u ''indahū illā bi''iżnih, ya''lamu mā baina aidīhim wa mā khalfahum, wa lā yuḥīṭūna bisyai''im min ''ilmihī illā bimā syā'', wasi''a kursiyyuhus-samāwāti wal-arḍ, wa lā ya''ūduhū ḥifẓuhumā, wa huwal-''aliyyul-''aẓīm.', 'Aku berlindung kepada Allah dari godaan syaitan yang terkutuk. Allah tidak ada Ilah (yang berhak diibadahi dengan benar) melainkan Dia. Yang Hidup kekal lagi terus menerus mengurus (makhluk-Nya); tidak mengantuk dan tidak tidur. Kepunyaan-Nya apa-apa yang ada di langit dan apa-apa yang ada di bumi. Siapakah yang dapat memberi syafa''at di sisi Allah tanpa izin-Nya. Allah mengetahui apa-apa yang di hadapan mereka dan di belakang mereka, dan mereka tidak mengetahui apa-apa dari ilmu Allah melainkan apa yang dikehendaki-Nya. Dan Kursi Allah meliputi langit dan bumi, dan Allah tidak merasa berat memelihara keduanya, dan Allah Maha Tinggi lagi Maha Besar.(Al-Baqarah: 255)', '''Barangsiapa yang membacanya setiap selesai shalat, tidak ada yang menghalanginya masuk Surga selain kematian.'' HR. An-Nasa-i dalam ''Amalul Yaum wal Lailah'' no.100 dan Ibnus Sunni no.124 dari Abu Umamah rahimahullah, dinyatakan shahih oleh Syaikh al-Albani dalam Shahiibul Jaami'' dan Silsilah al-Ahadiits ash-Shahiihah (no. 972)', 'dzikirsesudahsholat_6.mp3', 7)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('sholat_subuh_8', 'sholat_subuh', 8, 'Surat Al-Ikhlas (QS. 112: 1-4)', 'surat_al_ikhlas_zoom1.png', 1, 'Dibaca 1x', 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
+قُلْ هُوَ اللَّهُ أَحَدٌ ۝ اللَّهُ الصَّمَدُ ۝ لَمْ يَلِدْ وَلَمْ يُولَدْ ۝ وَلَمْ يَكُنْ لَهُ كُفُوًا أَحَدٌ', 'Bismillāhir-raḥmānir-raḥīm. Qul huwallāhu aḥad. Allāhuṣ-ṣamad. Lam yalid wa lam yūlad. Wa lam yakul lahū kufuwan aḥad.', 'Dialah Allah, Yang Maha Esa. Allah tempat bergantung kepada-Nya segala sesuatu. Dia tiada beranak dan tidak pula diperanakkan, dan tidak ada seorangpun yang setara dengan Dia.(QS. Al-ikhlas: 1-4)', 'HR Abu Dawud no.1523, an-Nasa-i III/68, Ibnu Khuzaimah no.755 dan Hakim I/253. Lihat pula Shahiih at-Tirmidzi III/8 no.2324. Ketiga surat tersebut dinamakan al-Mu''awwidzaat. lihat pula Fat-hul Baari (IX/62)', 'dzikirsesudahsholat_7.mp3', 8)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('sholat_subuh_9', 'sholat_subuh', 9, 'Surat Al-Falaq (QS. 113: 1-5)', 'surat_al_falaq_zoom.png', 1, '(QS. Al-Falaq: 1-5). (Dibaca 1x)', 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
+قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ ۝ مِنْ شَرِّ مَا خَلَقَ ۝ وَمِنْ شَرِّ غَاسِقٍ إِذَا وَقَبَ ۝ وَمِنْ شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ ۝ وَمِنْ شَرِّ حَاسِدٍ إِذَا حَسَدَ', 'Bismillāhir-raḥmānir-raḥīm. Qul a''ūżu birabbil-falaq. Min syarri mā khalaq. Wa min syarri gāsiqin iżā waqab. Wa min syarrin-naffāṡāti fil-''uqad. Wa min syarri ḥāsidin iżā ḥasad.', 'Aku berlindung kepada Robb Yang Menguasai waktu subuh, dari kejahatan apa-apa (mahluk) yang diciptakan-Nya. Dan dari kejahatan malam apabila telah gelap gulita, dan dari kejahatan wanita-wanita tukang sihir yang menghembus pada buhul-buhul, dan dari kejahatan orang-orang yang dengki apabila ia dengki', 'HR Abu Dawud no.1523, an-Nasa-i III/68, Ibnu Khuzaimah no.755 dan Hakim I/253. Lihat pula Shahiih at-Tirmidzi III/8 no.2324. Ketiga surat tersebut dinamakan al-Mu''awwidzaat. lihat pula Fat-hul Baari (IX/62)', 'dzikirsesudahsholat_8.mp3', 9)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('sholat_subuh_10', 'sholat_subuh', 10, 'Surat An-Nas (QS. 114: 1-6)', 'surat_an_nas_zoom3.png', 1, '(Dibaca 1x) (Dibaca masing-masing 1x)', 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
+قُلْ أَعُوذُ بِرَبِّ النَّاسِ ۝ مَلِكِ النَّاسِ ۝ إِلَٰهِ النَّاسِ ۝ مِنْ شَرِّ الْوَسْوَاسِ الْخَنَّاسِ ۝ الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ ۝ مِنَ الْجِنَّةِ وَالنَّاسِ', 'Bismillāhir-raḥmānir-raḥīm. Qul a''ūżu birabbin-nās. Malikin-nās. Ilāhin-nās. Min syarril-waswāsil-khannās. Allażī yuwaswisu fī ṣudūrin-nās. Minal-jinnati wan-nās.', 'Aku berlindung kepada Robb (yang memelihara dan menguasai) manusia. Raja manusia. Sembahan manusia. Dari kejahatan (bisikan) syaitan yang biasa bersembunyi, yang membisikkan (kejahatan) ke dalam dada manusia, dari (golongan) jin dan manusia.(QS. An-Naas: 1-6)', 'HR Abu Dawud no.1523, an-Nasa-i III/68, Ibnu Khuzaimah no.755 dan Hakim I/253. Lihat pula Shahiih at-Tirmidzi III/8 no.2324. Ketiga surat tersebut dinamakan al-Mu''awwidzaat. lihat pula Fat-hul Baari (IX/62)', 'dzikirsesudahsholat_9.mp3', 10)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('sholat_subuh_11', 'sholat_subuh', 11, 'Memohon Ilmu yang Bermanfaat, Rezeki Halal & Amal Diterima', 'dzikir_pagi_zoom16.png', 1, 'Dibaca 1x setelah selesai sholat Shubuh', 'اللَّهُمَّ إِنِّي أَسْأَلُكَ عِلْمًا نَافِعًا، وَرِزْقًا طَيِّبًا، وَعَمَلًا مُتَقَبَّلًا', 'Allaahumma innii as-aluka ''ilman naafi''aa, wa rizqan thayyibaa, wa ''amalam mutaqabbalaa.', 'Ya Allah, sesungguhnya aku mohon kepada-Mu ilmu yang bermanfaat, rizki yang halal, dan amal yang diterima', 'HR. ibnu majah (no.925), Shahiih Ibnu Majah (I/152, no 753) dan ibus Sunni dalam ''Amalul Yaum wal Lailah (no 54, 110) dan ahli hadits yang lain dari Ummu Salamah Radhiallahu''anha. Lihat kitab Majma''uz Zaawaaid (X/111), shahih', 'dzikirsesudahsholat_10.mp3', 11)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('sholat_maghrib_1', 'sholat_maghrib', 1, 'Istighfar & Doa Keselamatan', 'dzikir_setelah_sholat_zoom0.png', 1, '(dibaca 1x)', 'أَسْتَغْفِرُ اللَّهَ، أَسْتَغْفِرُ اللَّهَ، أَسْتَغْفِرُ اللَّهَ.
+اللَّهُمَّ أَنْتَ السَّلَامُ وَمِنْكَ السَّلَامُ، تَبَارَكْتَ يَا ذَا الْجَلَالِ وَالْإِكْرَامِ', 'Astaghfirullaah (3x). Allaahumma antas-salaamu wa minkas-salaam, tabaarakta yaa dzal-jalaali wal-ikraam.', 'Saya memohon ampun kepada Allah.(3x) Ya Allah Engkau Maha Sejahtera, dan dari-Mu lah kesejahteraan, Maha Suci Engkau wahai Rabb pemilik Keagungan dan Kemuliaan.', 'HR. Muslim no.591 (135), Ahmad (V/275,279), Abu Dawud no.1513, an-Nasa-i III/68, Ibnu Khuzaimah no.737, ad-Darimi I/311 dan Ibnu Majah no.928 dari Sahabat Tsauban radhiyallaahu ''anhu. penjelasan : Hendaklah dicukupkan dengan bacaan ini dan jangan ditambah-tambah dengan macam-macam bacaan lainnya yang tidak ada asalnya dari Nabi Shallallaahu ''alaihi wa sallam. (Lihat Misykaatul Mashaabiih 1/303)', 'dzikirsesudahsholat_0.mp3', 1)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('sholat_maghrib_2', 'sholat_maghrib', 2, 'Tahlil & Ketetapan Qadha Allah', 'dzikir_setelah_sholat_zoom1.png', 1, 'Dibaca 1x', 'لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ، اللَّهُمَّ لَا مَانِعَ لِمَا أَعْطَيْتَ، وَلَا مُعْطِيَ لِمَا مَنَعْتَ، وَلَا يَنْفَعُ ذَا الْجَدِّ مِنْكَ الْجَدُّ', 'Laa ilaaha illallaahu wahdahu laa syariika lah, lahul mulku wa lahul hamdu wa huwa ''alaa kulli syai-in qadiir. Allaahumma laa maani''a limaa a''thaita, wa laa mu''thiya limaa mana''ta, wa laa yanfa''u dzal jaddi minkal jaddu.', 'Tidak ada Ilah yang berhak diibadahi dengan benar melainkan hanya Allah Yang Maha Esa, tidak ada sekutu bagi-Nya. Bagi-Nya kerajaan dan bagi-Nya segala pujian dan Dia Maha Kuasa atas segala sesuatu. Ya Allah tidak ada yang dapat mencegah apa yang Engkau beri, dan tidak ada yang dapat memberi apa yang Engkau cegah. Tidak berguna kekayaan dan kemuliaan itu bagi pemiliknya dari siksa-Mu.', 'HR. Al-Bukhari no.844 dan Muslim no.593, Abu Dawud no.1505, Ahmad IV/245, 247, 250, 254, 255, Ibnu Khuzaimah no.742, ad-Darimi I/311, dan An-Nasa-i III/70,71, dari  Al-Mughirah bin Syu''bah', 'dzikirsesudahsholat_1.mp3', 2)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('sholat_maghrib_3', 'sholat_maghrib', 3, 'Tahlil & Kemurnian Ibadah Hanya untuk Allah', 'dzikir_setelah_sholat_zoom2_rev.png', 1, 'dibaca 1x', 'لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ. لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ، لَا إِلَٰهَ إِلَّا اللَّهُ، وَلَا نَعْبُدُ إِلَّا إِيَّاهُ، لَهُ النِّعْمَةُ وَلَهُ الْفَضْلُ وَلَهُ الثَّنَاءُ الْحَسَنُ، لَا إِلَٰهَ إِلَّا اللَّهُ مُخْلِصِينَ لَهُ الدِّينَ وَلَوْ كَرِهَ الْكَافِرُونَ', 'Laa ilaaha illallaahu wahdahu laa syariika lah, lahul mulku wa lahul hamdu wa huwa ''alaa kulli syai-in qadiir. Laa hawla wa laa quwwata illaa billaah, laa ilaaha illallaahu wa laa na''budu illaa iyyaahu, lahun ni''matu wa lahul fadhlu wa lahuts-tsanaa-ul hasan, laa ilaaha illallaahu mukhlishiina lahud-diina wa law karihal kaafiruun.', 'Tidak ada Ilah yang berhak diibadahi dengan benar melainkan hanya Allah Yang Maha Esa, tidak ada sekutu bagi-Nya. Bagi-Nya kerajaan dan bagi-Nya segala pujian dan Dia Maha Kuasa atas segala sesuatu. Tidak ada daya dan kekuatan kecuali (dengan pertolongan) Allah. Tidak ada Ilah yang berhak diibadahi dengan benar melainkan hanya Allah. Kami tidak beribadah kecuali kepada-Nya. Baginya nikmat, anugerah, dan pujian yang baik. Tidak ada Ilah yang berhak diibadahi dengan benar melainkan hanya Allah, dengan memurnikan ibadah hanya kepada-Nya, meskipun orang-orang kafir tidak menyukainya.', 'HR. Muslim no.594, Ahmad IV/ 4, 5, Abu  Dawud no. 1506, 1507, an- Nasa-i III/70, Ibnu Khuzaimah no.740, 741, Dari ''Abdullah bin az-Zubair Rahimahullah', 'dzikirsesudahsholat_2.mp3', 3)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('sholat_maghrib_4', 'sholat_maghrib', 4, 'Tahlil Khusus Selesai Sholat Maghrib & Shubuh (10x)', 'dzikir_setelah_sholat_zoom3.png', 10, 'Dibaca 10x setiap selesai shalat maghrib dan shubuh', 'لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ يُحْيِي وَيُمِيتُ وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ', 'Laa ilaaha illallaahu wahdahu laa syariika lah, lahul mulku wa lahul hamdu yuhyii wa yumiitu wa huwa ''alaa kulli syai-in qadiir.', 'Tidak ada Ilah yang berhak diibadahi dengan benar melainkan hanya Allah Yang Maha Esa, tidak ada sekutu bagi-Nya. Bagi-Nya kerajaan dan bagi-Nya segala pujian. Dialah yang menghidupkan (orang yang sudah mati atau memberi ruh janin yang akan dilahirkan) dan yang mematikan. Dan Dialah Yang Maha Kuasa atas segala sesuatu.', 'Nabi Shallallaahu ''alaihi wasallam bersabda: ''Barangsiapa setelah shalat Maghrib dan Shubuh membaca ''Laa ilaaha illallah wahdahu laa syarikalah, lahul mulku, walahul hamdu, yuhyiy wa yumiytu wahuwa ''ala kulli syay-in qadiir,''  sebanyak 10x Allah akan tulis setiap satu kali 10 kebaikan, dihapus 10 kejelekan, diangkat 10 derajat, Allah lindungi dari setiap kejelekan, dan Allah lindungi dari godaan syetan yang terkutuk.'' (HR. Ahmad IV/227, at-Tirmidzi no.3474). At-Tirmidzi berkata: Hadits ini hasan gharih shahih.'' (Lihat Shahiih Al-Taghrrib wat Tahriib (I/322-323, no 474, 475, dan 477), Zaadul Ma''aad (I/300-301) dan Silsilah al-Ahaadiits ash-Shahiihah (no. 113, 114 dan 2563))', 'dzikirsesudahsholat_3.mp3', 4)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('sholat_maghrib_5', 'sholat_maghrib', 5, 'Doa Memohon Pertolongan untuk Berdzikir, Bersyukur & Beribadah', 'dzikir_setelah_sholat_zoom4.png', 1, 'Dibaca 1x', 'اللَّهُمَّ أَعِنِّي عَلَىٰ ذِكْرِكَ، وَشُكْرِكَ، وَحُسْنِ عِبَادَتِكَ', 'Allaahumma a''innii ''alaa dzikrika, wa syukrika, wa husni ''ibaadatika.', 'Ya Allah, tolonglah aku untuk berdzikir kepada-Mu, bersyukur kepada-Mu, serta beribadah dengan baik kepada-Mu.', 'HR. Abu Dawud no.1522, an-Nasa-i III/53, Ahmad V/245 dan al-Hakim (I/273 dan III/273) dan dishahihkannya, juga disepakati oleh adz-Dzahabi, yang mana kedudukan hadits itu seperti yang dikatakan oleh keduanya, bahwa Nabi shallallaahu ''alaihi wasallam pernah memberikan wasiat kepada Mu''adz agar dia mengucapkannya di setiap akhir shalat', 'dzikirsesudahsholat_4.mp3', 5)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('sholat_maghrib_6', 'sholat_maghrib', 6, 'Tasbih (33x), Tahmid (33x), Takbir (33x) & Tahlil Penutup (1x)', 'dzikir_setelah_sholat_zoom5.png,dzikir_setelah_sholat_zoom6.png,dzikir_setelah_sholat_zoom7.png,dzikir_zoom14.png', 1, 'dibaca 1x', 'سُبْحَانَ اللَّهِ (٣٣×)
+الْحَمْدُ لِلَّهِ (٣٣×)
+اللَّهُ أَكْبَرُ (٣٣×)
+لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ (١×)', 'Subhaanallaah (33x), Alhamdulillaah (33x), Allaahu Akbar (33x).
+Penutup (1x): Laa ilaaha illallaahu wahdahu laa syariika lah, lahul mulku wa lahul hamdu wa huwa ''alaa kulli syai-in qadiir.', 'Maha suci Allah (dibaca 33x) Segala puji bagi Allah (dibaca 33x) Allah Maha Besar (dibaca 33x) Kemudian untuk melengkapinya menjadi seratus, ditambah dengan membaca:Laa ilaaha illallah wahdahu laa syarikalah, lahul mulku, walahul hamdu, wahuwa ''ala kulli syay-in qadiir.Tidak ada Ilah yang berhak diibadahi dengan benar melainkan hanya Allah Yang Maha Esa, tidak ada sekutu bagi-Nya. Bagi-Nya kerajaan dan bagi-Nya segala pujian dan Dialah Yang Maha Kuasa atas segala sesuatu.', '''Barangsiapa membaca kalimat tersebut setiap selesai shalat, akan diampuni kesalahannya, sekalipun seperti buih di lautan.'' HR. Muslim no.597, Ahmad II/371,483, Ibnu Khuzaimah no.750 dan al-Baihaqi II/187)', 'dzikirsesudahsholat_5.mp3', 6)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('sholat_maghrib_7', 'sholat_maghrib', 7, 'Ayat Kursi (QS. Al-Baqarah: 255)', 'ayat_kursi_zoom0.png', 1, 'Dibaca 1x', 'اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ ۗ مَنْ ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَيْءٍ مِنْ عِلْمِهِ إِلَّا بِمَا شَاءَ ۚ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ ۖ وَلَا يَئُودُهُ حِفْظُهُمَا ۚ وَهُوَ الْعَلِيُّ الْعَظِيمُ', 'Allāhu lā ilāha illā huwal-ḥayyul-qayyūm, lā ta''khużuhū sinatuw wa lā na''ūm, lahū mā fis-samāwāti wa mā fil-arḍ, man żal-lażī yasyfa''u ''indahū illā bi''iżnih, ya''lamu mā baina aidīhim wa mā khalfahum, wa lā yuḥīṭūna bisyai''im min ''ilmihī illā bimā syā'', wasi''a kursiyyuhus-samāwāti wal-arḍ, wa lā ya''ūduhū ḥifẓuhumā, wa huwal-''aliyyul-''aẓīm.', 'Aku berlindung kepada Allah dari godaan syaitan yang terkutuk. Allah tidak ada Ilah (yang berhak diibadahi dengan benar) melainkan Dia. Yang Hidup kekal lagi terus menerus mengurus (makhluk-Nya); tidak mengantuk dan tidak tidur. Kepunyaan-Nya apa-apa yang ada di langit dan apa-apa yang ada di bumi. Siapakah yang dapat memberi syafa''at di sisi Allah tanpa izin-Nya. Allah mengetahui apa-apa yang di hadapan mereka dan di belakang mereka, dan mereka tidak mengetahui apa-apa dari ilmu Allah melainkan apa yang dikehendaki-Nya. Dan Kursi Allah meliputi langit dan bumi, dan Allah tidak merasa berat memelihara keduanya, dan Allah Maha Tinggi lagi Maha Besar.(Al-Baqarah: 255)', '''Barangsiapa yang membacanya setiap selesai shalat, tidak ada yang menghalanginya masuk Surga selain kematian.'' HR. An-Nasa-i dalam ''Amalul Yaum wal Lailah'' no.100 dan Ibnus Sunni no.124 dari Abu Umamah rahimahullah, dinyatakan shahih oleh Syaikh al-Albani dalam Shahiibul Jaami'' dan Silsilah al-Ahadiits ash-Shahiihah (no. 972)', 'dzikirsesudahsholat_6.mp3', 7)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('sholat_maghrib_8', 'sholat_maghrib', 8, 'Surat Al-Ikhlas (QS. 112: 1-4)', 'surat_al_ikhlas_zoom1.png', 1, 'Dibaca 1x', 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
+قُلْ هُوَ اللَّهُ أَحَدٌ ۝ اللَّهُ الصَّمَدُ ۝ لَمْ يَلِدْ وَلَمْ يُولَدْ ۝ وَلَمْ يَكُنْ لَهُ كُفُوًا أَحَدٌ', 'Bismillāhir-raḥmānir-raḥīm. Qul huwallāhu aḥad. Allāhuṣ-ṣamad. Lam yalid wa lam yūlad. Wa lam yakul lahū kufuwan aḥad.', 'Dialah Allah, Yang Maha Esa. Allah tempat bergantung kepada-Nya segala sesuatu. Dia tiada beranak dan tidak pula diperanakkan, dan tidak ada seorangpun yang setara dengan Dia.(QS. Al-ikhlas: 1-4)', 'HR Abu Dawud no.1523, an-Nasa-i III/68, Ibnu Khuzaimah no.755 dan Hakim I/253. Lihat pula Shahiih at-Tirmidzi III/8 no.2324. Ketiga surat tersebut dinamakan al-Mu''awwidzaat. lihat pula Fat-hul Baari (IX/62)', 'dzikirsesudahsholat_7.mp3', 8)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('sholat_maghrib_9', 'sholat_maghrib', 9, 'Surat Al-Falaq (QS. 113: 1-5)', 'surat_al_falaq_zoom.png', 1, '(QS. Al-Falaq: 1-5). (Dibaca 1x)', 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
+قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ ۝ مِنْ شَرِّ مَا خَلَقَ ۝ وَمِنْ شَرِّ غَاسِقٍ إِذَا وَقَبَ ۝ وَمِنْ شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ ۝ وَمِنْ شَرِّ حَاسِدٍ إِذَا حَسَدَ', 'Bismillāhir-raḥmānir-raḥīm. Qul a''ūżu birabbil-falaq. Min syarri mā khalaq. Wa min syarri gāsiqin iżā waqab. Wa min syarrin-naffāṡāti fil-''uqad. Wa min syarri ḥāsidin iżā ḥasad.', 'Aku berlindung kepada Robb Yang Menguasai waktu subuh, dari kejahatan apa-apa (mahluk) yang diciptakan-Nya. Dan dari kejahatan malam apabila telah gelap gulita, dan dari kejahatan wanita-wanita tukang sihir yang menghembus pada buhul-buhul, dan dari kejahatan orang-orang yang dengki apabila ia dengki', 'HR Abu Dawud no.1523, an-Nasa-i III/68, Ibnu Khuzaimah no.755 dan Hakim I/253. Lihat pula Shahiih at-Tirmidzi III/8 no.2324. Ketiga surat tersebut dinamakan al-Mu''awwidzaat. lihat pula Fat-hul Baari (IX/62)', 'dzikirsesudahsholat_8.mp3', 9)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('sholat_maghrib_10', 'sholat_maghrib', 10, 'Surat An-Nas (QS. 114: 1-6)', 'surat_an_nas_zoom3.png', 1, '(Dibaca 1x) (Dibaca masing-masing 1x)', 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
+قُلْ أَعُوذُ بِرَبِّ النَّاسِ ۝ مَلِكِ النَّاسِ ۝ إِلَٰهِ النَّاسِ ۝ مِنْ شَرِّ الْوَسْوَاسِ الْخَنَّاسِ ۝ الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ ۝ مِنَ الْجِنَّةِ وَالنَّاسِ', 'Bismillāhir-raḥmānir-raḥīm. Qul a''ūżu birabbin-nās. Malikin-nās. Ilāhin-nās. Min syarril-waswāsil-khannās. Allażī yuwaswisu fī ṣudūrin-nās. Minal-jinnati wan-nās.', 'Aku berlindung kepada Robb (yang memelihara dan menguasai) manusia. Raja manusia. Sembahan manusia. Dari kejahatan (bisikan) syaitan yang biasa bersembunyi, yang membisikkan (kejahatan) ke dalam dada manusia, dari (golongan) jin dan manusia.(QS. An-Naas: 1-6)', 'HR Abu Dawud no.1523, an-Nasa-i III/68, Ibnu Khuzaimah no.755 dan Hakim I/253. Lihat pula Shahiih at-Tirmidzi III/8 no.2324. Ketiga surat tersebut dinamakan al-Mu''awwidzaat. lihat pula Fat-hul Baari (IX/62)', 'dzikirsesudahsholat_9.mp3', 10)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('sholat_dz_a_i_1', 'sholat_dz_a_i', 1, 'Istighfar & Doa Keselamatan', 'dzikir_setelah_sholat_zoom0.png', 1, '(dibaca 1x)', 'أَسْتَغْفِرُ اللَّهَ، أَسْتَغْفِرُ اللَّهَ، أَسْتَغْفِرُ اللَّهَ.
+اللَّهُمَّ أَنْتَ السَّلَامُ وَمِنْكَ السَّلَامُ، تَبَارَكْتَ يَا ذَا الْجَلَالِ وَالْإِكْرَامِ', 'Astaghfirullaah (3x). Allaahumma antas-salaamu wa minkas-salaam, tabaarakta yaa dzal-jalaali wal-ikraam.', 'Saya memohon ampun kepada Allah.(3x) Ya Allah Engkau Maha Sejahtera, dan dari-Mu lah kesejahteraan, Maha Suci Engkau wahai Rabb pemilik Keagungan dan Kemuliaan.', 'HR. Muslim no.591 (135), Ahmad (V/275,279), Abu Dawud no.1513, an-Nasa-i III/68, Ibnu Khuzaimah no.737, ad-Darimi I/311 dan Ibnu Majah no.928 dari Sahabat Tsauban radhiyallaahu ''anhu. penjelasan : Hendaklah dicukupkan dengan bacaan ini dan jangan ditambah-tambah dengan macam-macam bacaan lainnya yang tidak ada asalnya dari Nabi Shallallaahu ''alaihi wa sallam. (Lihat Misykaatul Mashaabiih 1/303)', 'dzikirsesudahsholat_0.mp3', 1)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('sholat_dz_a_i_2', 'sholat_dz_a_i', 2, 'Tahlil & Ketetapan Qadha Allah', 'dzikir_setelah_sholat_zoom1.png', 1, 'Dibaca 1x', 'لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ، اللَّهُمَّ لَا مَانِعَ لِمَا أَعْطَيْتَ، وَلَا مُعْطِيَ لِمَا مَنَعْتَ، وَلَا يَنْفَعُ ذَا الْجَدِّ مِنْكَ الْجَدُّ', 'Laa ilaaha illallaahu wahdahu laa syariika lah, lahul mulku wa lahul hamdu wa huwa ''alaa kulli syai-in qadiir. Allaahumma laa maani''a limaa a''thaita, wa laa mu''thiya limaa mana''ta, wa laa yanfa''u dzal jaddi minkal jaddu.', 'Tidak ada Ilah yang berhak diibadahi dengan benar melainkan hanya Allah Yang Maha Esa, tidak ada sekutu bagi-Nya. Bagi-Nya kerajaan dan bagi-Nya segala pujian dan Dia Maha Kuasa atas segala sesuatu. Ya Allah tidak ada yang dapat mencegah apa yang Engkau beri, dan tidak ada yang dapat memberi apa yang Engkau cegah. Tidak berguna kekayaan dan kemuliaan itu bagi pemiliknya dari siksa-Mu.', 'HR. Al-Bukhari no.844 dan Muslim no.593, Abu Dawud no.1505, Ahmad IV/245, 247, 250, 254, 255, Ibnu Khuzaimah no.742, ad-Darimi I/311, dan An-Nasa-i III/70,71, dari  Al-Mughirah bin Syu''bah', 'dzikirsesudahsholat_1.mp3', 2)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('sholat_dz_a_i_3', 'sholat_dz_a_i', 3, 'Tahlil & Kemurnian Ibadah Hanya untuk Allah', 'dzikir_setelah_sholat_zoom2_rev.png', 1, 'dibaca 1x', 'لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ. لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ، لَا إِلَٰهَ إِلَّا اللَّهُ، وَلَا نَعْبُدُ إِلَّا إِيَّاهُ، لَهُ النِّعْمَةُ وَلَهُ الْفَضْلُ وَلَهُ الثَّنَاءُ الْحَسَنُ، لَا إِلَٰهَ إِلَّا اللَّهُ مُخْلِصِينَ لَهُ الدِّينَ وَلَوْ كَرِهَ الْكَافِرُونَ', 'Laa ilaaha illallaahu wahdahu laa syariika lah, lahul mulku wa lahul hamdu wa huwa ''alaa kulli syai-in qadiir. Laa hawla wa laa quwwata illaa billaah, laa ilaaha illallaahu wa laa na''budu illaa iyyaahu, lahun ni''matu wa lahul fadhlu wa lahuts-tsanaa-ul hasan, laa ilaaha illallaahu mukhlishiina lahud-diina wa law karihal kaafiruun.', 'Tidak ada Ilah yang berhak diibadahi dengan benar melainkan hanya Allah Yang Maha Esa, tidak ada sekutu bagi-Nya. Bagi-Nya kerajaan dan bagi-Nya segala pujian dan Dia Maha Kuasa atas segala sesuatu. Tidak ada daya dan kekuatan kecuali (dengan pertolongan) Allah. Tidak ada Ilah yang berhak diibadahi dengan benar melainkan hanya Allah. Kami tidak beribadah kecuali kepada-Nya. Baginya nikmat, anugerah, dan pujian yang baik. Tidak ada Ilah yang berhak diibadahi dengan benar melainkan hanya Allah, dengan memurnikan ibadah hanya kepada-Nya, meskipun orang-orang kafir tidak menyukainya.', 'HR. Muslim no.594, Ahmad IV/ 4, 5, Abu  Dawud no. 1506, 1507, an- Nasa-i III/70, Ibnu Khuzaimah no.740, 741, Dari ''Abdullah bin az-Zubair Rahimahullah', 'dzikirsesudahsholat_2.mp3', 3)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('sholat_dz_a_i_4', 'sholat_dz_a_i', 4, 'Doa Memohon Pertolongan untuk Berdzikir, Bersyukur & Beribadah', 'dzikir_setelah_sholat_zoom4.png', 1, 'Dibaca 1x', 'اللَّهُمَّ أَعِنِّي عَلَىٰ ذِكْرِكَ، وَشُكْرِكَ، وَحُسْنِ عِبَادَتِكَ', 'Allaahumma a''innii ''alaa dzikrika, wa syukrika, wa husni ''ibaadatika.', 'Ya Allah, tolonglah aku untuk berdzikir kepada-Mu, bersyukur kepada-Mu, serta beribadah dengan baik kepada-Mu.', 'HR. Abu Dawud no.1522, an-Nasa-i III/53, Ahmad V/245 dan al-Hakim (I/273 dan III/273) dan dishahihkannya, juga disepakati oleh adz-Dzahabi, yang mana kedudukan hadits itu seperti yang dikatakan oleh keduanya, bahwa Nabi shallallaahu ''alaihi wasallam pernah memberikan wasiat kepada Mu''adz agar dia mengucapkannya di setiap akhir shalat', 'dzikirsesudahsholat_4.mp3', 4)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('sholat_dz_a_i_5', 'sholat_dz_a_i', 5, 'Tasbih (33x), Tahmid (33x), Takbir (33x) & Tahlil Penutup (1x)', 'dzikir_setelah_sholat_zoom5.png,dzikir_setelah_sholat_zoom6.png,dzikir_setelah_sholat_zoom7.png,dzikir_zoom14.png', 1, 'dibaca 1x', 'سُبْحَانَ اللَّهِ (٣٣×)
+الْحَمْدُ لِلَّهِ (٣٣×)
+اللَّهُ أَكْبَرُ (٣٣×)
+لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ (١×)', 'Subhaanallaah (33x), Alhamdulillaah (33x), Allaahu Akbar (33x).
+Penutup (1x): Laa ilaaha illallaahu wahdahu laa syariika lah, lahul mulku wa lahul hamdu wa huwa ''alaa kulli syai-in qadiir.', 'Maha suci Allah (dibaca 33x) Segala puji bagi Allah (dibaca 33x) Allah Maha Besar (dibaca 33x) Kemudian untuk melengkapinya menjadi seratus, ditambah dengan membaca:Laa ilaaha illallah wahdahu laa syarikalah, lahul mulku, walahul hamdu, wahuwa ''ala kulli syay-in qadiir.Tidak ada Ilah yang berhak diibadahi dengan benar melainkan hanya Allah Yang Maha Esa, tidak ada sekutu bagi-Nya. Bagi-Nya kerajaan dan bagi-Nya segala pujian dan Dialah Yang Maha Kuasa atas segala sesuatu.', '''Barangsiapa membaca kalimat tersebut setiap selesai shalat, akan diampuni kesalahannya, sekalipun seperti buih di lautan.'' HR. Muslim no.597, Ahmad II/371,483, Ibnu Khuzaimah no.750 dan al-Baihaqi II/187)', 'dzikirsesudahsholat_5.mp3', 5)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('sholat_dz_a_i_6', 'sholat_dz_a_i', 6, 'Ayat Kursi (QS. Al-Baqarah: 255)', 'ayat_kursi_zoom0.png', 1, 'Dibaca 1x', 'اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ ۗ مَنْ ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَيْءٍ مِنْ عِلْمِهِ إِلَّا بِمَا شَاءَ ۚ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ ۖ وَلَا يَئُودُهُ حِفْظُهُمَا ۚ وَهُوَ الْعَلِيُّ الْعَظِيمُ', 'Allāhu lā ilāha illā huwal-ḥayyul-qayyūm, lā ta''khużuhū sinatuw wa lā na''ūm, lahū mā fis-samāwāti wa mā fil-arḍ, man żal-lażī yasyfa''u ''indahū illā bi''iżnih, ya''lamu mā baina aidīhim wa mā khalfahum, wa lā yuḥīṭūna bisyai''im min ''ilmihī illā bimā syā'', wasi''a kursiyyuhus-samāwāti wal-arḍ, wa lā ya''ūduhū ḥifẓuhumā, wa huwal-''aliyyul-''aẓīm.', 'Aku berlindung kepada Allah dari godaan syaitan yang terkutuk. Allah tidak ada Ilah (yang berhak diibadahi dengan benar) melainkan Dia. Yang Hidup kekal lagi terus menerus mengurus (makhluk-Nya); tidak mengantuk dan tidak tidur. Kepunyaan-Nya apa-apa yang ada di langit dan apa-apa yang ada di bumi. Siapakah yang dapat memberi syafa''at di sisi Allah tanpa izin-Nya. Allah mengetahui apa-apa yang di hadapan mereka dan di belakang mereka, dan mereka tidak mengetahui apa-apa dari ilmu Allah melainkan apa yang dikehendaki-Nya. Dan Kursi Allah meliputi langit dan bumi, dan Allah tidak merasa berat memelihara keduanya, dan Allah Maha Tinggi lagi Maha Besar.(Al-Baqarah: 255)', '''Barangsiapa yang membacanya setiap selesai shalat, tidak ada yang menghalanginya masuk Surga selain kematian.'' HR. An-Nasa-i dalam ''Amalul Yaum wal Lailah'' no.100 dan Ibnus Sunni no.124 dari Abu Umamah rahimahullah, dinyatakan shahih oleh Syaikh al-Albani dalam Shahiibul Jaami'' dan Silsilah al-Ahadiits ash-Shahiihah (no. 972)', 'dzikirsesudahsholat_6.mp3', 6)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('sholat_dz_a_i_7', 'sholat_dz_a_i', 7, 'Surat Al-Ikhlas (QS. 112: 1-4)', 'surat_al_ikhlas_zoom1.png', 1, 'Dibaca 1x', 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
+قُلْ هُوَ اللَّهُ أَحَدٌ ۝ اللَّهُ الصَّمَدُ ۝ لَمْ يَلِدْ وَلَمْ يُولَدْ ۝ وَلَمْ يَكُنْ لَهُ كُفُوًا أَحَدٌ', 'Bismillāhir-raḥmānir-raḥīm. Qul huwallāhu aḥad. Allāhuṣ-ṣamad. Lam yalid wa lam yūlad. Wa lam yakul lahū kufuwan aḥad.', 'Dialah Allah, Yang Maha Esa. Allah tempat bergantung kepada-Nya segala sesuatu. Dia tiada beranak dan tidak pula diperanakkan, dan tidak ada seorangpun yang setara dengan Dia.(QS. Al-ikhlas: 1-4)', 'HR Abu Dawud no.1523, an-Nasa-i III/68, Ibnu Khuzaimah no.755 dan Hakim I/253. Lihat pula Shahiih at-Tirmidzi III/8 no.2324. Ketiga surat tersebut dinamakan al-Mu''awwidzaat. lihat pula Fat-hul Baari (IX/62)', 'dzikirsesudahsholat_7.mp3', 7)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('sholat_dz_a_i_8', 'sholat_dz_a_i', 8, 'Surat Al-Falaq (QS. 113: 1-5)', 'surat_al_falaq_zoom.png', 1, '(QS. Al-Falaq: 1-5). (Dibaca 1x)', 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
+قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ ۝ مِنْ شَرِّ مَا خَلَقَ ۝ وَمِنْ شَرِّ غَاسِقٍ إِذَا وَقَبَ ۝ وَمِنْ شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ ۝ وَمِنْ شَرِّ حَاسِدٍ إِذَا حَسَدَ', 'Bismillāhir-raḥmānir-raḥīm. Qul a''ūżu birabbil-falaq. Min syarri mā khalaq. Wa min syarri gāsiqin iżā waqab. Wa min syarrin-naffāṡāti fil-''uqad. Wa min syarri ḥāsidin iżā ḥasad.', 'Aku berlindung kepada Robb Yang Menguasai waktu subuh, dari kejahatan apa-apa (mahluk) yang diciptakan-Nya. Dan dari kejahatan malam apabila telah gelap gulita, dan dari kejahatan wanita-wanita tukang sihir yang menghembus pada buhul-buhul, dan dari kejahatan orang-orang yang dengki apabila ia dengki', 'HR Abu Dawud no.1523, an-Nasa-i III/68, Ibnu Khuzaimah no.755 dan Hakim I/253. Lihat pula Shahiih at-Tirmidzi III/8 no.2324. Ketiga surat tersebut dinamakan al-Mu''awwidzaat. lihat pula Fat-hul Baari (IX/62)', 'dzikirsesudahsholat_8.mp3', 8)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;
+INSERT INTO dhikr (id, category, item_index, title, bacaan_key, target, runningtext, arabic, latin, terjemah, dalil, sound, sort_order)
+VALUES ('sholat_dz_a_i_9', 'sholat_dz_a_i', 9, 'Surat An-Nas (QS. 114: 1-6)', 'surat_an_nas_zoom3.png', 1, '(Dibaca 1x) (Dibaca masing-masing 1x)', 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
+قُلْ أَعُوذُ بِرَبِّ النَّاسِ ۝ مَلِكِ النَّاسِ ۝ إِلَٰهِ النَّاسِ ۝ مِنْ شَرِّ الْوَسْوَاسِ الْخَنَّاسِ ۝ الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ ۝ مِنَ الْجِنَّةِ وَالنَّاسِ', 'Bismillāhir-raḥmānir-raḥīm. Qul a''ūżu birabbin-nās. Malikin-nās. Ilāhin-nās. Min syarril-waswāsil-khannās. Allażī yuwaswisu fī ṣudūrin-nās. Minal-jinnati wan-nās.', 'Aku berlindung kepada Robb (yang memelihara dan menguasai) manusia. Raja manusia. Sembahan manusia. Dari kejahatan (bisikan) syaitan yang biasa bersembunyi, yang membisikkan (kejahatan) ke dalam dada manusia, dari (golongan) jin dan manusia.(QS. An-Naas: 1-6)', 'HR Abu Dawud no.1523, an-Nasa-i III/68, Ibnu Khuzaimah no.755 dan Hakim I/253. Lihat pula Shahiih at-Tirmidzi III/8 no.2324. Ketiga surat tersebut dinamakan al-Mu''awwidzaat. lihat pula Fat-hul Baari (IX/62)', 'dzikirsesudahsholat_9.mp3', 9)
+ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  item_index = EXCLUDED.item_index,
+  title = EXCLUDED.title,
+  bacaan_key = EXCLUDED.bacaan_key,
+  target = EXCLUDED.target,
+  runningtext = EXCLUDED.runningtext,
+  arabic = EXCLUDED.arabic,
+  latin = EXCLUDED.latin,
+  terjemah = EXCLUDED.terjemah,
+  dalil = EXCLUDED.dalil,
+  sound = EXCLUDED.sound,
+  sort_order = EXCLUDED.sort_order;

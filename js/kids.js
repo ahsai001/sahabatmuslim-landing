@@ -26,6 +26,7 @@
         renderStats();
         renderChannelGrid();
         renderTimerUI();
+        loadChannelsFromApi();
 
         window.addEventListener('sm:sync-applied', () => {
             loadFavorites();
@@ -33,6 +34,22 @@
             renderChannelGrid();
             renderTimerUI();
         });
+    }
+
+    async function loadChannelsFromApi() {
+        try {
+            const res = await fetch('/api/kids/channels');
+            if (res.ok) {
+                const data = await res.json();
+                if (data.ok && Array.isArray(data.channels) && data.channels.length > 0) {
+                    window.KIDS_CHANNELS = data.channels;
+                    renderStats();
+                    renderChannelGrid();
+                }
+            }
+        } catch (e) {
+            console.warn('Kids channels API offline, using embedded fallback data', e);
+        }
     }
 
     function loadFavorites() {

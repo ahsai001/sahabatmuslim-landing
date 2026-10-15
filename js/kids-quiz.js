@@ -453,7 +453,7 @@
 
             if (res.ok) {
                 if (msgEl) {
-                    msgEl.innerHTML = '✅ Masya Allah, skormu berhasil disimpan di database!';
+                    msgEl.innerHTML = '✅ Masya Allah, skormu berhasil disimpan di database! <a href="javascript:void(0)" onclick="window.KidsQuiz.openLeaderboard()" style="color: #059669; text-decoration: underline; font-weight: 700; display: inline-block; margin-top: 4px;">Lihat Peringkatmu 🏆</a>';
                     msgEl.style.color = 'var(--green-700)';
                 }
             } else {
@@ -479,41 +479,58 @@
         }
 
         modal.innerHTML = `
-            <div class="modal-box" style="max-width: 520px; border-radius: 20px;">
-                <button type="button" class="modal-close-btn" onclick="window.KidsQuiz.closeLeaderboard()">✕</button>
-                <div style="text-align: center; margin-bottom: 1.25rem;">
-                    <div style="font-size: 2.2rem; margin-bottom: 0.25rem;">🏆</div>
-                    <h3 style="font-size: 1.35rem; color: var(--green-900);">Papan Peringkat Santri Cilik</h3>
-                    <p style="font-size: 0.85rem; color: var(--gray-600);">Santri tergiat yang berhasil menyelesaikan Kuis Ceria</p>
+            <div class="quiz-leaderboard-modal-box">
+                <div class="quiz-leaderboard-header">
+                    <button type="button" class="quiz-leaderboard-close-btn" onclick="window.KidsQuiz.closeLeaderboard()" title="Tutup">✕</button>
+                    <span class="quiz-leaderboard-trophy">🏆</span>
+                    <h3 class="quiz-leaderboard-title">Papan Peringkat Santri Cilik</h3>
+                    <p class="quiz-leaderboard-sub">Santri tergiat berprestasi di Kuis Ceria</p>
+                    <span class="quiz-leaderboard-badge-live">🟢 Terhubung Database PostgreSQL</span>
                 </div>
 
-                <div id="leaderboard-list-body" style="max-height: 320px; overflow-y: auto; padding-right: 4px;">
-                    <div style="text-align: center; padding: 2rem 0; color: var(--gray-500);">Memuat peringkat dari server...</div>
+                <div id="leaderboard-list-body" class="quiz-leaderboard-list">
+                    <div style="text-align: center; padding: 2rem 0; color: #64748b;">
+                        <div class="quiz-spinner"></div>
+                        <p style="margin-top: 0.85rem; font-size: 0.88rem; font-weight: 600;">Memuat peringkat santri...</p>
+                    </div>
                 </div>
 
-                <div style="margin-top: 1.25rem; text-align: center;">
-                    <button type="button" class="quiz-btn-secondary" style="width: 100%;" onclick="window.KidsQuiz.closeLeaderboard()">Tutup</button>
+                <div class="quiz-leaderboard-footer">
+                    <button type="button" class="quiz-btn-modal-action" onclick="window.KidsQuiz.closeLeaderboard(); window.KidsQuiz.startQuiz();">
+                        🚀 Main Kuis Sekarang
+                    </button>
+                    <button type="button" class="quiz-btn-modal-close" onclick="window.KidsQuiz.closeLeaderboard()">
+                        Tutup
+                    </button>
                 </div>
             </div>
         `;
         modal.classList.add('active');
 
-        // Fetch leaderboard data
+        // Fetch leaderboard data from PostgreSQL API
         const bodyEl = document.getElementById('leaderboard-list-body');
         try {
-            const res = await fetch('/api/kids/quiz/leaderboard?limit=10', { cache: 'no-store' });
+            const res = await fetch('/api/kids/quiz/leaderboard?limit=15', { cache: 'no-store' });
             if (res.ok) {
                 const data = await res.json();
                 if (data && data.ok && Array.isArray(data.leaderboard) && data.leaderboard.length > 0) {
                     bodyEl.innerHTML = data.leaderboard.map((item, idx) => {
+                        const rankClass = idx === 0 ? 'rank-1' : idx === 1 ? 'rank-2' : idx === 2 ? 'rank-3' : 'rank-other';
                         const rankMedal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `${idx + 1}`;
-                        const stars = '⭐'.repeat(item.stars || 1);
+                        const isNumRank = idx >= 3;
+                        const stars = '⭐'.repeat(Math.max(1, Math.min(3, item.stars || 1)));
+                        const catObj = CATEGORIES[item.category];
+                        const catLabel = catObj ? catObj.label : (item.category || 'Semua');
                         return `
-                            <div class="leaderboard-item-row">
-                                <div class="leaderboard-rank">${rankMedal}</div>
+                            <div class="leaderboard-item-row ${rankClass}">
+                                <div class="leaderboard-rank ${isNumRank ? 'num-rank' : ''}">${rankMedal}</div>
                                 <div class="leaderboard-name-info">
                                     <div class="leaderboard-name">${escapeHtml(item.player_name)}</div>
-                                    <div class="leaderboard-meta">${stars} • Topik: ${escapeHtml(item.category || 'Semua')}</div>
+                                    <div class="leaderboard-meta">
+                                        <span>${stars}</span>
+                                        <span>•</span>
+                                        <span>Topik: ${escapeHtml(catLabel)}</span>
+                                    </div>
                                 </div>
                                 <div class="leaderboard-score">${item.score} Pts</div>
                             </div>

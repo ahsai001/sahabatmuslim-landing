@@ -1516,6 +1516,1078 @@
             }
         }
     </style>
+
+    <style>
+        /* ============================================================
+           TAB NAVIGASI UTAMA (Berlaku untuk Semua Ukuran Layar)
+           ============================================================ */
+        .kids-main-nav-tabs {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1.25rem 1.5rem 0;
+            display: flex;
+            gap: 0.75rem;
+            border-bottom: 2px solid var(--gray-200);
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+
+        .kids-main-nav-tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .kids-main-tab {
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            padding: 0.75rem 1.15rem;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--gray-600);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+            margin-bottom: -2px;
+            white-space: nowrap;
+            flex-shrink: 0;
+            font-family: inherit;
+        }
+
+        .kids-main-tab:hover {
+            color: var(--green-800);
+        }
+
+        .kids-main-tab.active {
+            color: var(--green-700);
+            border-bottom-color: var(--green-600);
+        }
+
+        /* ============================================================
+           WADAH SECTION HIJAIYAH & TAHFIZH
+           ============================================================ */
+        .kids-hijaiyah-section,
+        .kids-tahfizh-section {
+            max-width: 1000px;
+            margin: 1.5rem auto 4rem;
+            padding: 0 1.25rem;
+        }
+
+        .arabic {
+            font-family: 'Amiri', serif;
+        }
+
+        /* ============================================================
+           1. PAPAN HURUF HIJAIYAH
+           ============================================================ */
+        .hj-hero {
+            background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 55%, #fffbeb 100%);
+            border: 2px solid var(--green-200);
+            border-radius: 24px;
+            padding: 2rem 1.75rem;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(5, 150, 105, 0.08);
+        }
+
+        .hj-hero-emoji {
+            font-size: 3rem;
+            margin-bottom: 0.35rem;
+            animation: bounce 2s infinite ease-in-out;
+        }
+
+        .hj-hero-title {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--green-900);
+            margin-bottom: 0.5rem;
+        }
+
+        .hj-hero-desc {
+            font-size: 0.95rem;
+            color: var(--gray-600);
+            max-width: 620px;
+            margin: 0 auto 1.25rem;
+            line-height: 1.6;
+        }
+
+        .hj-btn-main {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            padding: 0.8rem 1.6rem;
+            font-size: 1rem;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            box-shadow: 0 6px 18px rgba(5, 150, 105, 0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .hj-btn-main:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 22px rgba(5, 150, 105, 0.4);
+        }
+
+        .hj-btn-secondary {
+            background: var(--gray-100);
+            color: var(--gray-700);
+            border: 1.5px solid var(--gray-300);
+            border-radius: 14px;
+            padding: 0.7rem 1.4rem;
+            font-size: 0.92rem;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .hj-btn-secondary:hover {
+            background: white;
+            border-color: var(--green-600);
+            color: var(--green-800);
+        }
+
+        /* Grid kartu huruf */
+        .hj-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(min(100%, 112px), 1fr));
+            gap: 0.85rem;
+            margin-top: 1.25rem;
+        }
+
+        .hj-card {
+            position: relative;
+            background: white;
+            border: 2px solid var(--gray-200);
+            border-radius: 20px;
+            padding: 1rem 0.5rem 0.85rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.15rem;
+            cursor: pointer;
+            text-align: center;
+            font-family: inherit;
+            transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+            min-width: 0;
+        }
+
+        .hj-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 22px rgba(0, 0, 0, 0.08);
+            border-color: var(--green-500);
+        }
+
+        .hj-card:active {
+            transform: scale(0.97);
+        }
+
+        .hj-c0 { background: #ecfdf5; border-color: #a7f3d0; }
+        .hj-c1 { background: #f0fdfa; border-color: #99f6e4; }
+        .hj-c2 { background: #fffbeb; border-color: #fde68a; }
+        .hj-c3 { background: #f0f9ff; border-color: #bae6fd; }
+        .hj-c4 { background: #fff1f2; border-color: #fecdd3; }
+        .hj-c5 { background: #f5f3ff; border-color: #ddd6fe; }
+
+        .hj-char {
+            font-size: clamp(2.2rem, 9vw, 2.9rem);
+            line-height: 1.35;
+            color: var(--green-900);
+        }
+
+        .hj-name {
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: var(--gray-800);
+        }
+
+        .hj-latin {
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--gray-500);
+        }
+
+        .hj-play {
+            position: absolute;
+            right: 7px;
+            top: 7px;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: white;
+            border: 1px solid var(--gray-200);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+        }
+
+        .hj-card.pop,
+        .hj-option.pop {
+            animation: hjPop 0.35s ease;
+        }
+
+        @keyframes hjPop {
+            0% { transform: scale(1); }
+            45% { transform: scale(1.13) rotate(-2deg); }
+            100% { transform: scale(1); }
+        }
+
+        /* Modal info huruf */
+        .hj-info-card {
+            position: relative;
+            background: white;
+            border-radius: 22px;
+            max-width: 440px;
+            width: 100%;
+            padding: 1.75rem 1.5rem 1.5rem;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
+            border-top: 6px solid var(--green-500);
+            animation: quizModalPop 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .hj-info-close {
+            position: absolute;
+            top: 0.85rem;
+            right: 0.85rem;
+            background: var(--gray-100);
+            color: var(--gray-600);
+        }
+
+        .hj-info-close:hover {
+            background: var(--gray-200);
+        }
+
+        .hj-info-top {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .hj-info-char {
+            width: 84px;
+            height: 84px;
+            flex-shrink: 0;
+            background: linear-gradient(135deg, #ecfdf5, #fffbeb);
+            border: 2px solid var(--green-200);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: var(--green-900);
+        }
+
+        .hj-info-heading h3 {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--green-900);
+        }
+
+        .hj-info-heading p {
+            font-size: 0.85rem;
+            color: var(--gray-500);
+            margin-top: 0.2rem;
+        }
+
+        .hj-info-block {
+            background: var(--gray-50);
+            border: 1.5px solid var(--gray-200);
+            border-radius: 14px;
+            padding: 0.85rem 1rem;
+            margin-bottom: 0.85rem;
+            text-align: left;
+        }
+
+        .hj-info-block h4 {
+            font-size: 0.82rem;
+            font-weight: 800;
+            color: var(--green-800);
+            margin-bottom: 0.35rem;
+        }
+
+        .hj-info-block p {
+            font-size: 0.92rem;
+            color: var(--gray-700);
+            line-height: 1.55;
+        }
+
+        .hj-info-example {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .hj-info-example .arabic {
+            font-size: 1.9rem;
+            color: var(--green-900);
+        }
+
+        .hj-info-example-meaning {
+            font-weight: 700;
+            color: var(--gold-600);
+            font-size: 0.95rem !important;
+        }
+
+        .hj-info-card > .hj-btn-main {
+            width: 100%;
+        }
+
+        /* Mini game Tebak Huruf */
+        .hj-game-card {
+            background: white;
+            border: 2px solid var(--green-100);
+            border-radius: 24px;
+            padding: 2rem 1.75rem;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(5, 150, 105, 0.08);
+            animation: fadeInQuiz 0.3s ease;
+        }
+
+        .hj-game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .hj-game-pill {
+            background: var(--green-50);
+            color: var(--green-800);
+            border: 1px solid var(--green-200);
+            padding: 0.3rem 0.8rem;
+            border-radius: 999px;
+            font-size: 0.82rem;
+            font-weight: 700;
+        }
+
+        .hj-game-score {
+            background: #fef3c7;
+            color: #b45309;
+            border: 1px solid #fde68a;
+            padding: 0.3rem 0.8rem;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 800;
+        }
+
+        .hj-game-question {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: var(--gray-900);
+            margin-bottom: 1.25rem;
+        }
+
+        .hj-game-question b {
+            color: var(--green-700);
+        }
+
+        .hj-game-q-hint {
+            font-size: 0.95rem;
+            color: var(--gray-400);
+            font-weight: 600;
+        }
+
+        .hj-options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.85rem;
+            margin-bottom: 1.15rem;
+            max-width: 460px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hj-option.is-correct {
+            border-color: #10b981;
+            background: #d1fae5;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25);
+        }
+
+        .hj-option.is-wrong {
+            border-color: #ef4444;
+            background: #fef2f2;
+        }
+
+        .hj-option.is-disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
+        .hj-option:disabled {
+            cursor: not-allowed;
+        }
+
+        .hj-feedback-banner {
+            border-radius: 16px;
+            padding: 1.15rem 1.25rem;
+            margin-bottom: 1.15rem;
+            text-align: left;
+            animation: fadeInQuiz 0.2s ease;
+        }
+
+        .hj-feedback-banner.banner-correct {
+            background: #ecfdf5;
+            border: 1.5px solid #a7f3d0;
+            color: #065f46;
+        }
+
+        .hj-feedback-banner.banner-wrong {
+            background: #fffbeb;
+            border: 1.5px solid #fde68a;
+            color: #92400e;
+        }
+
+        .hj-feedback-banner strong {
+            display: block;
+            font-size: 1.05rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .hj-feedback-banner p {
+            font-size: 0.95rem;
+            margin-bottom: 0.85rem;
+            line-height: 1.55;
+        }
+
+        .hj-result-stars {
+            font-size: 3rem;
+            margin-bottom: 0.35rem;
+            animation: bounceStars 0.6s ease;
+        }
+
+        .hj-result-score {
+            font-size: 2.4rem;
+            font-weight: 800;
+            color: var(--green-700);
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .hj-result-cheer {
+            font-size: 1rem;
+            color: var(--gray-600);
+            margin-bottom: 1.35rem;
+        }
+
+        .hj-result-actions {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* ============================================================
+           2. POHON HAFALAN JUZ 'AMMA
+           ============================================================ */
+        .tf-progress-card {
+            background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 60%, #fffbeb 100%);
+            border: 2px solid var(--green-200);
+            border-radius: 24px;
+            padding: 1.5rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1.15rem;
+            box-shadow: 0 10px 30px rgba(5, 150, 105, 0.08);
+        }
+
+        .tf-progress-emoji {
+            font-size: 3rem;
+            flex-shrink: 0;
+            animation: bounce 2.5s infinite ease-in-out;
+        }
+
+        .tf-progress-body {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .tf-progress-title {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: var(--green-900);
+            margin-bottom: 0.3rem;
+        }
+
+        .tf-progress-text {
+            font-size: 0.95rem;
+            color: var(--gray-600);
+            margin-bottom: 0.75rem;
+        }
+
+        .tf-progress-text b {
+            color: var(--green-700);
+        }
+
+        .tf-progress-bar {
+            width: 100%;
+            height: 14px;
+            background: white;
+            border: 1.5px solid var(--green-200);
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .tf-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #34d399, #059669 60%, #f59e0b);
+            border-radius: 999px;
+            transition: width 0.4s ease;
+        }
+
+        /* Filter cepat */
+        .tf-filters {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1.15rem;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 0.35rem;
+            scrollbar-width: none;
+        }
+
+        .tf-filters::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tf-filter-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.6rem 1.1rem;
+            border-radius: 9999px;
+            border: 1.5px solid var(--gray-200);
+            background: white;
+            font-size: 0.86rem;
+            font-weight: 700;
+            font-family: inherit;
+            color: var(--gray-600);
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .tf-filter-btn:hover {
+            border-color: var(--green-500);
+            color: var(--green-800);
+            background: var(--green-50);
+        }
+
+        .tf-filter-btn.active {
+            background: var(--green-700);
+            color: white;
+            border-color: var(--green-700);
+            box-shadow: 0 3px 10px rgba(4, 120, 87, 0.22);
+        }
+
+        /* Grid kartu daun / buah surat */
+        .tf-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(min(100%, 150px), 1fr));
+            gap: 0.9rem;
+            margin-top: 1.15rem;
+        }
+
+        .tf-card {
+            position: relative;
+            background: white;
+            border: 2px solid var(--gray-200);
+            border-radius: 20px;
+            padding: 1.15rem 0.75rem 0.95rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.1rem;
+            cursor: pointer;
+            font-family: inherit;
+            text-align: center;
+            transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+            min-width: 0;
+        }
+
+        .tf-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 22px rgba(0, 0, 0, 0.08);
+        }
+
+        .tf-card:active {
+            transform: scale(0.97);
+        }
+
+        /* Status 0: kuncup daun abu-abu (belum hafal) */
+        .tf-card.tf-st-0 {
+            background: #f9fafb;
+            border-color: var(--gray-200);
+        }
+
+        .tf-card.tf-st-0 .tf-leaf {
+            filter: grayscale(1);
+            opacity: 0.55;
+        }
+
+        .tf-card.tf-st-0 .tf-surah-arabic,
+        .tf-card.tf-st-0 .tf-surah-latin {
+            color: var(--gray-500);
+        }
+
+        /* Status 1: daun hijau muda bertunas (sedang menghafal) */
+        .tf-card.tf-st-1 {
+            background: #f0fdf4;
+            border-color: #86efac;
+        }
+
+        /* Status 2: daun hijau emas berbuah bintang (sudah hafal) */
+        .tf-card.tf-st-2 {
+            background: linear-gradient(160deg, #f0fdf4 0%, #fffbeb 100%);
+            border-color: #fcd34d;
+            box-shadow: 0 4px 14px rgba(245, 158, 11, 0.18);
+        }
+
+        .tf-card.tf-st-2 .tf-leaf {
+            filter: drop-shadow(0 2px 5px rgba(245, 158, 11, 0.5));
+            animation: sparkle 2s infinite ease-in-out;
+        }
+
+        @keyframes sparkle {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.15) rotate(8deg); }
+        }
+
+        .tf-leaf {
+            font-size: 1.9rem;
+            line-height: 1.2;
+            margin-bottom: 0.2rem;
+        }
+
+        .tf-surah-no {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--green-700);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tf-card.tf-st-0 .tf-surah-no {
+            background: var(--gray-400);
+        }
+
+        .tf-card.tf-st-2 .tf-surah-no {
+            background: var(--gold-500);
+        }
+
+        .tf-surah-arabic {
+            font-size: 1.7rem;
+            line-height: 1.4;
+            color: var(--green-900);
+        }
+
+        .tf-surah-latin {
+            font-size: 0.9rem;
+            font-weight: 800;
+            color: var(--gray-800);
+        }
+
+        .tf-surah-ayat {
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--gray-500);
+            margin-bottom: 0.45rem;
+        }
+
+        .tf-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-size: 0.72rem;
+            font-weight: 800;
+            padding: 0.28rem 0.65rem;
+            border-radius: 999px;
+            border: 1.5px solid transparent;
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+
+        .tf-badge:hover {
+            transform: scale(1.06);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+        }
+
+        .tf-badge-st-0 {
+            background: var(--gray-100);
+            color: var(--gray-600);
+            border-color: var(--gray-300);
+        }
+
+        .tf-badge-st-1 {
+            background: #dcfce7;
+            color: #166534;
+            border-color: #86efac;
+        }
+
+        .tf-badge-st-2 {
+            background: var(--gold-100);
+            color: var(--gold-600);
+            border-color: #fcd34d;
+        }
+
+        .tf-empty {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--gray-500);
+        }
+
+        .tf-empty-icon {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Modal audio & latihan hafalan */
+        .tf-modal-card {
+            position: relative;
+            background: white;
+            border-radius: 22px;
+            max-width: 460px;
+            width: 100%;
+            padding: 1.5rem;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
+            border-top: 6px solid var(--green-500);
+            animation: quizModalPop 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .tf-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .tf-modal-heading {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            min-width: 0;
+        }
+
+        .tf-modal-arabic {
+            font-size: 2.3rem;
+            line-height: 1.3;
+            color: var(--green-900);
+            flex-shrink: 0;
+        }
+
+        .tf-modal-heading h3 {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--green-900);
+        }
+
+        .tf-modal-heading p {
+            font-size: 0.82rem;
+            color: var(--gray-500);
+            margin-top: 0.15rem;
+        }
+
+        .tf-modal-header .modal-close-btn {
+            background: var(--gray-100);
+            color: var(--gray-600);
+            flex-shrink: 0;
+        }
+
+        .tf-modal-header .modal-close-btn:hover {
+            background: var(--gray-200);
+        }
+
+        .tf-modal-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.85rem;
+            font-weight: 800;
+            padding: 0.4rem 0.9rem;
+            border-radius: 999px;
+            border: 1.5px solid transparent;
+            margin-bottom: 1rem;
+        }
+
+        .tf-modal-status.tf-st-0 {
+            background: var(--gray-100);
+            color: var(--gray-600);
+            border-color: var(--gray-300);
+        }
+
+        .tf-modal-status.tf-st-1 {
+            background: #dcfce7;
+            color: #166534;
+            border-color: #86efac;
+        }
+
+        .tf-modal-status.tf-st-2 {
+            background: var(--gold-100);
+            color: var(--gold-600);
+            border-color: #fcd34d;
+        }
+
+        .tf-audio-wrap {
+            background: var(--gray-50);
+            border: 1.5px dashed var(--green-300, #6ee7b7);
+            border-radius: 16px;
+            padding: 1rem;
+            margin-bottom: 1.15rem;
+            text-align: center;
+        }
+
+        .tf-audio-wrap audio {
+            width: 100%;
+            height: 42px;
+            border-radius: 10px;
+        }
+
+        .tf-audio-note {
+            font-size: 0.78rem;
+            color: var(--gray-500);
+            margin-top: 0.5rem;
+        }
+
+        .tf-modal-actions {
+            display: flex;
+            gap: 0.65rem;
+            flex-wrap: wrap;
+            margin-bottom: 0.75rem;
+        }
+
+        .tf-btn {
+            flex: 1;
+            min-width: 160px;
+            border: 2px solid var(--gray-200);
+            background: white;
+            border-radius: 14px;
+            padding: 0.75rem 1rem;
+            font-size: 0.92rem;
+            font-weight: 800;
+            font-family: inherit;
+            color: var(--gray-700);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tf-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .tf-btn-star {
+            background: var(--gold-50);
+            border-color: #fcd34d;
+            color: var(--gold-600);
+        }
+
+        .tf-btn-star.is-active {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            border-color: #d97706;
+            color: white;
+            box-shadow: 0 5px 14px rgba(217, 119, 6, 0.35);
+        }
+
+        .tf-btn-leaf {
+            background: #f0fdf4;
+            border-color: #86efac;
+            color: #166534;
+        }
+
+        .tf-btn-leaf.is-active {
+            background: linear-gradient(135deg, #10b981, #047857);
+            border-color: #047857;
+            color: white;
+            box-shadow: 0 5px 14px rgba(5, 150, 105, 0.35);
+        }
+
+        .tf-btn-reset {
+            display: block;
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: var(--gray-400);
+            font-size: 0.8rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            padding: 0.35rem;
+            transition: color 0.2s;
+        }
+
+        .tf-btn-reset:hover {
+            color: var(--gray-600);
+            text-decoration: underline;
+        }
+
+        /* ============================================================
+           RESPONSIVITAS — ANDROID (360px - 412px) & DESKTOP
+           ============================================================ */
+        @media (max-width: 480px) {
+            .kids-main-nav-tabs {
+                padding: 1rem 1rem 0;
+                gap: 0.35rem;
+            }
+
+            .kids-main-tab {
+                padding: 0.65rem 0.8rem;
+                font-size: 0.88rem;
+                gap: 0.35rem;
+            }
+
+            .kids-hijaiyah-section,
+            .kids-tahfizh-section {
+                padding: 0 1rem;
+            }
+
+            .hj-hero {
+                padding: 1.5rem 1.15rem;
+                border-radius: 20px;
+            }
+
+            .hj-hero-title {
+                font-size: 1.25rem;
+            }
+
+            .hj-hero-desc {
+                font-size: 0.88rem;
+            }
+
+            .hj-btn-main {
+                width: 100%;
+                padding: 0.8rem 1rem;
+                font-size: 0.95rem;
+            }
+
+            .hj-grid {
+                grid-template-columns: repeat(auto-fill, minmax(min(100%, 96px), 1fr));
+                gap: 0.65rem;
+            }
+
+            .hj-card {
+                padding: 0.85rem 0.35rem 0.7rem;
+                border-radius: 16px;
+            }
+
+            .hj-play {
+                width: 22px;
+                height: 22px;
+                font-size: 0.68rem;
+                right: 5px;
+                top: 5px;
+            }
+
+            .hj-info-card {
+                padding: 1.5rem 1.15rem 1.25rem;
+                border-radius: 18px;
+            }
+
+            .hj-info-char {
+                width: 68px;
+                height: 68px;
+                font-size: 2.4rem;
+                border-radius: 16px;
+            }
+
+            .hj-info-heading h3 {
+                font-size: 1.1rem;
+            }
+
+            .hj-game-card {
+                padding: 1.5rem 1.15rem;
+                border-radius: 20px;
+            }
+
+            .hj-game-question {
+                font-size: 1.15rem;
+            }
+
+            .hj-options-grid {
+                gap: 0.65rem;
+            }
+
+            .tf-progress-card {
+                flex-direction: column;
+                text-align: center;
+                padding: 1.35rem 1.15rem;
+                border-radius: 20px;
+            }
+
+            .tf-progress-title {
+                font-size: 1.2rem;
+            }
+
+            .tf-progress-text {
+                font-size: 0.9rem;
+            }
+
+            .tf-filter-btn {
+                padding: 0.55rem 0.9rem;
+                font-size: 0.82rem;
+            }
+
+            .tf-grid {
+                grid-template-columns: repeat(auto-fill, minmax(min(100%, 136px), 1fr));
+                gap: 0.7rem;
+            }
+
+            .tf-card {
+                padding: 1rem 0.55rem 0.85rem;
+                border-radius: 16px;
+            }
+
+            .tf-surah-arabic {
+                font-size: 1.5rem;
+            }
+
+            .tf-modal-card {
+                padding: 1.25rem 1.1rem;
+                border-radius: 18px;
+            }
+
+            .tf-modal-arabic {
+                font-size: 1.9rem;
+            }
+
+            .tf-btn {
+                min-width: 100%;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .hj-grid {
+                grid-template-columns: repeat(auto-fill, minmax(124px, 1fr));
+            }
+
+            .tf-grid {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            }
+        }
+    </style>
 </head>
 <body>
 
@@ -1576,13 +2648,19 @@
         </div>
     </header>
 
-    <!-- Main Tabs: Video vs Kuis -->
+    <!-- Main Tabs: Video vs Kuis vs Hijaiyah vs Pohon Hafalan -->
     <div class="kids-main-nav-tabs">
         <button type="button" class="kids-main-tab active" id="tab-btn-videos" onclick="window.KidsQuiz.switchMainTab('videos')">
-            <span>🎬</span> Video Edukasi Terkurasi
+            <span>🎬</span> Video Terkurasi
         </button>
         <button type="button" class="kids-main-tab" id="tab-btn-quiz" onclick="window.KidsQuiz.switchMainTab('quiz')">
             <span>🎯</span> Kuis Santri Cilik
+        </button>
+        <button type="button" class="kids-main-tab" id="tab-btn-hijaiyah" onclick="window.KidsQuiz.switchMainTab('hijaiyah')">
+            <span>🔤</span> Belajar Hijaiyah
+        </button>
+        <button type="button" class="kids-main-tab" id="tab-btn-tahfizh" onclick="window.KidsQuiz.switchMainTab('tahfizh')">
+            <span>🌳</span> Pohon Hafalan Juz 'Amma
         </button>
     </div>
 
@@ -1590,6 +2668,20 @@
     <section class="kids-quiz-section" id="kids-quiz-section" style="display: none;">
         <div id="quiz-view-container">
             <!-- Populated dynamically by js/kids-quiz.js -->
+        </div>
+    </section>
+
+    <!-- Kids Hijaiyah Section (Papan Suara Huruf) -->
+    <section class="kids-hijaiyah-section" id="kids-hijaiyah-section" style="display: none;">
+        <div id="hijaiyah-view-container">
+            <!-- Populated dynamically by js/kids-hijaiyah.js -->
+        </div>
+    </section>
+
+    <!-- Kids Tahfizh Section (Pohon Hafalan Juz 'Amma) -->
+    <section class="kids-tahfizh-section" id="kids-tahfizh-section" style="display: none;">
+        <div id="tahfizh-view-container">
+            <!-- Populated dynamically by js/kids-tahfizh.js -->
         </div>
     </section>
 
@@ -1717,10 +2809,12 @@
     </footer>
 
     <!-- Scripts -->
-    <script src="js/sync.js?v=1"></script>
+    <script src="js/sync.js?v=2"></script>
     <script src="js/nav.js?v=3"></script>
     <script src="js/kids-data.js?v=2"></script>
     <script src="js/kids.js?v=4"></script>
-    <script src="js/kids-quiz.js?v=4"></script>
+    <script src="js/kids-quiz.js?v=5"></script>
+    <script src="js/kids-hijaiyah.js?v=1"></script>
+    <script src="js/kids-tahfizh.js?v=1"></script>
 </body>
 </html>

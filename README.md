@@ -73,6 +73,10 @@ Platform web ibadah digital all-in-one yang ringan, cepat, responsif, dan kaya f
 - **Kurasi 15 Channel YouTube Edukasi Islam Sesuai Sunnah**: Yufid Kids, Kak Erlan Bercerita, Rodja Ceria, Keluarga Hamzi, Kids Tauhid, Kak Yogi the Explorer, Hijaiyah Journey Jawwada, Al Firqatun Najiyah Kids, Sarah Playschool, Rofif Kids, Muslim Zone, Annawawi TV, Anak Cerdas Indonesia, Happy Hola Official, dan Tumbuh Kembang Anak Saleh.
 - **Embedded Player Bebas Distraksi**: Pemutaran video langsung di web app menggunakan embed privasi YouTube (`youtube-nocookie.com`) tanpa rekomendasi liar YouTube publik.
 - **Parental Screen Time Timer**: Pengatur batas waktu menonton (15, 30, 45, 60 menit) dengan dialog pengingat santun saat batas waktu selesai agar anak istirahat dan beribadah.
+- **4 Tab Utama**: 🎬 Video Terkurasi, 🎯 Kuis Santri Cilik, 🔤 Belajar Hijaiyah, dan 🌳 Pohon Hafalan Juz 'Amma.
+- **Kuis Santri Cilik** (`js/kids-quiz.js`): Kuis pilihan ganda 5 topik (aqidah, sirah, adab, ibadah) dengan skor bintang dan papan juara.
+- **Papan Suara Hijaiyah** (`js/kids-hijaiyah.js`): 29 kartu huruf Hijaiyah (Alif–Ya') dengan lafal suara gratis via Web Speech Synthesis (`ar-SA`), penjelasan makhraj ramah anak, kata contoh ber-emoji, dan mini game "Tebak Huruf Cilik" berskor.
+- **Pohon Hafalan Juz 'Amma** (`js/kids-tahfizh.js`): Progres hafalan 37 surat Juz 30 dengan status 🔒 Belum / 🌿 Sedang Dihafal / ⭐ Sudah Hafal, filter cepat, progress bar, dan modal latihan berisi audio murottal (CDN `equran.nos.wjv-1.neo.id`, Misyari Rasyid Al-Afasi). Progress tersimpan lokal di `localStorage` (`sm_kids_tahfizh_progress`) tanpa wajib login, dan ikut tersinkron ke cloud (smart-merge status tertinggi) bila pengguna login.
 - **Kategori Tematik & Filter**: Aqidah & Tauhid, Kisah Nabi & Ulama, Belajar Hijaiyah & Qur'an, Eksplorasi Sains & Alam, serta Aktivitas Karakter.
 - **Favorit Lokal**: Orang tua dapat menyimpan channel favorit anak ke browser.
 

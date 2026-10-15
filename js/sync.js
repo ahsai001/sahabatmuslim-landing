@@ -52,6 +52,7 @@
         const dzikirCounters = getJson('sm_dzikir_counters_v2') || {};
         const doaFavs = getJson('sm_doa_favorites') || [];
         const kidsFavs = getJson('sm_kids_favorites') || [];
+        const kidsTahfizh = getJson('sm_kids_tahfizh_progress') || {};
 
         return {
             // Backward-compatibility keys for ramadhan / ibadah
@@ -93,7 +94,8 @@
             },
             kids: {
                 favorites: kidsFavs,
-                screenTime: localStorage.getItem('sm_kids_screentime') || '30'
+                screenTime: localStorage.getItem('sm_kids_screentime') || '30',
+                tahfizhProgress: kidsTahfizh
             }
         };
     }
@@ -184,6 +186,25 @@
         if (mergedKidsFavs.length !== localKidsFavs.length) {
             setJson('sm_kids_favorites', mergedKidsFavs);
             hasChanges = true;
+        }
+
+        // 5b. Kids Tahfizh Progress (Union: ambil status tertinggi per surah)
+        const cloudTahfizh = cloudKids.tahfizhProgress || {};
+        const localTahfizh = getJson('sm_kids_tahfizh_progress') || {};
+        let tahfizhChanged = false;
+
+        Object.keys(cloudTahfizh).forEach(surahKey => {
+            const cloudStatus = Number(cloudTahfizh[surahKey]) || 0;
+            const localStatus = Number(localTahfizh[surahKey]) || 0;
+            if (cloudStatus > localStatus) {
+                localTahfizh[surahKey] = cloudStatus;
+                tahfizhChanged = true;
+                hasChanges = true;
+            }
+        });
+
+        if (tahfizhChanged) {
+            setJson('sm_kids_tahfizh_progress', localTahfizh);
         }
 
         // 6. Ibadah Mutaba'ah (Union true flags)

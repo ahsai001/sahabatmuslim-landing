@@ -186,6 +186,20 @@ Menyimpan atau memperbarui data amalan pengguna ke database PostgreSQL.
 }
 ```
 
+##### Struktur `payload.kids` (Sahabat Muslim Kids):
+```json
+"payload": {
+  "kids": {
+    "favorites": ["yufid-kids", "kak-erlan"],
+    "screenTime": "30",
+    "tahfizhProgress": { "78": 2, "79": 1, "114": 2 }
+  }
+}
+```
+- `favorites`: daftar ID channel favorit anak (gabung union saat sinkronisasi).
+- `screenTime`: batas waktu menonton dalam menit (`"0"` = tanpa batas).
+- `tahfizhProgress`: progres hafalan Juz 'Amma per nomor surat — `0` = belum hafal, `1` = sedang menghafal, `2` = sudah hafal. Kunci JSON-nya berupa string nomor surat (mis. `"78"`), disimpan lokal di `localStorage` dengan nama `sm_kids_tahfizh_progress`. Saat smart-merge, diambil **status tertinggi** per surat (tidak pernah menurunkan capaian ibadah pengguna).
+
 ---
 
 ### D. Pendaftaran Email Newsletter

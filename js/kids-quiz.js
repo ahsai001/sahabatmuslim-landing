@@ -122,30 +122,56 @@
         ibadah: { label: 'Ibadah & Al-Qur\'an', icon: '🕌' }
     };
 
-    // Switch main tabs: Videos vs Quiz
+    // Switch main tabs: Videos vs Quiz vs Hijaiyah vs Tahfizh
     function switchMainTab(tab) {
-        const videoBtn = document.getElementById('tab-btn-videos');
-        const quizBtn = document.getElementById('tab-btn-quiz');
+        const current = tab || 'videos';
+        const TAB_BUTTON_IDS = {
+            videos: 'tab-btn-videos',
+            quiz: 'tab-btn-quiz',
+            hijaiyah: 'tab-btn-hijaiyah',
+            tahfizh: 'tab-btn-tahfizh'
+        };
+        const SECTION_IDS = {
+            quiz: 'kids-quiz-section',
+            hijaiyah: 'kids-hijaiyah-section',
+            tahfizh: 'kids-tahfizh-section'
+        };
+
         const filterSection = document.querySelector('.kids-filter-section');
         const contentSection = document.querySelector('.kids-content-section');
-        const quizSection = document.getElementById('kids-quiz-section');
 
-        if (tab === 'quiz') {
-            if (videoBtn) videoBtn.classList.remove('active');
-            if (quizBtn) quizBtn.classList.add('active');
-            if (filterSection) filterSection.style.display = 'none';
-            if (contentSection) contentSection.style.display = 'none';
-            if (quizSection) quizSection.style.display = 'block';
-            
-            // Scroll gently to quiz
-            quizSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // Aktifkan tombol tab yang dipilih
+        Object.keys(TAB_BUTTON_IDS).forEach(key => {
+            const btn = document.getElementById(TAB_BUTTON_IDS[key]);
+            if (btn) btn.classList.toggle('active', key === current);
+        });
+
+        // Tab videos menampilkan daftar channel, tab lain menyembunyikannya
+        const showVideos = current === 'videos';
+        if (filterSection) filterSection.style.display = showVideos ? 'block' : 'none';
+        if (contentSection) contentSection.style.display = showVideos ? 'block' : 'none';
+
+        // Tampilkan hanya section tab aktif
+        let activeSection = null;
+        Object.keys(SECTION_IDS).forEach(key => {
+            const section = document.getElementById(SECTION_IDS[key]);
+            if (!section) return;
+            section.style.display = (key === current) ? 'block' : 'none';
+            if (key === current) activeSection = section;
+        });
+
+        // Render isi tab sesuai kebutuhan
+        if (current === 'quiz') {
             renderQuizLobby();
-        } else {
-            if (videoBtn) videoBtn.classList.add('active');
-            if (quizBtn) quizBtn.classList.remove('active');
-            if (filterSection) filterSection.style.display = 'block';
-            if (contentSection) contentSection.style.display = 'block';
-            if (quizSection) quizSection.style.display = 'none';
+        } else if (current === 'hijaiyah' && window.KidsHijaiyah && typeof window.KidsHijaiyah.render === 'function') {
+            window.KidsHijaiyah.render();
+        } else if (current === 'tahfizh' && window.KidsTahfizh && typeof window.KidsTahfizh.render === 'function') {
+            window.KidsTahfizh.render();
+        }
+
+        // Scroll lembut ke section tab (kecuali tab videos)
+        if (current !== 'videos' && activeSection) {
+            activeSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
     }
 
@@ -607,10 +633,16 @@
         window.KidsApp.switchMainTab = switchMainTab;
     }
 
-    // Support URL hash: #quiz
+    // Support URL hash: #quiz, #hijaiyah, #tahfizh
     document.addEventListener('DOMContentLoaded', () => {
-        if (window.location.hash === '#quiz') {
-            setTimeout(() => switchMainTab('quiz'), 300);
+        const hashMap = {
+            '#quiz': 'quiz',
+            '#hijaiyah': 'hijaiyah',
+            '#tahfizh': 'tahfizh'
+        };
+        const target = hashMap[window.location.hash];
+        if (target) {
+            setTimeout(() => switchMainTab(target), 300);
         }
     });
 

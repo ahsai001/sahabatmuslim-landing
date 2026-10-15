@@ -186,7 +186,7 @@
                 </div>
 
                 <div class="quiz-lobby-footer-note">
-                    <span>⚡ Terhubung database PostgreSQL & kurasi materi sesuai Al-Qur'an dan Sunnah</span>
+                    <span>✨ Materi edukasi Islam shahih sesuai Al-Qur'an dan Sunnah</span>
                 </div>
             </div>
         `;
@@ -449,7 +449,7 @@
 
         if (msgEl) {
             msgEl.style.display = 'block';
-            msgEl.innerHTML = 'Menyimpan skor ke database...';
+            msgEl.innerHTML = 'Menyimpan skormu... ⏳';
         }
 
         try {
@@ -468,7 +468,7 @@
             if (res.ok) {
                 QUIZ_STATE.scoreSaved = true;
                 if (msgEl) {
-                    msgEl.innerHTML = '✅ Masya Allah, skormu berhasil disimpan di database! <a href="javascript:void(0)" onclick="window.KidsQuiz.openLeaderboard()" style="color: #059669; text-decoration: underline; font-weight: 700; display: inline-block; margin-top: 4px;">Lihat Peringkatmu 🏆</a>';
+                    msgEl.innerHTML = '✅ Masya Allah, skormu berhasil disimpan! <a href="javascript:void(0)" onclick="window.KidsQuiz.openLeaderboard()" style="color: #059669; text-decoration: underline; font-weight: 700; display: inline-block; margin-top: 4px;">Lihat Peringkatmu 🏆</a>';
                     msgEl.style.color = 'var(--green-700)';
                 }
             } else {
@@ -476,7 +476,7 @@
             }
         } catch (err) {
             if (msgEl) {
-                msgEl.innerHTML = '💾 Tersimpan di perangkat (offline mode).';
+                msgEl.innerHTML = '💾 Tersimpan di perangkatmu.';
                 msgEl.style.color = 'var(--gray-600)';
             }
         }
@@ -511,7 +511,7 @@
                     <span class="quiz-leaderboard-trophy">🏆</span>
                     <h3 class="quiz-leaderboard-title">Papan Peringkat Santri Cilik</h3>
                     <p class="quiz-leaderboard-sub">Santri tergiat berprestasi di Kuis Ceria</p>
-                    <span class="quiz-leaderboard-badge-live">🟢 Terhubung Database PostgreSQL</span>
+                    <span class="quiz-leaderboard-badge-live">🌟 Santri Berprestasi</span>
                 </div>
 
                 <div id="leaderboard-list-body" class="quiz-leaderboard-list">

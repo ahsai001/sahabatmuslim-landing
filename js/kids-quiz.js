@@ -169,7 +169,14 @@
                     `).join('')}
                 </div>
 
-                <div style="margin: 1.75rem 0 1rem; display: flex; justify-content: center; gap: 0.75rem; flex-wrap: wrap;">
+                <div style="margin: 1.25rem auto 0; max-width: 320px; text-align: left;">
+                    <label for="lobby-player-name" style="display: block; font-size: 0.82rem; font-weight: 700; color: var(--gray-700); margin-bottom: 0.35rem; text-align: center;">
+                        👤 Nama Santri Cilik:
+                    </label>
+                    <input type="text" id="lobby-player-name" class="quiz-player-input" style="text-align: center; font-weight: 700;" placeholder="Contoh: Ahmad" value="${escapeHtml(QUIZ_STATE.playerName)}" oninput="window.KidsQuiz.setPlayerName(this.value)">
+                </div>
+
+                <div style="margin: 1.5rem 0 1rem; display: flex; justify-content: center; gap: 0.75rem; flex-wrap: wrap;">
                     <button type="button" class="quiz-btn-start" onclick="window.KidsQuiz.startQuiz()">
                         🚀 Mulai Kuis Sekarang (10 Soal)
                     </button>
@@ -179,10 +186,17 @@
                 </div>
 
                 <div class="quiz-lobby-footer-note">
-                    <span>⚡ Didukung database PostgreSQL & kurasi materi sesuai Al-Qur'an dan Sunnah</span>
+                    <span>⚡ Terhubung database PostgreSQL & kurasi materi sesuai Al-Qur'an dan Sunnah</span>
                 </div>
             </div>
         `;
+    }
+
+    function setPlayerName(name) {
+        QUIZ_STATE.playerName = (name || '').trim();
+        try {
+            localStorage.setItem('sm_kids_player_name', QUIZ_STATE.playerName);
+        } catch (e) {}
     }
 
     function selectCategory(cat) {
@@ -392,18 +406,18 @@
                 </div>
 
                 <!-- Simpan ke Leaderboard Form -->
-                <div class="quiz-save-score-wrap" id="quiz-save-box">
-                    <label for="quiz-player-name" style="display: block; font-size: 0.85rem; font-weight: 700; color: var(--gray-700); margin-bottom: 0.4rem;">
-                        Tulis namamu untuk masuk ke Papan Peringkat Santri:
+                <form class="quiz-save-score-wrap" id="quiz-save-box" onsubmit="event.preventDefault(); window.KidsQuiz.submitScore(${stars});">
+                    <label for="quiz-player-name" style="display: block; font-size: 0.88rem; font-weight: 700; color: var(--gray-800); margin-bottom: 0.4rem;">
+                        🏆 Tulis namamu untuk masuk ke Papan Peringkat Santri:
                     </label>
                     <div style="display: flex; gap: 0.5rem; max-width: 380px; margin: 0 auto;">
-                        <input type="text" id="quiz-player-name" class="quiz-player-input" placeholder="Nama Santri Cilik..." value="${escapeHtml(QUIZ_STATE.playerName)}">
-                        <button type="button" class="quiz-btn-submit-score" onclick="window.KidsQuiz.submitScore(${stars})">
+                        <input type="text" id="quiz-player-name" class="quiz-player-input" placeholder="Nama Santri Cilik (misal: Ahmad)" value="${escapeHtml(QUIZ_STATE.playerName)}" required>
+                        <button type="submit" class="quiz-btn-submit-score">
                             Simpan 🏆
                         </button>
                     </div>
                     <div id="quiz-save-msg" style="display: none; font-size: 0.85rem; font-weight: 600; color: var(--green-700); margin-top: 0.5rem;"></div>
-                </div>
+                </form>
 
                 <!-- Action Buttons -->
                 <div style="margin-top: 2rem; display: flex; justify-content: center; gap: 0.75rem; flex-wrap: wrap;">
@@ -413,7 +427,7 @@
                     <button type="button" class="quiz-btn-secondary" onclick="window.KidsQuiz.renderQuizLobby()">
                         🎯 Ganti Topik
                     </button>
-                    <button type="button" class="quiz-btn-secondary" onclick="window.KidsQuiz.openLeaderboard()">
+                    <button type="button" class="quiz-btn-secondary" onclick="window.KidsQuiz.openLeaderboardFromResult(${stars})">
                         🏆 Papan Peringkat
                     </button>
                 </div>
@@ -452,6 +466,7 @@
             });
 
             if (res.ok) {
+                QUIZ_STATE.scoreSaved = true;
                 if (msgEl) {
                     msgEl.innerHTML = '✅ Masya Allah, skormu berhasil disimpan di database! <a href="javascript:void(0)" onclick="window.KidsQuiz.openLeaderboard()" style="color: #059669; text-decoration: underline; font-weight: 700; display: inline-block; margin-top: 4px;">Lihat Peringkatmu 🏆</a>';
                     msgEl.style.color = 'var(--green-700)';
@@ -465,6 +480,17 @@
                 msgEl.style.color = 'var(--gray-600)';
             }
         }
+    }
+
+    function openLeaderboardFromResult(stars) {
+        const nameInput = document.getElementById('quiz-player-name');
+        if (nameInput && nameInput.value.trim() && !QUIZ_STATE.scoreSaved) {
+            submitScore(stars).then(() => {
+                openLeaderboard();
+            });
+            return;
+        }
+        openLeaderboard();
     }
 
     // Open Leaderboard Modal
@@ -564,6 +590,7 @@
     window.KidsQuiz = {
         switchMainTab,
         renderQuizLobby,
+        setPlayerName,
         selectCategory,
         startQuiz,
         handleAnswer,
@@ -571,6 +598,7 @@
         renderQuizResult,
         submitScore,
         openLeaderboard,
+        openLeaderboardFromResult,
         closeLeaderboard
     };
 

@@ -1154,10 +1154,10 @@
                 <div class="radius-filter-wrap">
                     <span class="radius-filter-label">Radius:</span>
                     <div class="radius-pill-group">
-                        <button type="button" class="radius-pill" data-radius="5" onclick="setKajianRadius(5)">≤ 5 km</button>
+                        <button type="button" class="radius-pill active" data-radius="5" onclick="setKajianRadius(5)">≤ 5 km</button>
                         <button type="button" class="radius-pill" data-radius="10" onclick="setKajianRadius(10)">≤ 10 km</button>
                         <button type="button" class="radius-pill" data-radius="15" onclick="setKajianRadius(15)">≤ 15 km</button>
-                        <button type="button" class="radius-pill active" data-radius="9999" onclick="setKajianRadius(9999)">Semua</button>
+                        <button type="button" class="radius-pill" data-radius="9999" onclick="setKajianRadius(9999)">Semua</button>
                     </div>
                 </div>
 
@@ -1165,7 +1165,7 @@
                     <!-- Status GPS -->
                     <div class="kajian-location-badge" id="kajian-loc-badge" title="Status lokasi GPS">
                         <span>📍</span>
-                        <span id="kajian-loc-text">GPS Terkunci (≤ 5 km)</span>
+                        <span id="kajian-loc-text">Mendeteksi GPS (≤ 5 km)...</span>
                     </div>
 
                     <button type="button" class="btn-gps" id="btn-detect-kajian-gps" onclick="detectKajianGPS(true)">
@@ -1263,7 +1263,7 @@
     <script>
         let allKajianData = [];
         let userGPS = null;
-        let currentKajianRadius = 9999;
+        let currentKajianRadius = 5;
         let currentDateFilter = 'today';
         let currentTagFilter = 'all';
         let customSelectedDate = '';
@@ -1622,7 +1622,10 @@
             });
 
             if (countInfo) {
-                countInfo.textContent = `Menampilkan ${filtered.length} jadwal kajian (${currentKajianRadius < 9999 ? '≤ ' + currentKajianRadius + ' km' : 'semua jarak'})`;
+                const radiusLabel = userGPS 
+                    ? (currentKajianRadius < 9999 ? `≤ ${currentKajianRadius} km` : 'semua jarak') 
+                    : (currentKajianRadius < 9999 ? 'semua jarak - GPS belum aktif' : 'semua jarak');
+                countInfo.textContent = `Menampilkan ${filtered.length} jadwal kajian (${radiusLabel})`;
             }
 
             if (filtered.length === 0) {
@@ -1823,6 +1826,9 @@
                     if (gpsBtn) {
                         gpsBtn.disabled = false;
                         gpsBtn.innerHTML = '<span>🎯</span> Update GPS';
+                    }
+                    if (locText) {
+                        locText.innerHTML = 'GPS Belum Terkunci';
                     }
                     if (interactive) {
                         showToast('Izin GPS tidak diberikan. Menampilkan semua wilayah.');

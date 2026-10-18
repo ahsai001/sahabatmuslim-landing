@@ -902,33 +902,225 @@
             color: var(--gray-500);
         }
     </style>
+    <link rel="stylesheet" href="css/nav.css?v=1">
 </head>
 <body>
 
     <!-- Navigation Header -->
-    <nav>
+    <nav class="sm-navbar">
         <div class="nav-inner">
             <a href="/" class="logo">
                 <div class="logo-icon">🕌</div>
                 <span class="logo-text">Sahabat Muslim</span>
             </a>
-            <button class="mobile-menu-btn" id="mobile-menu-toggle" aria-label="Menu Navigasi" onclick="toggleMobileMenu(event)">
-                <span>☰</span>
+            
+            <button class="mobile-menu-btn" id="mobile-menu-toggle" aria-label="Buka Menu Navigasi" aria-expanded="false" onclick="toggleMobileMenu(event)">
+                <span class="menu-icon-bar"></span>
+                <span class="menu-icon-bar"></span>
+                <span class="menu-icon-bar"></span>
             </button>
-            <ul class="nav-links">
-                <li><a href="/">Beranda</a></li>
-                <li><a href="/#jadwal-sholat">Jadwal Sholat</a></li>
-                <li><a href="/ramadhan">Ibadah Hijriyah 🌙</a></li>
-                <li><a href="/murottal">Murottal 🎧</a></li>
-                <li><a href="/haramain" class="active">Live Haramain 🕋</a></li>
-                <li><a href="/kids" style="color: var(--green-600, #059669); font-weight: 700;">Kids 🎈</a></li>
-                <li><a href="/kajian">Jadwal Kajian</a></li>
-                <li><a href="/dzikir">Dzikir Harian</a></li>
-                <li><a href="/doa">Doa Harian</a></li>
-                <li><a href="/quran">Al-Qur'an</a></li>
-                <li><a href="/kiblat">Arah Kiblat</a></li>
-                <li><a href="https://ruqyah.ahsailabs.my.id/" target="_blank" rel="noopener noreferrer">Ruqyah ↗</a></li>
-            </ul>
+            
+            <div class="nav-menu-wrapper" id="nav-menu-wrapper">
+                <ul class="nav-links">
+                    <!-- Dropdown Ibadah -->
+                    <li class="nav-item has-dropdown" data-dropdown="ibadah">
+                        <button class="nav-link nav-dropdown-btn" type="button" aria-expanded="false">
+                            <span>Ibadah</span>
+                            <svg class="chevron-icon" viewBox="0 0 20 20" fill="currentColor" width="16" height="16">
+                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                        <div class="nav-dropdown-menu dropdown-ibadah">
+                            <div class="dropdown-header">
+                                <span class="dropdown-header-title">Ibadah Harian</span>
+                            </div>
+                            <div class="dropdown-grid">
+                                <a href="/#jadwal-sholat" class="dropdown-item">
+                                    <div class="item-icon fi-green">🕌</div>
+                                    <div class="item-content">
+                                        <div class="item-title">Jadwal Sholat</div>
+                                        <div class="item-desc">Waktu sholat 5 waktu & imsakiyah</div>
+                                    </div>
+                                </a>
+                                <a href="/quran" class="dropdown-item">
+                                    <div class="item-icon fi-emerald">📖</div>
+                                    <div class="item-content">
+                                        <div class="item-title">Al-Qur'an</div>
+                                        <div class="item-desc">Tafsir, tajwid & mushaf 30 juz</div>
+                                    </div>
+                                </a>
+                                <a href="/murottal" class="dropdown-item">
+                                    <div class="item-icon fi-teal">🎧</div>
+                                    <div class="item-content">
+                                        <div class="item-title">Murottal Audio</div>
+                                        <div class="item-desc">Lantunan merdu para qari ternama</div>
+                                    </div>
+                                </a>
+                                <a href="/dzikir" class="dropdown-item">
+                                    <div class="item-icon fi-indigo">📿</div>
+                                    <div class="item-content">
+                                        <div class="item-title">Dzikir Harian</div>
+                                        <div class="item-desc">Dzikir pagi, petang & setelah sholat</div>
+                                    </div>
+                                </a>
+                                <a href="/doa" class="dropdown-item">
+                                    <div class="item-icon fi-cyan">🤲</div>
+                                    <div class="item-content">
+                                        <div class="item-title">Doa Harian</div>
+                                        <div class="item-desc">Kumpulan doa mustajab & adab</div>
+                                    </div>
+                                </a>
+                                <a href="/kiblat" class="dropdown-item">
+                                    <div class="item-icon fi-purple">🧭</div>
+                                    <div class="item-content">
+                                        <div class="item-title">Arah Kiblat</div>
+                                        <div class="item-desc">Kompas penunjuk Ka'bah presisi</div>
+                                    </div>
+                                </a>
+                                <a href="/ramadhan" class="dropdown-item">
+                                    <div class="item-icon fi-forest">🌙</div>
+                                    <div class="item-content">
+                                        <div class="item-title">Kalender Hijriyah</div>
+                                        <div class="item-desc">Penanggalan Islam & panduan ibadah</div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </li>
+
+                    <!-- Dropdown Kajian & Media -->
+                    <li class="nav-item has-dropdown" data-dropdown="kajian">
+                        <button class="nav-link nav-dropdown-btn" type="button" aria-expanded="false">
+                            <span>Kajian & Media</span>
+                            <svg class="chevron-icon" viewBox="0 0 20 20" fill="currentColor" width="16" height="16">
+                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                        <div class="nav-dropdown-menu dropdown-kajian">
+                            <div class="dropdown-header">
+                                <span class="dropdown-header-title">Edukasi & Siaran</span>
+                            </div>
+                            <div class="dropdown-grid single-col">
+                                <a href="/kajian" class="dropdown-item">
+                                    <div class="item-icon fi-amber">📚</div>
+                                    <div class="item-content">
+                                        <div class="item-title">Jadwal Kajian</div>
+                                        <div class="item-desc">Kajian sunnah terdekat berbasis GPS</div>
+                                    </div>
+                                </a>
+                                <a href="/haramain" class="dropdown-item">
+                                    <div class="item-icon fi-gold">🕋</div>
+                                    <div class="item-content">
+                                        <div class="item-title">Live Haramain</div>
+                                        <div class="item-desc">Siaran langsung Masjidil Haram & Nabawi</div>
+                                    </div>
+                                </a>
+                                <a href="https://ruqyah.ahsailabs.my.id/" target="_blank" rel="noopener noreferrer" class="dropdown-item">
+                                    <div class="item-icon fi-green">🌿</div>
+                                    <div class="item-content">
+                                        <div class="item-title">Ruqyah Syar'iyyah ↗</div>
+                                        <div class="item-desc">Audio terapi penenang ayat Al-Quran</div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </li>
+
+                    <!-- Kids Link (Highlighted Pill) -->
+                    <li class="nav-item">
+                        <a href="/kids" class="nav-pill-kids">
+                            <span class="kids-emoji">🎈</span>
+                            <span>Kids</span>
+                            <span class="kids-badge-star">★ Seru</span>
+                        </a>
+                    </li>
+
+                    <!-- Fitur Link -->
+                    <li class="nav-item">
+                        <a href="/#fitur" class="nav-link">Fitur</a>
+                    </li>
+
+                    <!-- CTA Daftar -->
+                    <li class="nav-item nav-item-cta">
+                        <a href="/#daftar" class="nav-btn-cta">Daftar Early Access</a>
+                    </li>
+                </ul>
+
+                <!-- Mobile Drawer Body -->
+                <div class="mobile-drawer-content">
+                    <div class="mobile-section">
+                        <div class="mobile-section-title">🕌 Ibadah Harian</div>
+                        <div class="mobile-nav-grid">
+                            <a href="/#jadwal-sholat" class="mobile-nav-tile">
+                                <span class="tile-icon">🕌</span>
+                                <span class="tile-text">Jadwal Sholat</span>
+                            </a>
+                            <a href="/quran" class="mobile-nav-tile">
+                                <span class="tile-icon">📖</span>
+                                <span class="tile-text">Al-Qur'an</span>
+                            </a>
+                            <a href="/murottal" class="mobile-nav-tile">
+                                <span class="tile-icon">🎧</span>
+                                <span class="tile-text">Murottal</span>
+                            </a>
+                            <a href="/dzikir" class="mobile-nav-tile">
+                                <span class="tile-icon">📿</span>
+                                <span class="tile-text">Dzikir</span>
+                            </a>
+                            <a href="/doa" class="mobile-nav-tile">
+                                <span class="tile-icon">🤲</span>
+                                <span class="tile-text">Doa Harian</span>
+                            </a>
+                            <a href="/kiblat" class="mobile-nav-tile">
+                                <span class="tile-icon">🧭</span>
+                                <span class="tile-text">Arah Kiblat</span>
+                            </a>
+                            <a href="/ramadhan" class="mobile-nav-tile">
+                                <span class="tile-icon">🌙</span>
+                                <span class="tile-text">Kalender Hijriyah</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="mobile-section">
+                        <div class="mobile-section-title">📚 Kajian & Edukasi</div>
+                        <div class="mobile-nav-grid">
+                            <a href="/kajian" class="mobile-nav-tile">
+                                <span class="tile-icon">📚</span>
+                                <span class="tile-text">Jadwal Kajian</span>
+                            </a>
+                            <a href="/haramain" class="mobile-nav-tile">
+                                <span class="tile-icon">🕋</span>
+                                <span class="tile-text">Live Haramain</span>
+                            </a>
+                            <a href="https://ruqyah.ahsailabs.my.id/" target="_blank" rel="noopener noreferrer" class="mobile-nav-tile">
+                                <span class="tile-icon">🌿</span>
+                                <span class="tile-text">Ruqyah ↗</span>
+                            </a>
+                        </div>
+
+                        <!-- Highlighted Kids Card in Mobile -->
+                        <a href="/kids" class="mobile-kids-card">
+                            <div class="kids-card-icon">🎈</div>
+                            <div class="kids-card-body">
+                                <div class="kids-card-title">Sahabat Muslim Kids <span class="kids-card-pill">Favorit Anak</span></div>
+                                <div class="kids-card-sub">Video islami aman, tebak kuis & pohon tahfizh</div>
+                            </div>
+                            <span class="kids-card-arrow">→</span>
+                        </a>
+                    </div>
+
+                    <div class="mobile-section mobile-section-bottom">
+                        <a href="/#fitur" class="mobile-link-row">
+                            <span>⚡ 8 Fitur Utama</span>
+                            <span class="arrow-right">›</span>
+                        </a>
+                        <a href="/#daftar" class="mobile-cta-btn">
+                            Daftar Early Access 🚀
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
     </nav>
 
@@ -1112,7 +1304,7 @@
 
     <!-- Scripts -->
     <script src="js/sync.js?v=2"></script>
-    <script src="js/nav.js?v=3"></script>
+    <script src="js/nav.js?v=4"></script>
     <script src="js/quran-data.js"></script>
     <script src="js/haramain-data.js?v=2"></script>
     <script src="js/haramain.js?v=2"></script>

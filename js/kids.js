@@ -180,11 +180,8 @@
 
                     <div class="kids-card-footer">
                         <button type="button" class="kids-btn-watch" onclick="window.KidsApp.openPlayer('${item.id}')">
-                            <span>▶️</span> Putar Rekomendasi
+                            <span>▶️</span> Putar Video
                         </button>
-                        <a href="${item.youtubeUrl}" target="_blank" rel="noopener noreferrer" class="kids-btn-yt" title="Buka di YouTube">
-                            <span>Buka Channel ↗</span>
-                        </a>
                     </div>
                 </div>
             `;
@@ -220,13 +217,9 @@
         const titleEl = document.getElementById('player-modal-title');
         const channelEl = document.getElementById('player-modal-channel');
         const iframeEl = document.getElementById('player-modal-iframe');
-        const directLinkEl = document.getElementById('player-modal-direct-link');
 
         if (titleEl) titleEl.textContent = item.featuredTitle;
         if (channelEl) channelEl.textContent = `${item.title} (${item.handle})`;
-        if (directLinkEl) {
-            directLinkEl.href = `https://www.youtube.com/watch?v=${item.featuredVideoId}`;
-        }
 
         // Use privacy-enhanced YouTube embed with recommended params
         if (iframeEl) {
@@ -292,10 +285,8 @@
         STATE.activeVideoId = videoId;
         const titleEl = document.getElementById('player-modal-title');
         const iframeEl = document.getElementById('player-modal-iframe');
-        const directLinkEl = document.getElementById('player-modal-direct-link');
 
         if (titleEl) titleEl.textContent = title;
-        if (directLinkEl) directLinkEl.href = `https://www.youtube.com/watch?v=${videoId}`;
         if (iframeEl) {
             iframeEl.src = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&playsinline=1`;
         }

@@ -2740,7 +2740,7 @@
                 <button type="button" class="modal-close-btn" onclick="window.KidsApp.closePlayer()">✕</button>
             </div>
             <div class="video-container">
-                <iframe id="player-modal-iframe" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <iframe id="player-modal-iframe" src="" sandbox="allow-scripts allow-same-origin allow-presentation allow-forms" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
             </div>
 
             <!-- Video Playlist Selector -->
@@ -2754,11 +2754,10 @@
                 </div>
             </div>
 
-            <div style="padding: 0.85rem 1.25rem; background: #111827; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; border-top: 1px solid #1f2937;">
-                <span style="font-size: 0.8rem; color: #9ca3af;">Video tidak dapat diputar di layar ini?</span>
-                <a id="player-modal-direct-link" href="#" target="_blank" rel="noopener noreferrer" style="color: #34d399; font-size: 0.82rem; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 0.3rem;">
-                    Buka Langsung di YouTube ↗
-                </a>
+            <div style="padding: 0.85rem 1.25rem; background: #111827; display: flex; justify-content: center; align-items: center; border-top: 1px solid #1f2937;">
+                <span style="font-size: 0.8rem; color: #34d399; display: inline-flex; align-items: center; gap: 0.35rem; font-weight: 500;">
+                    🛡️ Ruang Aman Anak: Pemutaran video terlindungi di dalam aplikasi tanpa akses ke situs luar
+                </span>
             </div>
         </div>
     </div>

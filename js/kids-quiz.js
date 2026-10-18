@@ -118,9 +118,67 @@
         all: { label: 'Semua Kategori', icon: '🌟' },
         aqidah: { label: 'Aqidah & Tauhid', icon: '☝️' },
         sirah: { label: 'Kisah Nabi & Sahabat', icon: '🎙️' },
-        adab: { label: 'Adab Sunnah & Akhlak', icon: '🌿' },
+        adab: { label: 'Adab & Akhlak', icon: '🌿' },
         ibadah: { label: 'Ibadah & Al-Qur\'an', icon: '🕌' }
     };
+
+    // Synthesized Sound Effects for Kids via Web Audio API (Zero External Files)
+    function playQuizAudio(type) {
+        try {
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (!AudioCtx) return;
+            const ctx = new AudioCtx();
+            if (ctx.state === 'suspended') ctx.resume();
+
+            const now = ctx.currentTime;
+            if (type === 'correct') {
+                // Cheerful ascending melody C5, E5, G5, C6
+                const notes = [523.25, 659.25, 783.99, 1046.50];
+                notes.forEach((freq, idx) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, now + idx * 0.07);
+                    gain.gain.setValueAtTime(0.14, now + idx * 0.07);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.07 + 0.28);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(now + idx * 0.07);
+                    osc.stop(now + idx * 0.07 + 0.28);
+                });
+            } else if (type === 'wrong') {
+                // Gentle warm boop (not harsh)
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(349.23, now); // F4
+                osc.frequency.setValueAtTime(261.63, now + 0.12); // C4
+                gain.gain.setValueAtTime(0.12, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.32);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.32);
+            } else if (type === 'finish') {
+                // Celebration Fanfare
+                const fanfare = [523.25, 659.25, 783.99, 1046.50, 1318.51];
+                fanfare.forEach((freq, idx) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, now + idx * 0.09);
+                    gain.gain.setValueAtTime(0.16, now + idx * 0.09);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.09 + 0.38);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(now + idx * 0.09);
+                    osc.stop(now + idx * 0.09 + 0.38);
+                });
+            }
+        } catch (e) {
+            // Audio context not allowed or unsupported
+        }
+    }
 
     // Switch main tabs: Videos vs Quiz vs Hijaiyah vs Tahfizh
     function switchMainTab(tab) {
@@ -183,36 +241,37 @@
         container.innerHTML = `
             <div class="quiz-lobby-card">
                 <div class="quiz-lobby-badge">🎯 Kuis Cerdas Ceria Islam</div>
-                <h2 class="quiz-lobby-title">Santri Cilik Berprestasi</h2>
-                <p class="quiz-lobby-desc">Ayo uji wawasan keislamanmu sambil mengumpulkan bintang prestasi! Pilih topik kuis yang ingin kamu pelajari:</p>
+                <h2 class="quiz-lobby-title">Santri Cilik Berprestasi ✨</h2>
+                <p class="quiz-lobby-desc">Ayo uji wawasan keislamanmu sambil mengumpulkan bintang emas! Pilih topik yang ingin kamu pelajari:</p>
 
                 <div class="quiz-cat-selector">
                     ${Object.keys(CATEGORIES).map(key => `
                         <button type="button" class="quiz-cat-pill ${QUIZ_STATE.category === key ? 'active' : ''}" onclick="window.KidsQuiz.selectCategory('${key}')">
-                            <span>${CATEGORIES[key].icon}</span>
+                            <span class="cat-icon">${CATEGORIES[key].icon}</span>
                             <span>${CATEGORIES[key].label}</span>
                         </button>
                     `).join('')}
                 </div>
 
-                <div style="margin: 1.25rem auto 0; max-width: 320px; text-align: left;">
-                    <label for="lobby-player-name" style="display: block; font-size: 0.82rem; font-weight: 700; color: var(--gray-700); margin-bottom: 0.35rem; text-align: center;">
-                        👤 Nama Santri Cilik:
+                <div class="quiz-player-name-card">
+                    <label for="lobby-player-name">
+                        <span>🧒</span>
+                        <span>Siapa Namamu, Santri Cilik?</span>
                     </label>
-                    <input type="text" id="lobby-player-name" class="quiz-player-input" style="text-align: center; font-weight: 700;" placeholder="Contoh: Ahmad" value="${escapeHtml(QUIZ_STATE.playerName)}" oninput="window.KidsQuiz.setPlayerName(this.value)">
+                    <input type="text" id="lobby-player-name" class="quiz-player-input" placeholder="Tulis namamu (misal: Ahmad / Aisyah)" value="${escapeHtml(QUIZ_STATE.playerName)}" oninput="window.KidsQuiz.setPlayerName(this.value)">
                 </div>
 
-                <div style="margin: 1.5rem 0 1rem; display: flex; justify-content: center; gap: 0.75rem; flex-wrap: wrap;">
+                <div style="display: flex; justify-content: center; gap: 0.85rem; flex-wrap: wrap;">
                     <button type="button" class="quiz-btn-start" onclick="window.KidsQuiz.startQuiz()">
-                        🚀 Mulai Kuis Sekarang (10 Soal)
+                        🚀 Mulai Kuis Ceria (10 Soal)
                     </button>
                     <button type="button" class="quiz-btn-secondary" onclick="window.KidsQuiz.openLeaderboard()">
-                        🏆 Papan Peringkat Santri
+                        🏆 Papan Juara Santri
                     </button>
                 </div>
 
                 <div class="quiz-lobby-footer-note">
-                    <span>✨ Materi edukasi Islam shahih sesuai Al-Qur'an dan Sunnah</span>
+                    <span>✨ Materi edukasi Islam shahih & aman sesuai Al-Qur'an dan Sunnah</span>
                 </div>
             </div>
         `;
@@ -235,10 +294,14 @@
         const container = document.getElementById('quiz-view-container');
         if (!container) return;
 
+        // Smooth scroll to quiz card
+        const quizSection = document.getElementById('kids-quiz-section');
+        if (quizSection) quizSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
         container.innerHTML = `
-            <div style="text-align: center; padding: 4rem 1rem;">
+            <div class="quiz-lobby-card" style="padding: 4rem 1rem;">
                 <div class="quiz-spinner"></div>
-                <p style="margin-top: 1rem; font-weight: 600; color: var(--green-800);">Memuat soal kuis dari server...</p>
+                <p style="margin-top: 1.25rem; font-weight: 800; font-size: 1.1rem; color: #065f46; font-family: 'Comic Neue', cursive, sans-serif;">Menyiapkan soal kuis ceria...</p>
             </div>
         `;
 
@@ -297,13 +360,13 @@
             <div class="quiz-play-card">
                 <!-- Top Progress Bar -->
                 <div class="quiz-play-header">
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.6rem;">
                         <span class="quiz-cat-tag">${catInfo.icon} ${catInfo.label}</span>
-                        <span style="font-size: 0.85rem; font-weight: 700; color: var(--gray-600);">Soal ${currentNum} dari ${total}</span>
+                        <span class="quiz-question-counter-pill">Soal ${currentNum} / ${total}</span>
                     </div>
                     <div class="quiz-score-badge">
                         <span>⭐</span>
-                        <span>Skor: ${QUIZ_STATE.score}</span>
+                        <span>${QUIZ_STATE.score} Poin</span>
                     </div>
                 </div>
 
@@ -311,7 +374,7 @@
                     <div class="quiz-progress-bar-fill" style="width: ${progressPercent}%;"></div>
                 </div>
 
-                <!-- Question Text -->
+                <!-- Question Text (Speech Bubble) -->
                 <div class="quiz-question-box">
                     <h3 class="quiz-question-text">${q.question}</h3>
                 </div>
@@ -321,11 +384,14 @@
                     ${q.options.map((opt, idx) => {
                         const letter = String.fromCharCode(65 + idx); // A, B, C
                         let stateClass = '';
+                        let iconHtml = letter;
                         if (QUIZ_STATE.answered) {
                             if (idx === q.correct_index) {
                                 stateClass = 'is-correct';
+                                iconHtml = '✓';
                             } else if (idx === QUIZ_STATE.selectedOption) {
                                 stateClass = 'is-wrong';
+                                iconHtml = '✕';
                             } else {
                                 stateClass = 'is-disabled';
                             }
@@ -334,7 +400,7 @@
                             <button type="button" class="quiz-option-btn ${stateClass}" 
                                     ${QUIZ_STATE.answered ? 'disabled' : ''} 
                                     onclick="window.KidsQuiz.handleAnswer(${idx})">
-                                <span class="quiz-option-letter">${letter}</span>
+                                <span class="quiz-option-letter">${iconHtml}</span>
                                 <span class="quiz-option-text">${opt}</span>
                             </button>
                         `;
@@ -347,6 +413,16 @@
                 </div>
             </div>
         `;
+
+        // If answered, auto-scroll gently to the feedback
+        if (QUIZ_STATE.answered) {
+            setTimeout(() => {
+                const feedbackBox = document.getElementById('quiz-feedback-box');
+                if (feedbackBox) {
+                    feedbackBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            }, 60);
+        }
     }
 
     function renderFeedbackContent(q) {
@@ -354,12 +430,12 @@
         return `
             <div class="quiz-feedback-banner ${isCorrect ? 'banner-correct' : 'banner-wrong'}">
                 <div class="quiz-feedback-title">
-                    <span>${isCorrect ? '🎉 Masya Allah, Tepat Sekali!' : '💡 Hampir Benar!'}</span>
+                    <span>${isCorrect ? '🎉 Masya Allah, Tepat Sekali! (+10 Poin)' : '💡 Belum Tepat, Tetap Semangat Ya!'}</span>
                 </div>
                 <p class="quiz-feedback-desc">${q.explanation || ''}</p>
-                <div style="margin-top: 1rem; text-align: right;">
+                <div style="text-align: right; margin-top: 0.5rem;">
                     <button type="button" class="quiz-btn-next" onclick="window.KidsQuiz.nextQuestion()">
-                        ${QUIZ_STATE.currentIndex + 1 >= QUIZ_STATE.questions.length ? 'Lihat Hasil Akhir 🏆' : 'Soal Berikutnya ➡️'}
+                        ${QUIZ_STATE.currentIndex + 1 >= QUIZ_STATE.questions.length ? 'Lihat Hasil Akhir 🏆' : 'Soal Berikutnya ➔'}
                     </button>
                 </div>
             </div>
@@ -378,6 +454,9 @@
 
         if (isCorrect) {
             QUIZ_STATE.score += 10;
+            playQuizAudio('correct');
+        } else {
+            playQuizAudio('wrong');
         }
 
         renderCurrentQuestion();
@@ -391,6 +470,12 @@
 
         if (QUIZ_STATE.currentIndex < QUIZ_STATE.questions.length) {
             renderCurrentQuestion();
+            setTimeout(() => {
+                const card = document.querySelector('.quiz-play-card') || document.getElementById('kids-quiz-section');
+                if (card) {
+                    card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }, 30);
         } else {
             renderQuizResult();
         }
@@ -401,52 +486,63 @@
         const container = document.getElementById('quiz-view-container');
         if (!container) return;
 
+        // Play celebration audio
+        playQuizAudio('finish');
+
+        // Scroll to top of quiz
+        const quizSection = document.getElementById('kids-quiz-section');
+        if (quizSection) quizSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
         const totalQ = QUIZ_STATE.questions.length;
         const maxScore = totalQ * 10;
         const percentage = Math.round((QUIZ_STATE.score / maxScore) * 100);
 
         let stars = 3;
         let starStr = '⭐⭐⭐';
-        let appreciation = 'Masya Allah Tabarakallah! Kamu santri cilik yang luar biasa cerdas!';
+        let gradeBadge = 'Mumtaz! 🌟 Luar Biasa!';
+        let appreciation = 'Masya Allah Tabarakallah! Kamu santri cilik yang sangat cerdas & berprestasi!';
         if (percentage < 50) {
             stars = 1;
             starStr = '⭐';
-            appreciation = 'Alhamdulillah, tetap semangat ya! Belajar lagi dan coba kuis ini sekali lagi.';
+            gradeBadge = 'Alhamdulillah 📚 Terus Semangat!';
+            appreciation = 'Tetap semangat ya! Belajar lagi materi keislaman dan coba kuis ini sekali lagi.';
         } else if (percentage < 80) {
             stars = 2;
             starStr = '⭐⭐';
-            appreciation = 'Bagus sekali! Sedikit lagi kamu bisa meraih nilai sempurna 3 bintang.';
+            gradeBadge = 'Jayyid Jiddan 👏 Hebat Sekali!';
+            appreciation = 'Bagus sekali! Sedikit lagi kamu bisa meraih nilai sempurna 3 bintang emas.';
         }
 
         container.innerHTML = `
             <div class="quiz-result-card">
                 <div class="quiz-result-stars">${starStr}</div>
-                <h2 style="font-size: 1.85rem; color: var(--green-900); margin-bottom: 0.35rem;">Alhamdulillah Selesai!</h2>
-                <p style="font-size: 1.1rem; color: var(--gray-700); margin-bottom: 1.25rem;">${appreciation}</p>
+                <h2 style="font-size: 2.2rem; color: #065f46; font-family: 'Comic Neue', cursive, sans-serif; margin-bottom: 0.35rem;">Alhamdulillah Selesai! 🎉</h2>
+                <p style="font-size: 1.1rem; color: #4b5563; margin-bottom: 1.5rem; line-height: 1.5;">${appreciation}</p>
 
                 <div class="quiz-score-summary-box">
-                    <div class="quiz-score-num">${QUIZ_STATE.score} <span style="font-size: 1.1rem; font-weight: 500; color: var(--gray-500);">/ ${maxScore} Poin</span></div>
-                    <div style="font-size: 0.88rem; color: var(--gray-600); margin-top: 0.25rem;">
+                    <div class="quiz-score-num">${QUIZ_STATE.score} <span style="font-size: 1.2rem; font-weight: 700; color: #6b7280;">/ ${maxScore} Poin</span></div>
+                    <div class="quiz-score-grade-badge">${gradeBadge}</div>
+                    <div style="font-size: 0.92rem; font-weight: 600; color: #4b5563; margin-top: 0.6rem;">
                         Tingkat Ketepatan: <strong>${percentage}%</strong> (${Math.round(QUIZ_STATE.score / 10)} dari ${totalQ} Soal Benar)
                     </div>
                 </div>
 
                 <!-- Simpan ke Leaderboard Form -->
                 <form class="quiz-save-score-wrap" id="quiz-save-box" onsubmit="event.preventDefault(); window.KidsQuiz.submitScore(${stars});">
-                    <label for="quiz-player-name" style="display: block; font-size: 0.88rem; font-weight: 700; color: var(--gray-800); margin-bottom: 0.4rem;">
-                        🏆 Tulis namamu untuk masuk ke Papan Peringkat Santri:
+                    <label for="quiz-player-name" style="display: block; font-size: 0.92rem; font-weight: 800; color: #065f46; margin-bottom: 0.5rem; font-family: 'Comic Neue', cursive, sans-serif;">
+                        🏆 Tulis namamu untuk masuk ke Papan Juara Santri:
                     </label>
-                    <div style="display: flex; gap: 0.5rem; max-width: 380px; margin: 0 auto;">
+                    <div style="display: flex; gap: 0.5rem; max-width: 400px; margin: 0 auto;">
                         <input type="text" id="quiz-player-name" class="quiz-player-input" placeholder="Nama Santri Cilik (misal: Ahmad)" value="${escapeHtml(QUIZ_STATE.playerName)}" required>
                         <button type="submit" class="quiz-btn-submit-score">
                             Simpan 🏆
                         </button>
                     </div>
-                    <div id="quiz-save-msg" style="display: none; font-size: 0.85rem; font-weight: 600; color: var(--green-700); margin-top: 0.5rem;"></div>
+                    <div id="quiz-save-msg" style="display: none; font-size: 0.88rem; font-weight: 700; color: #047857; margin-top: 0.6rem;"></div>
                 </form>
 
                 <!-- Action Buttons -->
-                <div style="margin-top: 2rem; display: flex; justify-content: center; gap: 0.75rem; flex-wrap: wrap;">
+                <div style="margin-top: 2rem; display: flex; justify-content: center; gap: 0.85rem; flex-wrap: wrap;">
                     <button type="button" class="quiz-btn-start" onclick="window.KidsQuiz.startQuiz()">
                         🔁 Main Kuis Lagi
                     </button>
@@ -454,7 +550,7 @@
                         🎯 Ganti Topik
                     </button>
                     <button type="button" class="quiz-btn-secondary" onclick="window.KidsQuiz.openLeaderboardFromResult(${stars})">
-                        🏆 Papan Peringkat
+                        🏆 Papan Juara
                     </button>
                 </div>
             </div>
@@ -467,15 +563,18 @@
         const msgEl = document.getElementById('quiz-save-msg');
         if (!nameInput) return;
 
-        const name = nameInput.value.trim() || 'Santri Cilik';
-        QUIZ_STATE.playerName = name;
-        try {
-            localStorage.setItem('sm_kids_player_name', name);
-        } catch (e) {}
+        const name = (nameInput.value || '').trim();
+        if (!name) {
+            nameInput.focus();
+            return;
+        }
+
+        setPlayerName(name);
 
         if (msgEl) {
+            msgEl.textContent = 'Menyimpan skormu ke papan juara...';
             msgEl.style.display = 'block';
-            msgEl.innerHTML = 'Menyimpan skormu... ⏳';
+            msgEl.style.color = '#047857';
         }
 
         try {
@@ -484,37 +583,36 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     player_name: name,
+                    category: QUIZ_STATE.category,
                     score: QUIZ_STATE.score,
-                    total_questions: QUIZ_STATE.questions.length,
                     stars: stars,
-                    category: QUIZ_STATE.category
+                    total_questions: QUIZ_STATE.questions.length
                 })
             });
 
             if (res.ok) {
-                QUIZ_STATE.scoreSaved = true;
                 if (msgEl) {
-                    msgEl.innerHTML = '✅ Masya Allah, skormu berhasil disimpan! <a href="javascript:void(0)" onclick="window.KidsQuiz.openLeaderboard()" style="color: #059669; text-decoration: underline; font-weight: 700; display: inline-block; margin-top: 4px;">Lihat Peringkatmu 🏆</a>';
-                    msgEl.style.color = 'var(--green-700)';
+                    msgEl.textContent = '✅ Masya Allah! Skor berhasil dicatat di Papan Juara!';
+                    msgEl.style.color = '#047857';
                 }
             } else {
-                throw new Error('Gagal menyimpan');
+                throw new Error('Server returned ' + res.status);
             }
-        } catch (err) {
+        } catch (e) {
+            console.warn('Gagal simpan skor ke database:', e);
             if (msgEl) {
-                msgEl.innerHTML = '💾 Tersimpan di perangkatmu.';
-                msgEl.style.color = 'var(--gray-600)';
+                msgEl.textContent = 'Skor tersimpan di browser Anda!';
+                msgEl.style.color = '#b45309';
             }
         }
     }
 
-    function openLeaderboardFromResult(stars) {
+    // Open Leaderboard From Result with Auto-Save
+    async function openLeaderboardFromResult(stars) {
         const nameInput = document.getElementById('quiz-player-name');
-        if (nameInput && nameInput.value.trim() && !QUIZ_STATE.scoreSaved) {
-            submitScore(stars).then(() => {
-                openLeaderboard();
-            });
-            return;
+        const name = nameInput ? (nameInput.value || '').trim() : QUIZ_STATE.playerName;
+        if (name) {
+            submitScore(stars);
         }
         openLeaderboard();
     }
@@ -535,15 +633,14 @@
                 <div class="quiz-leaderboard-header">
                     <button type="button" class="quiz-leaderboard-close-btn" onclick="window.KidsQuiz.closeLeaderboard()" title="Tutup">✕</button>
                     <span class="quiz-leaderboard-trophy">🏆</span>
-                    <h3 class="quiz-leaderboard-title">Papan Peringkat Santri Cilik</h3>
-                    <p class="quiz-leaderboard-sub">Santri tergiat berprestasi di Kuis Ceria</p>
-                    <span class="quiz-leaderboard-badge-live">🌟 Santri Berprestasi</span>
+                    <h3 class="quiz-leaderboard-title">Papan Juara Santri Cilik</h3>
+                    <p class="quiz-leaderboard-sub">Santri tergiat berprestasi di Kuis Cerdas Ceria</p>
                 </div>
 
                 <div id="leaderboard-list-body" class="quiz-leaderboard-list">
-                    <div style="text-align: center; padding: 2rem 0; color: #64748b;">
+                    <div style="text-align: center; padding: 2.5rem 0; color: #64748b;">
                         <div class="quiz-spinner"></div>
-                        <p style="margin-top: 0.85rem; font-size: 0.88rem; font-weight: 600;">Memuat peringkat santri...</p>
+                        <p style="margin-top: 0.85rem; font-size: 0.92rem; font-weight: 700; font-family: 'Comic Neue', cursive, sans-serif;">Memuat papan juara...</p>
                     </div>
                 </div>
 
@@ -567,21 +664,18 @@
                 const data = await res.json();
                 if (data && data.ok && Array.isArray(data.leaderboard) && data.leaderboard.length > 0) {
                     bodyEl.innerHTML = data.leaderboard.map((item, idx) => {
-                        const rankClass = idx === 0 ? 'rank-1' : idx === 1 ? 'rank-2' : idx === 2 ? 'rank-3' : 'rank-other';
+                        const rankClass = idx === 0 ? 'is-gold' : idx === 1 ? 'is-silver' : idx === 2 ? 'is-bronze' : '';
                         const rankMedal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `${idx + 1}`;
-                        const isNumRank = idx >= 3;
                         const stars = '⭐'.repeat(Math.max(1, Math.min(3, item.stars || 1)));
                         const catObj = CATEGORIES[item.category];
-                        const catLabel = catObj ? catObj.label : (item.category || 'Semua');
+                        const catLabel = catObj ? catObj.label : (item.category || 'Semua Topik');
                         return `
                             <div class="leaderboard-item-row ${rankClass}">
-                                <div class="leaderboard-rank ${isNumRank ? 'num-rank' : ''}">${rankMedal}</div>
-                                <div class="leaderboard-name-info">
+                                <div class="leaderboard-rank-badge">${rankMedal}</div>
+                                <div style="flex: 1; text-align: left;">
                                     <div class="leaderboard-name">${escapeHtml(item.player_name)}</div>
-                                    <div class="leaderboard-meta">
-                                        <span>${stars}</span>
-                                        <span>•</span>
-                                        <span>Topik: ${escapeHtml(catLabel)}</span>
+                                    <div style="font-size: 0.75rem; color: #64748b; margin-top: 2px;">
+                                        <span>${stars}</span> • <span>${escapeHtml(catLabel)}</span>
                                     </div>
                                 </div>
                                 <div class="leaderboard-score">${item.score} Pts</div>
@@ -591,20 +685,23 @@
                     return;
                 }
             }
-            bodyEl.innerHTML = `<div style="text-align: center; padding: 2rem 0; color: var(--gray-500);">Belum ada skor kuis tercatat. Jadilah yang pertama! 🌟</div>`;
+            bodyEl.innerHTML = `<div style="text-align: center; padding: 2rem 0; color: #64748b; font-weight: 600;">Belum ada skor kuis tercatat. Jadilah yang pertama! 🌟</div>`;
         } catch (e) {
-            bodyEl.innerHTML = `<div style="text-align: center; padding: 2rem 0; color: var(--gray-500);">Gagal memuat papan peringkat. Silakan coba lagi.</div>`;
+            bodyEl.innerHTML = `<div style="text-align: center; padding: 2rem 0; color: #64748b; font-weight: 600;">Gagal memuat papan juara. Silakan coba lagi.</div>`;
         }
     }
 
     function closeLeaderboard() {
         const modal = document.getElementById('quiz-leaderboard-modal');
-        if (modal) modal.classList.remove('active');
+        if (modal) {
+            modal.classList.remove('active');
+        }
     }
 
+    // Helper: Escape HTML
     function escapeHtml(str) {
         if (!str) return '';
-        return String(str)
+        return str
             .replace(/&/g, '&amp;')
             .replace(/</g, '&lt;')
             .replace(/>/g, '&gt;')
@@ -612,37 +709,29 @@
             .replace(/'/g, '&#039;');
     }
 
-    // Expose API
+    // Expose Global API
     window.KidsQuiz = {
         switchMainTab,
-        renderQuizLobby,
-        setPlayerName,
         selectCategory,
+        setPlayerName,
         startQuiz,
         handleAnswer,
         nextQuestion,
-        renderQuizResult,
-        submitScore,
+        renderQuizLobby,
         openLeaderboard,
         openLeaderboardFromResult,
-        closeLeaderboard
+        closeLeaderboard,
+        submitScore
     };
 
-    // Auto-bind to KidsApp if exists
-    if (window.KidsApp) {
-        window.KidsApp.switchMainTab = switchMainTab;
-    }
-
-    // Support URL hash: #quiz, #hijaiyah, #tahfizh
+    // Auto-init on DOMContentLoaded
     document.addEventListener('DOMContentLoaded', () => {
-        const hashMap = {
-            '#quiz': 'quiz',
-            '#hijaiyah': 'hijaiyah',
-            '#tahfizh': 'tahfizh'
-        };
-        const target = hashMap[window.location.hash];
-        if (target) {
-            setTimeout(() => switchMainTab(target), 300);
+        // Tab click listener check
+        const quizTabBtn = document.getElementById('tab-btn-quiz');
+        if (quizTabBtn) {
+            quizTabBtn.addEventListener('click', () => {
+                switchMainTab('quiz');
+            });
         }
     });
 

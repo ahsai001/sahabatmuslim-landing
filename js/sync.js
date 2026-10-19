@@ -78,7 +78,10 @@
                 fontSize: localStorage.getItem('sm_quran_font_size') || '28',
                 showLatin: localStorage.getItem('sm_quran_show_latin') !== 'false',
                 showTrans: localStorage.getItem('sm_quran_show_trans') !== 'false',
-                selectedQari: localStorage.getItem('sm_quran_selected_qari') || '05'
+                selectedQari: localStorage.getItem('sm_quran_selected_qari') || '05',
+                readingLog: getJson('sm_quran_reading_log') || {},
+                dailyGoal: localStorage.getItem('sm_quran_daily_goal') || '20',
+                distinctAyahs: getJson('sm_quran_distinct_ayahs') || []
             },
             dzikir: {
                 counters: dzikirCounters,
@@ -147,6 +150,26 @@
                 setJson('sm_quran_last_read', cloudQuran.lastRead);
                 hasChanges = true;
             }
+        }
+
+        // 2b. Quran Reading Log (Merge date-by-date seamlessly)
+        if (cloudQuran.readingLog && typeof cloudQuran.readingLog === 'object') {
+            const localLog = getJson('sm_quran_reading_log') || {};
+            let logChanged = false;
+            Object.keys(cloudQuran.readingLog).forEach(d => {
+                if (!localLog[d] || (cloudQuran.readingLog[d].totalAyahs || 0) > (localLog[d].totalAyahs || 0)) {
+                    localLog[d] = cloudQuran.readingLog[d];
+                    logChanged = true;
+                }
+            });
+            if (logChanged) {
+                setJson('sm_quran_reading_log', localLog);
+                hasChanges = true;
+            }
+        }
+        if (cloudQuran.dailyGoal && !localStorage.getItem('sm_quran_daily_goal')) {
+            localStorage.setItem('sm_quran_daily_goal', cloudQuran.dailyGoal.toString());
+            hasChanges = true;
         }
 
         // 3. Dzikir Counters (Take Math.max per counter ID)

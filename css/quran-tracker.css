@@ -1,0 +1,617 @@
+/* Quran Reading Progress & Activity Analytics Stylesheet — Sahabat Muslim */
+
+:root {
+    --qt-primary: #059669;
+    --qt-primary-dark: #064e3b;
+    --qt-primary-light: #10b981;
+    --qt-bg-soft: #f0fdf4;
+    --qt-border-soft: #bbf7d0;
+    --qt-amber: #d97706;
+    --qt-amber-light: #fef3c7;
+    --qt-blue: #0284c7;
+    --qt-blue-light: #e0f2fe;
+    --qt-gray-50: #f8fafc;
+    --qt-gray-100: #f1f5f9;
+    --qt-gray-200: #e2e8f0;
+    --qt-gray-500: #64748b;
+    --qt-gray-700: #334155;
+    --qt-gray-800: #1e293b;
+}
+
+/* Master Tracker Card */
+.quran-tracker-card {
+    background: #ffffff;
+    border: 1px solid var(--qt-gray-200);
+    border-radius: 20px;
+    padding: 1.75rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 20px rgba(6, 78, 59, 0.05);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.25s ease;
+}
+
+.quran-tracker-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #10b981, #059669, #047857);
+}
+
+/* Header */
+.qt-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--qt-gray-100);
+}
+
+.qt-title-group {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.qt-title-icon {
+    font-size: 1.75rem;
+    width: 44px;
+    height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--qt-bg-soft);
+    border: 1px solid var(--qt-border-soft);
+    border-radius: 12px;
+}
+
+.qt-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--qt-gray-800);
+    margin: 0;
+    line-height: 1.2;
+}
+
+.qt-subtitle {
+    font-size: 0.82rem;
+    color: var(--qt-gray-500);
+    margin-top: 0.2rem;
+}
+
+/* Header Badges & Actions */
+.qt-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.qt-badge-streak {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.4rem 0.85rem;
+    background: #fff7ed;
+    border: 1px solid #ffedd5;
+    border-radius: 9999px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #c2410c;
+}
+
+.qt-btn-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    font-family: inherit;
+}
+
+.qt-btn-primary {
+    background: linear-gradient(135deg, var(--qt-primary), var(--qt-primary-dark));
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(5, 150, 105, 0.25);
+}
+
+.qt-btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(5, 150, 105, 0.35);
+}
+
+.qt-btn-outline {
+    background: var(--qt-gray-50);
+    border: 1px solid var(--qt-gray-200);
+    color: var(--qt-gray-700);
+}
+
+.qt-btn-outline:hover {
+    background: var(--qt-gray-100);
+    border-color: var(--qt-gray-500);
+}
+
+/* Metric Cards Grid */
+.qt-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.qt-metric-card {
+    background: var(--qt-gray-50);
+    border: 1px solid var(--qt-gray-200);
+    border-radius: 16px;
+    padding: 1.1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.qt-metric-card:hover {
+    background: #ffffff;
+    border-color: var(--qt-primary-light);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.04);
+}
+
+.qt-metric-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.qt-metric-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--qt-gray-500);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.qt-metric-icon {
+    font-size: 1.25rem;
+}
+
+.qt-metric-val {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--qt-gray-800);
+    line-height: 1.1;
+    margin-bottom: 0.35rem;
+}
+
+.qt-metric-val small {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--qt-gray-500);
+}
+
+.qt-metric-sub {
+    font-size: 0.78rem;
+    color: var(--qt-gray-500);
+}
+
+/* Progress bar inside metric card */
+.qt-progress-bar {
+    width: 100%;
+    height: 6px;
+    background: var(--qt-gray-200);
+    border-radius: 9999px;
+    overflow: hidden;
+    margin-top: 0.4rem;
+}
+
+.qt-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #34d399, #059669);
+    border-radius: 9999px;
+    transition: width 0.5s ease;
+}
+
+/* Trend Banner */
+.qt-trend-banner {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.85rem 1.1rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    font-size: 0.88rem;
+    line-height: 1.5;
+    transition: all 0.2s ease;
+}
+
+.qt-trend-banner.increasing {
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    color: #065f46;
+}
+
+.qt-trend-banner.stable {
+    background: #f0f9ff;
+    border: 1px solid #bae6fd;
+    color: #0369a1;
+}
+
+.qt-trend-banner.decreasing {
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    color: #92400e;
+}
+
+.qt-trend-banner.new-state {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    color: #334155;
+}
+
+.qt-trend-icon {
+    font-size: 1.4rem;
+    flex-shrink: 0;
+}
+
+.qt-trend-text strong {
+    font-weight: 700;
+}
+
+/* Chart Container Section */
+.qt-chart-section {
+    background: #ffffff;
+    border: 1px solid var(--qt-gray-200);
+    border-radius: 16px;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.qt-chart-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.qt-chart-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--qt-gray-800);
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.qt-chart-legend-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #b45309;
+    background: #fef3c7;
+    border: 1px solid #fde68a;
+    border-radius: 9999px;
+    padding: 0.2rem 0.65rem;
+    margin-left: 0.35rem;
+}
+
+.qt-timeframe-group {
+    display: inline-flex;
+    background: var(--qt-gray-100);
+    border-radius: 8px;
+    padding: 2px;
+}
+
+.qt-timeframe-btn {
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    border: none;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--qt-gray-700);
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-family: inherit;
+}
+
+.qt-timeframe-btn.active {
+    background: #ffffff;
+    color: var(--qt-primary);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+/* SVG Chart */
+.qt-svg-wrap {
+    width: 100%;
+    position: relative;
+    user-select: none;
+}
+
+.qt-svg-chart {
+    width: 100%;
+    height: auto;
+    display: block;
+    overflow: visible;
+}
+
+.qt-grid-line {
+    stroke: #e2e8f0;
+    stroke-dasharray: 4 4;
+    stroke-width: 1;
+}
+
+.qt-axis-text {
+    font-size: 11px;
+    fill: #64748b;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.qt-bar-rect {
+    cursor: pointer;
+    transition: fill 0.2s ease, opacity 0.2s ease;
+}
+
+.qt-bar-rect:hover {
+    opacity: 0.85;
+    filter: brightness(1.1);
+}
+
+.qt-target-line {
+    stroke: #f59e0b;
+    stroke-width: 1.5;
+    stroke-dasharray: 6 3;
+}
+
+/* Chart Tooltip */
+.qt-chart-tooltip {
+    position: absolute;
+    background: #1e293b;
+    color: #ffffff;
+    padding: 0.6rem 0.85rem;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    line-height: 1.4;
+    pointer-events: none;
+    z-index: 20;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+    transform: translate(-50%, -100%);
+    margin-top: -10px;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    white-space: nowrap;
+}
+
+.qt-chart-tooltip.show {
+    opacity: 1;
+}
+
+.qt-chart-tooltip::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 5px 5px 0;
+    border-style: solid;
+    border-color: #1e293b transparent;
+    display: block;
+    width: 0;
+}
+
+/* Insights Grid */
+.qt-insights-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.qt-insight-box {
+    background: var(--qt-gray-50);
+    border: 1px solid var(--qt-gray-200);
+    border-radius: 14px;
+    padding: 1rem;
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+}
+
+.qt-insight-icon {
+    font-size: 1.4rem;
+    line-height: 1;
+}
+
+.qt-insight-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--qt-gray-800);
+    margin-bottom: 0.25rem;
+}
+
+.qt-insight-desc {
+    font-size: 0.8rem;
+    color: var(--qt-gray-500);
+    line-height: 1.45;
+}
+
+/* Modals */
+.qt-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    padding: 1rem;
+}
+
+.qt-modal-overlay.active {
+    display: flex;
+    animation: qtFadeIn 0.2s ease-out;
+}
+
+.qt-modal-card {
+    background: #ffffff;
+    border-radius: 20px;
+    max-width: 480px;
+    width: 100%;
+    padding: 1.75rem;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.qt-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--qt-gray-100);
+}
+
+.qt-modal-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--qt-gray-800);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.qt-modal-close {
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--qt-gray-500);
+    cursor: pointer;
+    line-height: 1;
+}
+
+.qt-form-group {
+    margin-bottom: 1rem;
+}
+
+.qt-form-label {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--qt-gray-700);
+    margin-bottom: 0.35rem;
+}
+
+.qt-form-input,
+.qt-form-select {
+    width: 100%;
+    padding: 0.65rem 0.85rem;
+    border: 1px solid var(--qt-gray-200);
+    border-radius: 10px;
+    font-size: 0.9rem;
+    outline: none;
+    font-family: inherit;
+    background: var(--qt-gray-50);
+    transition: all 0.2s;
+}
+
+.qt-form-input:focus,
+.qt-form-select:focus {
+    background: #ffffff;
+    border-color: var(--qt-primary);
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+}
+
+.qt-surah-complete-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.85rem 1.25rem;
+    background: linear-gradient(135deg, #059669, #047857);
+    color: #ffffff;
+    border: none;
+    border-radius: 12px;
+    font-size: 0.92rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(5, 150, 105, 0.25);
+    transition: all 0.2s ease;
+    margin: 1.5rem 0;
+}
+
+.qt-surah-complete-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(5, 150, 105, 0.35);
+}
+
+/* Animations */
+@keyframes qtFadeIn {
+    from { opacity: 0; transform: scale(0.97); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .qt-metrics-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .quran-tracker-card {
+        padding: 1.25rem 1rem;
+        border-radius: 16px;
+    }
+    .qt-metrics-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+    .qt-insights-grid {
+        grid-template-columns: 1fr;
+    }
+    .qt-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .qt-header-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+    .qt-btn-action {
+        flex: 1;
+        justify-content: center;
+    }
+    .qt-svg-wrap {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 0.5rem;
+    }
+    .qt-svg-chart {
+        min-width: 540px;
+    }
+}

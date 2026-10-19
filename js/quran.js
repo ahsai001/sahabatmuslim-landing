@@ -331,6 +331,12 @@
             bismillahBanner.style.display = (data.nomor !== 1 && data.nomor !== 9) ? 'block' : 'none';
         }
 
+        // Complete current surah button
+        const completeBtn = document.getElementById('btn-complete-current-surah');
+        if (completeBtn) {
+            completeBtn.innerHTML = `<span>✓</span> Tandai Surah ${escapeHtml(data.namaLatin)} Sudah Selesai Dibaca (${data.jumlahAyat} Ayat)`;
+        }
+
         // Ayah list
         const ayahContainer = document.getElementById('detail-ayah-list');
         if (ayahContainer) {
@@ -571,7 +577,22 @@
     function setLastRead(surah, surahName, ayah) {
         STATE.lastRead = { surah, surahName, ayah, date: new Date().toISOString() };
         savePreferences();
+        if (window.smQuranTracker && typeof window.smQuranTracker.recordAyahs === 'function') {
+            window.smQuranTracker.recordAyahs(surah, 1, ayah, null, 'bookmark');
+        }
         showToast(`Tersimpan! Terakhir dibaca: ${surahName} ayat ${ayah} 🔖`);
+    }
+
+    // Mark current full surah completed
+    function markCurrentSurahCompleted() {
+        const detail = STATE.currentSurahDetail;
+        if (!detail) return;
+        if (window.smQuranTracker && typeof window.smQuranTracker.recordFullSurah === 'function') {
+            const res = window.smQuranTracker.recordFullSurah(detail.nomor);
+            showToast(`Alhamdulillah! Surah ${detail.namaLatin} (${detail.jumlahAyat} ayat) tercatat di progres tilawah 🎉`);
+        } else {
+            showToast(`Alhamdulillah! Surah ${detail.namaLatin} telah selesai dibaca.`);
+        }
     }
 
     // Copy Ayah
@@ -739,7 +760,9 @@
         onSearchChange,
         selectFilter,
         resetFilter,
-        onQariChange
+        onQariChange,
+        showToast,
+        markCurrentSurahCompleted
     };
 
     if (document.readyState === 'loading') {

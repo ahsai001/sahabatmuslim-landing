@@ -921,6 +921,7 @@
         }
     </style>
     <link rel="stylesheet" href="css/nav.css?v=1">
+    <link rel="stylesheet" href="css/quran-tracker.css?v=1">
 </head>
 <body>
 
@@ -1155,6 +1156,121 @@
 
             <!-- LIST SECTION: 114 SURAH -->
             <div id="quran-list-section">
+                <!-- DASHBOARD PROGRES TILAWAH & AKTIVITAS BACAAN -->
+                <div class="quran-tracker-card" id="quran-tracker-card">
+                    <!-- Header -->
+                    <div class="qt-header">
+                        <div class="qt-title-group">
+                            <div class="qt-title-icon">📊</div>
+                            <div>
+                                <h2 class="qt-title">Progres Tilawah & Grafik Aktivitas</h2>
+                                <div class="qt-subtitle">Pantau konsistensi dan perkembangan membaca Al-Qur'an harian Anda</div>
+                            </div>
+                        </div>
+                        <div class="qt-header-actions">
+                            <span id="qt-badge-streak" class="qt-badge-streak" style="display: none;"></span>
+                            <button type="button" class="qt-btn-action qt-btn-primary" onclick="window.smQuranTracker.openRecordModal()">
+                                <span>➕</span> Catat Tilawah
+                            </button>
+                            <button type="button" class="qt-btn-action qt-btn-outline" onclick="window.smQuranTracker.openGoalModal()" title="Atur target ayat per hari">
+                                <span>🎯</span> Target
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Metrics Grid (4 Cards) -->
+                    <div class="qt-metrics-grid">
+                        <!-- Card 1: Hari Ini -->
+                        <div class="qt-metric-card">
+                            <div class="qt-metric-top">
+                                <span class="qt-metric-label">Tilawah Hari Ini</span>
+                                <span class="qt-metric-icon">📖</span>
+                            </div>
+                            <div class="qt-metric-val" id="qt-val-today">0 <small>/ 20 Ayat</small></div>
+                            <div class="qt-progress-bar">
+                                <div class="qt-progress-fill" id="qt-bar-today" style="width: 0%;"></div>
+                            </div>
+                            <div class="qt-metric-sub" id="qt-sub-today" style="margin-top: 0.4rem;">0% dari target harian</div>
+                        </div>
+
+                        <!-- Card 2: Khatam Progress -->
+                        <div class="qt-metric-card">
+                            <div class="qt-metric-top">
+                                <span class="qt-metric-label">Progres Khatam</span>
+                                <span class="qt-metric-icon">🕋</span>
+                            </div>
+                            <div class="qt-metric-val" id="qt-val-khatam">0.0% <small>Khatam</small></div>
+                            <div class="qt-progress-bar">
+                                <div class="qt-progress-fill" id="qt-bar-khatam" style="width: 0%;"></div>
+                            </div>
+                            <div class="qt-metric-sub" id="qt-sub-khatam" style="margin-top: 0.4rem;">0 dari 6.236 ayat</div>
+                        </div>
+
+                        <!-- Card 3: Rata-rata Harian -->
+                        <div class="qt-metric-card">
+                            <div class="qt-metric-top">
+                                <span class="qt-metric-label">Rata-Rata Tilawah</span>
+                                <span class="qt-metric-icon">⚡</span>
+                            </div>
+                            <div class="qt-metric-val" id="qt-val-avg">0 <small>Ayat/Hari</small></div>
+                            <div class="qt-metric-sub" id="qt-sub-avg" style="margin-top: 0.4rem;">Estimasi khatam: —</div>
+                        </div>
+
+                        <!-- Card 4: Rekor & Produktivitas -->
+                        <div class="qt-metric-card">
+                            <div class="qt-metric-top">
+                                <span class="qt-metric-label">Rekor Tertinggi</span>
+                                <span class="qt-metric-icon">🏆</span>
+                            </div>
+                            <div class="qt-metric-val" id="qt-insight-record" style="font-size: 1.35rem;">Belum ada rekor</div>
+                            <div class="qt-metric-sub" style="margin-top: 0.4rem;">Pencapaian tilawah harian terbaik</div>
+                        </div>
+                    </div>
+
+                    <!-- Trend Status Banner -->
+                    <div id="qt-trend-banner" class="qt-trend-banner new-state"></div>
+
+                    <!-- Day-by-Day Activity Chart Section -->
+                    <div class="qt-chart-section">
+                        <div class="qt-chart-toolbar">
+                            <div class="qt-chart-title">
+                                <span>📈</span> Grafik Aktivitas Tilawah (X: Hari | Y: Jumlah Ayat)
+                                <span class="qt-chart-legend-badge" id="qt-chart-target-badge">🎯 Target: 20 ayat/hari</span>
+                            </div>
+                            <div class="qt-timeframe-group">
+                                <button type="button" class="qt-timeframe-btn active" data-days="7" onclick="window.smQuranTracker.setTimeframe(7)">7 Hari</button>
+                                <button type="button" class="qt-timeframe-btn" data-days="14" onclick="window.smQuranTracker.setTimeframe(14)">14 Hari</button>
+                                <button type="button" class="qt-timeframe-btn" data-days="30" onclick="window.smQuranTracker.setTimeframe(30)">30 Hari</button>
+                            </div>
+                        </div>
+
+                        <!-- SVG Chart Wrap -->
+                        <div id="qt-chart-svg-wrap" class="qt-svg-wrap"></div>
+                    </div>
+
+                    <!-- Insights & Hadith Motivator Grid -->
+                    <div class="qt-insights-grid">
+                        <div class="qt-insight-box">
+                            <span class="qt-insight-icon">💡</span>
+                            <div>
+                                <div class="qt-insight-title">Insight Istiqomah</div>
+                                <div class="qt-insight-desc">
+                                    Membaca 1 lembar mushaf (sekitar 20 ayat) secara rutin setiap selesai sholat fardhu akan membantu Anda mengkhatamkan 1 juz dalam 1 hari atau 30 juz dalam 1 bulan!
+                                </div>
+                            </div>
+                        </div>
+                        <div class="qt-insight-box">
+                            <span class="qt-insight-icon">✨</span>
+                            <div>
+                                <div class="qt-insight-title">Keutamaan Membaca Al-Qur'an</div>
+                                <div class="qt-insight-desc">
+                                    <em>"Sebaik-baik kalian adalah orang yang mempelajari Al-Qur'an dan mengajarkannya."</em> (HR. Bukhari no. 5027)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Last Read Banner -->
                 <div id="quran-last-read-banner" class="quran-last-read-banner"></div>
 
@@ -1247,6 +1363,11 @@
                     <!-- Ayah List -->
                     <div id="detail-ayah-list"></div>
 
+                    <!-- Tombol Selesaikan Bacaan Surah Ini -->
+                    <button type="button" class="qt-surah-complete-btn" id="btn-complete-current-surah" onclick="window.smQuran.markCurrentSurahCompleted()">
+                        <span>✓</span> Tandai Surah Ini Sudah Selesai Dibaca
+                    </button>
+
                     <!-- Nav Prev / Next Bottom -->
                     <div class="quran-nav-bottom">
                         <button type="button" class="btn-back" id="btn-prev-surah" style="display: none;"></button>
@@ -1275,6 +1396,81 @@
 
     <!-- Toast Notification -->
     <div class="dzikir-toast" id="quran-toast"></div>
+
+    <!-- Modal Catat Tilawah Manual -->
+    <div class="qt-modal-overlay" id="qt-modal-record" onclick="if(event.target === this) window.smQuranTracker.closeRecordModal()">
+        <div class="qt-modal-card">
+            <div class="qt-modal-header">
+                <div class="qt-modal-title">
+                    <span>📖</span> Catat Bacaan Tilawah
+                </div>
+                <button type="button" class="qt-modal-close" onclick="window.smQuranTracker.closeRecordModal()">&times;</button>
+            </div>
+            <form onsubmit="window.smQuranTracker.submitRecordForm(event)">
+                <div class="qt-form-group">
+                    <label class="qt-form-label" for="qt-input-surah">Pilih Surah:</label>
+                    <select id="qt-input-surah" class="qt-form-select" required onchange="window.smQuranTracker.onSurahSelectChange(this.value)">
+                        <option value="">-- Pilih Surah --</option>
+                    </select>
+                    <div id="qt-surah-helper" style="font-size: 0.75rem; color: var(--qt-primary); margin-top: 0.25rem;"></div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                    <div class="qt-form-group">
+                        <label class="qt-form-label" for="qt-input-from">Dari Ayat:</label>
+                        <input type="number" id="qt-input-from" class="qt-form-input" min="1" value="1" required>
+                    </div>
+                    <div class="qt-form-group">
+                        <label class="qt-form-label" for="qt-input-to">Sampai Ayat:</label>
+                        <input type="number" id="qt-input-to" class="qt-form-input" min="1" value="7" required>
+                    </div>
+                </div>
+
+                <div class="qt-form-group">
+                    <label class="qt-form-label" for="qt-input-date">Tanggal Membaca:</label>
+                    <input type="date" id="qt-input-date" class="qt-form-input" required>
+                </div>
+
+                <div style="display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem;">
+                    <button type="button" class="qt-btn-action qt-btn-outline" onclick="window.smQuranTracker.closeRecordModal()">Batal</button>
+                    <button type="submit" class="qt-btn-action qt-btn-primary">💾 Simpan Catatan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Atur Target Harian -->
+    <div class="qt-modal-overlay" id="qt-modal-goal" onclick="if(event.target === this) window.smQuranTracker.closeGoalModal()">
+        <div class="qt-modal-card">
+            <div class="qt-modal-header">
+                <div class="qt-modal-title">
+                    <span>🎯</span> Atur Target Tilawah Harian
+                </div>
+                <button type="button" class="qt-modal-close" onclick="window.smQuranTracker.closeGoalModal()">&times;</button>
+            </div>
+            <form onsubmit="window.smQuranTracker.submitGoalForm(event)">
+                <div class="qt-form-group">
+                    <label class="qt-form-label" for="qt-input-goal">Target Jumlah Ayat per Hari:</label>
+                    <input type="number" id="qt-input-goal" class="qt-form-input" min="1" max="6236" value="20" required>
+                </div>
+
+                <div style="margin-bottom: 1.25rem;">
+                    <span style="font-size: 0.78rem; font-weight: 600; color: var(--qt-gray-500); display: block; margin-bottom: 0.4rem;">Pilihan Cepat:</span>
+                    <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
+                        <button type="button" class="qt-btn-action qt-btn-outline" style="padding: 0.35rem 0.65rem; font-size: 0.78rem;" onclick="window.smQuranTracker.setQuickGoal(10)">10 Ayat (Ringan)</button>
+                        <button type="button" class="qt-btn-action qt-btn-outline" style="padding: 0.35rem 0.65rem; font-size: 0.78rem;" onclick="window.smQuranTracker.setQuickGoal(20)">20 Ayat (~1 Lembar)</button>
+                        <button type="button" class="qt-btn-action qt-btn-outline" style="padding: 0.35rem 0.65rem; font-size: 0.78rem;" onclick="window.smQuranTracker.setQuickGoal(50)">50 Ayat (~1 Ruku)</button>
+                        <button type="button" class="qt-btn-action qt-btn-outline" style="padding: 0.35rem 0.65rem; font-size: 0.78rem;" onclick="window.smQuranTracker.setQuickGoal(140)">140 Ayat (~1/2 Juz)</button>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 0.75rem; justify-content: flex-end;">
+                    <button type="button" class="qt-btn-action qt-btn-outline" onclick="window.smQuranTracker.closeGoalModal()">Batal</button>
+                    <button type="submit" class="qt-btn-action qt-btn-primary">✓ Simpan Target</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <!-- Footer -->
     <footer>
@@ -1321,7 +1517,8 @@
     <!-- Scripts -->
     <script src="js/sync.js?v=2"></script>
     <script src="js/quran-data.js"></script>
-    <script src="js/quran.js?v=2"></script>
+    <script src="js/quran-tracker.js?v=1"></script>
+    <script src="js/quran.js?v=3"></script>
     <script src="js/nav.js?v=4"></script>
 </body>
 </html>

@@ -463,6 +463,279 @@
         }
     }
 
+    // Mode Dengarkan Dzikir (Continuous Audio Player with repetition)
+    let playerItems = [];
+    let playerCurrentIndex = 0;
+    let playerCurrentRep = 1;
+    let playerTargetRep = 1;
+    let playerAudio = null;
+    let playerAutoCount = true;
+
+    function openPlayerModal() {
+        const items = getItems().filter(it => it.sound);
+        if (!items || items.length === 0) {
+            showToast('Tidak ada file audio tersedia untuk kategori ini');
+            return;
+        }
+
+        // Hentikan audio individual jika sedang menyala
+        if (currentAudio) {
+            currentAudio.pause();
+            currentAudio.currentTime = 0;
+            if (playingItemId) {
+                const prevBtn = document.getElementById(`btn-audio-${playingItemId}`);
+                if (prevBtn) prevBtn.innerHTML = '🔊';
+            }
+            currentAudio = null;
+            playingItemId = null;
+        }
+
+        playerItems = items;
+        playerCurrentIndex = 0;
+        playerCurrentRep = 1;
+
+        const modal = document.getElementById('dzikir-player-modal');
+        if (modal) {
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        loadAndPlayCurrentPlayerItem(true);
+    }
+
+    function closePlayerModal() {
+        if (playerAudio) {
+            playerAudio.pause();
+            playerAudio.currentTime = 0;
+            playerAudio = null;
+        }
+
+        const modal = document.getElementById('dzikir-player-modal');
+        if (modal) {
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    }
+
+    function formatTime(seconds) {
+        if (!seconds || isNaN(seconds)) return '0:00';
+        const m = Math.floor(seconds / 60);
+        const s = Math.floor(seconds % 60);
+        return `${m}:${s < 10 ? '0' : ''}${s}`;
+    }
+
+    function updatePlayerUI() {
+        const item = playerItems[playerCurrentIndex];
+        if (!item) return;
+
+        // Badge Kategori
+        const catBadge = document.getElementById('dzikir-player-cat-badge');
+        if (catBadge) {
+            if (currentCategory === 'pagi') catBadge.textContent = '🌅 Dzikir Pagi';
+            else if (currentCategory === 'petang') catBadge.textContent = '🌇 Dzikir Petang';
+            else if (currentSholatSub === 'sholat_subuh') catBadge.textContent = '🕌 Sesudah Shubuh';
+            else if (currentSholatSub === 'sholat_maghrib') catBadge.textContent = '🕌 Sesudah Maghrib';
+            else if (currentSholatSub === 'sholat_dz_a_i') catBadge.textContent = "🕌 Sesudah Zhuhur/'Ashar/'Isya";
+            else catBadge.textContent = '🕌 Sesudah Sholat';
+        }
+
+        // Judul & Counter Repetisi
+        const titleEl = document.getElementById('dzikir-player-title');
+        if (titleEl) titleEl.textContent = item.title;
+
+        const curRepEl = document.getElementById('dzikir-player-cur-rep');
+        if (curRepEl) curRepEl.textContent = playerCurrentRep;
+
+        const targetRepEl = document.getElementById('dzikir-player-target-rep');
+        if (targetRepEl) targetRepEl.textContent = playerTargetRep;
+
+        // Progress Dzikir dalam Kategori
+        const itemIdxEl = document.getElementById('dzikir-player-item-index');
+        if (itemIdxEl) itemIdxEl.textContent = playerCurrentIndex + 1;
+
+        const totalItemsEl = document.getElementById('dzikir-player-total-items');
+        if (totalItemsEl) totalItemsEl.textContent = playerItems.length;
+
+        const targetTextEl = document.getElementById('dzikir-player-item-target-text');
+        if (targetTextEl) targetTextEl.textContent = item.runningtext || `Dibaca ${item.target}x`;
+
+        const fillEl = document.getElementById('dzikir-player-progress-fill');
+        if (fillEl) {
+            const pct = Math.round(((playerCurrentIndex + 1) / playerItems.length) * 100);
+            fillEl.style.width = `${pct}%`;
+        }
+
+        // Teks Preview
+        const arEl = document.getElementById('dzikir-player-arabic');
+        if (arEl) arEl.textContent = item.arabic || '';
+
+        const ltEl = document.getElementById('dzikir-player-latin');
+        if (ltEl) ltEl.textContent = item.latin || '';
+
+        const trEl = document.getElementById('dzikir-player-trans');
+        if (trEl) trEl.textContent = item.terjemah ? `"${item.terjemah}"` : '';
+
+        // Tombol Play/Pause
+        const playBtn = document.getElementById('dzikir-player-play-btn');
+        if (playBtn) {
+            if (playerAudio && !playerAudio.paused) {
+                playBtn.innerHTML = '⏸';
+                playBtn.title = 'Jeda';
+            } else {
+                playBtn.innerHTML = '▶';
+                playBtn.title = 'Putar';
+            }
+        }
+    }
+
+    function loadAndPlayCurrentPlayerItem(autoPlay = true) {
+        const item = playerItems[playerCurrentIndex];
+        if (!item || !item.sound) {
+            showToast('Selesai mendengarkan seluruh rangkaian dzikir 🎉');
+            closePlayerModal();
+            return;
+        }
+
+        playerTargetRep = item.target || 1;
+        updatePlayerUI();
+
+        if (playerAudio) {
+            playerAudio.pause();
+            playerAudio.currentTime = 0;
+            playerAudio = null;
+        }
+
+        const audioPath = 'audio/' + item.sound;
+        playerAudio = new Audio(audioPath);
+
+        const slider = document.getElementById('dzikir-player-slider');
+        const curTimeEl = document.getElementById('dzikir-player-cur-time');
+        const durationEl = document.getElementById('dzikir-player-duration');
+
+        playerAudio.ontimeupdate = function() {
+            if (!playerAudio) return;
+            const cur = playerAudio.currentTime || 0;
+            const dur = playerAudio.duration || 0;
+            if (curTimeEl) curTimeEl.textContent = formatTime(cur);
+            if (durationEl && dur > 0) durationEl.textContent = formatTime(dur);
+            if (slider && dur > 0) {
+                slider.value = Math.round((cur / dur) * 100);
+            }
+        };
+
+        playerAudio.onloadedmetadata = function() {
+            if (durationEl && playerAudio.duration) {
+                durationEl.textContent = formatTime(playerAudio.duration);
+            }
+        };
+
+        playerAudio.onended = function() {
+            // Jika repetisi belum mencapai target (misal target 3x, baru putaran ke-1 atau ke-2)
+            if (playerCurrentRep < playerTargetRep) {
+                // Tambah hitungan tasbih jika opsi aktif
+                if (playerAutoCount) {
+                    increment(item.id, item.target);
+                }
+
+                playerCurrentRep++;
+                updatePlayerUI();
+
+                // Beri jeda halus 400ms sebelum putaran berikutnya
+                setTimeout(() => {
+                    if (playerAudio) {
+                        playerAudio.currentTime = 0;
+                        playerAudio.play().catch(e => console.warn('Replay failed', e));
+                        updatePlayerUI();
+                    }
+                }, 400);
+            } else {
+                // Repetisi untuk bacaan ini sudah tuntas
+                if (playerAutoCount) {
+                    increment(item.id, item.target);
+                }
+
+                // Lanjut ke dzikir berikutnya dalam urutan
+                if (playerCurrentIndex < playerItems.length - 1) {
+                    playerCurrentIndex++;
+                    playerCurrentRep = 1;
+                    setTimeout(() => {
+                        loadAndPlayCurrentPlayerItem(true);
+                    }, 500);
+                } else {
+                    // Semua selesai!
+                    updatePlayerUI();
+                    showToast('Alhamdulillah, seluruh dzikir selesai diperdengarkan! 🤲');
+                    setTimeout(() => {
+                        closePlayerModal();
+                    }, 1200);
+                }
+            }
+        };
+
+        playerAudio.onerror = function() {
+            console.warn('Audio failed for item:', item.id);
+            showToast(`Audio untuk "${item.title}" tidak dapat dimuat, melewati...`);
+            nextPlayerItem();
+        };
+
+        if (autoPlay) {
+            playerAudio.play().then(() => {
+                updatePlayerUI();
+            }).catch(e => {
+                console.warn('Playback error (browser policy or user interaction needed):', e);
+                updatePlayerUI();
+            });
+        } else {
+            updatePlayerUI();
+        }
+    }
+
+    function togglePlayerPlay() {
+        if (!playerAudio) {
+            loadAndPlayCurrentPlayerItem(true);
+            return;
+        }
+
+        if (playerAudio.paused) {
+            playerAudio.play().then(() => {
+                updatePlayerUI();
+            }).catch(e => console.warn('Play failed', e));
+        } else {
+            playerAudio.pause();
+            updatePlayerUI();
+        }
+    }
+
+    function prevPlayerItem() {
+        if (playerCurrentIndex > 0) {
+            playerCurrentIndex--;
+            playerCurrentRep = 1;
+            loadAndPlayCurrentPlayerItem(true);
+        } else {
+            showToast('Ini adalah dzikir urutan pertama');
+        }
+    }
+
+    function nextPlayerItem() {
+        if (playerCurrentIndex < playerItems.length - 1) {
+            playerCurrentIndex++;
+            playerCurrentRep = 1;
+            loadAndPlayCurrentPlayerItem(true);
+        } else {
+            showToast('Ini adalah dzikir urutan terakhir');
+        }
+    }
+
+    function seekPlayerAudio(val) {
+        if (!playerAudio || !playerAudio.duration) return;
+        const targetTime = (val / 100) * playerAudio.duration;
+        playerAudio.currentTime = targetTime;
+    }
+
+    function toggleAutoCount(checked) {
+        playerAutoCount = checked;
+    }
+
     function openFaedahModal() {
         const modal = document.getElementById('dzikir-faedah-modal');
         if (modal) {
@@ -546,7 +819,14 @@
         shareItem,
         toggleAudio,
         openFaedahModal,
-        closeFaedahModal
+        closeFaedahModal,
+        openPlayerModal,
+        closePlayerModal,
+        togglePlayerPlay,
+        prevPlayerItem,
+        nextPlayerItem,
+        seekPlayerAudio,
+        toggleAutoCount
     };
 
     // Auto init when DOM is ready

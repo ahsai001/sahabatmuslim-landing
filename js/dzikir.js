@@ -436,7 +436,7 @@
         const item = getItemById(itemId);
         if (!item) return;
 
-        const textToCopy = `*${item.title}* (${item.runningtext})\n\n${item.arabic}\n\n_Artinya:_\n"${item.terjemah}"\n\n_Referensi:_\n${item.dalil || 'Dzikir Harian Sesuai Sunnah'}\n\n— Sahabat Muslim (https://sahabatmuslim.ahsailabs.my.id/#dzikir-harian)`;
+        const textToCopy = `*${item.title}* (${item.runningtext})\n\n${item.arabic}\n\n_Artinya:_\n"${item.terjemah}"\n\n_Referensi:_\n${item.dalil || 'Dzikir Harian Sesuai Sunnah'}\n\n— Sahabat Muslim (https://sahabatmuslim.ahsailabs.my.id/dzikir)`;
 
         navigator.clipboard.writeText(textToCopy).then(() => {
             showToast('Teks doa & artinya berhasil disalin! 📋');
@@ -449,16 +449,16 @@
         const item = getItemById(itemId);
         if (!item) return;
 
-        const shareData = {
-            title: `${item.title} — Dzikir Harian Sahabat Muslim`,
-            text: `*${item.title}*\n\n${item.arabic}\n\n"${item.terjemah}"\n\nBaca selengkapnya di Sahabat Muslim:`,
-            url: 'https://sahabatmuslim.ahsailabs.my.id/#dzikir-harian'
-        };
+        const text = `*${item.title}*\n\n${item.arabic}\n\n"${item.terjemah}"\n\nBaca selengkapnya di Sahabat Muslim: https://sahabatmuslim.ahsailabs.my.id/dzikir`;
 
         if (navigator.share) {
-            navigator.share(shareData).catch(() => {});
+            navigator.share({
+                title: `${item.title} — Dzikir Harian Sahabat Muslim`,
+                text: text,
+                url: 'https://sahabatmuslim.ahsailabs.my.id/dzikir'
+            }).catch(() => {});
         } else {
-            const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareData.text + ' ' + shareData.url)}`;
+            const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
             window.open(waUrl, '_blank');
         }
     }
